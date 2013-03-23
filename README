@@ -1,0 +1,24 @@
+Gamealoon v0.0.1
+=====================================
+
+Gamealoon, a eboie production, is first of its kind crowdsourcing based gaming digital media and entertainment product. This product has been conceived
+with the notion that in every passionate gamer out there, there is a great content writer. Here gamers can share their views in the form of review, preview,
+news and various form of articles. Great writers will be ranked and their articles will be highlighted and also they
+can be followed by other users. A basic flow of the system is as follows:
+
+-> User registers with the system and logs in
+-> User will have a profile page which will have various details about articles written, users followed, achievements earned, various game related stats and who are following the user.
+-> From his/her profile page, user will be able to access an editor section via which user will be able to publish articles- such as reviews, previews, etc.
+-> The system will follow the basic structure of a typical gaming website- such as gamespot and ign, but here the difference the sections are filled by user's content.
+-> User articles will be ranked according to their reputation and will be displayed accordingly.
+
+
+Technical notes:
+
+-> App should be designed and developed in the form of an API.
+-> All the views (browser, mobile, etc.) should interact via JSON with this API.
+
+Tools used:
+-> Play 2.1.0
+-> JDK 7 (64 bit)
+-> Eclipse Juno with EGIT plugin installed
