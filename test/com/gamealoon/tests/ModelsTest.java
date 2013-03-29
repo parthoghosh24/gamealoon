@@ -28,7 +28,7 @@ import static play.test.Helpers.running;
 public class ModelsTest {
 
 	/**
-	 * We are testing the db and vai
+	 * We are testing the db and various entites over here....
 	 * 
 	 */
 	@Test
