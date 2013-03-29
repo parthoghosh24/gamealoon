@@ -167,6 +167,13 @@ public class User {
 		this.follows = follows;
 	}
 	
+	/**
+	 * Name is returned as String
+	 */
+	public String toString()
+	{
+		return this.firstName+" "+this.middleName+" "+this.lastName;
+	}
 	//TODO need to see if we persist something related with reps or need to calculate in runtime
 
 }

@@ -118,5 +118,13 @@ public class Article {
 	public void setGame(Game game) {
 		this.game = game;
 	}
+	
+	/**
+	 * Title is returned as String
+	 */
+	public String toString()
+	{
+		return this.title;
+	}
 
 }

@@ -201,4 +201,11 @@ public class Game{
 	}
 	
 
+	/**
+	 * Title is returned as String
+	 */
+	public String toString()
+	{
+		return this.title;
+	}
 }
