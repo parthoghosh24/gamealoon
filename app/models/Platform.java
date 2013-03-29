@@ -1,10 +1,13 @@
 package models;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
-import play.db.ebean.Model;
+
+import org.bson.types.ObjectId;
+
+import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Id;
+
 
 /**
  * This is the platform entity of Gamealoon framework. A platform is something on which games run.
@@ -16,15 +19,52 @@ import play.db.ebean.Model;
  */
 
 @Entity
-public class Platform extends Model {
+public class Platform{
 
-	private static final long serialVersionUID = 2241184615513664270L;
 	
 	@Id
-	public long id;
-	public String title; //playstation, pc, xbox, browser...
-	public String description;
-	public String manufacturer; // Sony, Microsoft, Nintendo, Google, Apple
+	ObjectId id;
+	private String title; //playstation, pc, xbox, browser...
+	private String description;	
+	private String manufacturer; // Sony, Microsoft, Nintendo, Google, Apple
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	/**
+	 * @return the manufacturer
+	 */
+	public String getManufacturer() {
+		return manufacturer;
+	}
+	/**
+	 * @param manufacturer the manufacturer to set
+	 */
+	public void setManufacturer(String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+	
+	
 		
 
 }
