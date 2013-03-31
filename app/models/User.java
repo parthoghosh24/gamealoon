@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.bson.types.ObjectId;
 
@@ -24,13 +25,17 @@ public class User {
 
 	@Id
 	ObjectId id;
+	private String userId;
 	private String username;
 	private String email; //should be a way to find out whether email is valid or not
 	private String password; //need to find out a way to encrypt the password
 	private String firstName;
 	private String middleName;
 	private String lastName;
-	private String avatarPath; //path to avatar image file for user
+	private String avatarPath; //path to avatar image file for user	
+	private Date insertTime;
+	private Date updateTime;
+	private String gameBio; //This is a game related bio for user, which will be shown on article page
 		
 		
 	@Reference
@@ -175,5 +180,61 @@ public class User {
 		return this.firstName+" "+this.middleName+" "+this.lastName;
 	}
 	//TODO need to see if we persist something related with reps or need to calculate in runtime
+
+	/**
+	 * @return the userId
+	 */
+	public String getUserId() {
+		return userId;
+	}
+
+	/**
+	 * @param userId the userId to set
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	/**
+	 * @return the insertTime
+	 */
+	public Date getInsertTime() {
+		return insertTime;
+	}
+
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(Date insertTime) {
+		this.insertTime = insertTime;
+	}
+
+	/**
+	 * @return the updateTime
+	 */
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	/**
+	 * @return the gameBio
+	 */
+	public String getGameBio() {
+		return gameBio;
+	}
+
+	/**
+	 * @param gameBio the gameBio to set
+	 */
+	public void setGameBio(String gameBio) {
+		this.gameBio = gameBio;
+	}
 
 }

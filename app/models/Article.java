@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 
 import com.google.code.morphia.annotations.Embedded;
@@ -25,6 +27,9 @@ public class Article {
 	private String title;
 	private String body;
 	private String creationDate;
+	private Date insertTime;
+	private Date updateTime;
+	private String articleId;
 	
 	@Embedded
 	private User author;
@@ -125,6 +130,48 @@ public class Article {
 	public String toString()
 	{
 		return this.title;
+	}
+
+	/**
+	 * @return the insertTime
+	 */
+	public Date getInsertTime() {
+		return insertTime;
+	}
+
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(Date insertTime) {
+		this.insertTime = insertTime;
+	}
+
+	/**
+	 * @return the updateTime
+	 */
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	/**
+	 * @return the articleId
+	 */
+	public String getArticleId() {
+		return articleId;
+	}
+
+	/**
+	 * @param articleId the articleId to set
+	 */
+	public void setArticleId(String articleId) {
+		this.articleId = articleId;
 	}
 
 }
