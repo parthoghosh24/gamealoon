@@ -22,3 +22,5 @@ Tools used:
 -> Play 2.1.0
 -> JDK 7 (64 bit)
 -> Eclipse Juno with EGIT plugin installed
+-> Mongo DB 2.4.1
+-> Morphia 0.99 and its SL4j extension
