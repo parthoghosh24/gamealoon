@@ -1,4 +1,4 @@
-package models;
+package com.gamealoon.models;
 
 import java.util.Date;
 
@@ -30,6 +30,7 @@ public class Article {
 	private Date insertTime;
 	private Date updateTime;
 	private String articleId;
+	private double score; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
 	
 	@Embedded
 	private User author;
@@ -172,6 +173,20 @@ public class Article {
 	 */
 	public void setArticleId(String articleId) {
 		this.articleId = articleId;
+	}
+
+	/**
+	 * @return the score
+	 */
+	public double getScore() {
+		return score;
+	}
+
+	/**
+	 * @param score the score to set
+	 */
+	public void setScore(double score) {
+		this.score = score;
 	}
 
 }

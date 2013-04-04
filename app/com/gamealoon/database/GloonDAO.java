@@ -1,12 +1,12 @@
-package utility;
+package com.gamealoon.database;
 
 import java.net.UnknownHostException;
 
-import models.Article;
-import models.Game;
-import models.Platform;
-import models.User;
 
+import com.gamealoon.models.Article;
+import com.gamealoon.models.Game;
+import com.gamealoon.models.Platform;
+import com.gamealoon.models.User;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;

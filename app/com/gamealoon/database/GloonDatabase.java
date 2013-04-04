@@ -1,4 +1,4 @@
-package utility;
+package com.gamealoon.database;
 
 import java.net.UnknownHostException;
 

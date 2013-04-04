@@ -1,4 +1,4 @@
-package models;
+package com.gamealoon.models;
 
 import java.util.ArrayList;
 

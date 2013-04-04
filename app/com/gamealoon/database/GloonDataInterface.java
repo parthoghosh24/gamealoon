@@ -1,4 +1,4 @@
-package utility;
+package com.gamealoon.database;
 
 public interface GloonDataInterface {
 

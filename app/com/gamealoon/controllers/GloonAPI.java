@@ -1,15 +1,17 @@
-package controllers;
+package com.gamealoon.controllers;
 
 
 
 import java.util.ArrayList;
+
+import com.gamealoon.database.GloonDAO;
+import com.gamealoon.models.Game;
+import com.gamealoon.models.User;
 import com.google.code.morphia.Datastore;
+
 import static play.libs.Json.toJson;
-import models.Game;
-import models.User;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utility.GloonDAO;
 
 public class GloonAPI extends Controller{
 	
