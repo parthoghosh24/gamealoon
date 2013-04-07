@@ -33,7 +33,7 @@ public class Game{
 	private String publisher;
 	private String developer;
 	private String Genere;
-	private float score; //This will be a calculated value. Need to work on the formula to device the score. Normal distribution might help.
+	private double score; //This will be a calculated value. Need to work on the formula to device the score. Normal distribution might help.
 	
 	
 	@Embedded
@@ -172,7 +172,7 @@ public class Game{
 	/**
 	 * @return the score
 	 */
-	public float getScore() {
+	public double getScore() {
 		return score;
 	}
 
@@ -180,7 +180,7 @@ public class Game{
 	/**
 	 * @param score the score to set
 	 */
-	public void setScore(float score) {
+	public void setScore(double score) {
 		this.score = score;
 	}
 

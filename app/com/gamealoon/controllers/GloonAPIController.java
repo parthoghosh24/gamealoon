@@ -3,6 +3,7 @@ package com.gamealoon.controllers;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.models.Game;
@@ -13,22 +14,18 @@ import static play.libs.Json.toJson;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-public class GloonAPI extends Controller{
+public class GloonAPIController extends Controller{
 	
-	static GloonDAO daoInstance = GloonDAO.instantiateDAO();	
+	static GloonDAO daoInstance = GloonDAO.instantiateDAO();
 	
-	public static Result getGame(String title)
+	
+	public static Result getGames()
 	{
-		System.out.println("title-> "+title);		
 		Datastore gloonDatastore = daoInstance.initDatastore();
-		System.out.println("gloonDatastore ->"+gloonDatastore);
-		System.out.println("gloonDatastore count-> "+gloonDatastore.getCount(Game.class));		
-		Game game = gloonDatastore.find(Game.class,"title",title).get();
-		System.out.println("Game-------> "+game);
-		
-		if(game!=null)
+		List<Game> games = daoInstance.allGames(gloonDatastore);
+		if(games.size()>0)
 		{
-			return ok(toJson(game));
+			return ok(toJson(games));
 		}
 		else
 		{

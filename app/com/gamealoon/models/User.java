@@ -10,7 +10,9 @@ import org.bson.types.ObjectId;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Indexed;
 import com.google.code.morphia.annotations.Reference;
+import com.google.code.morphia.utils.IndexDirection;
 
 /**
  * Another major entity in Gamealoon framework is User. An user is an entity who registers with the system and then can
@@ -28,7 +30,6 @@ public class User {
 
 	@Id
 	ObjectId id;
-	private String userId;
 	private String username;
 	private String email; //should be a way to find out whether email is valid or not
 	private String password; //need to find out a way to encrypt the password
@@ -46,17 +47,16 @@ public class User {
     private double videoUploadBasedScore; //This is something like how often videos uploaded+other user score for videos uploaded
     private double achievementsBasedScore; //This is a score based on achievements earned. Also knows as Gloon points!!!
     private double userFollowScore; // will be calculated by considering the reps of users following
+    @Indexed(value=IndexDirection.ASC, name="usr_scr")
+    private double totalScore;
     
     @Embedded
     private Set<Achievement> achievements = new HashSet<>(); //Achievements earned    
 		
 	@Reference
-	//User followed by many users
+	//User followed by many users- eyed by
 	private Set<User> followedBy = new HashSet<>();
 	
-	@Reference
-	//User follows many users
-	private Set<User> follows = new HashSet<>();
 
 	/**
 	 * @return the username
@@ -169,20 +169,6 @@ public class User {
 	public void setFollowedBy(Set<User> followedBy) {
 		this.followedBy = followedBy;
 	}
-
-	/**
-	 * @return the follows
-	 */
-	public Set<User> getFollows() {
-		return follows;
-	}
-
-	/**
-	 * @param follows the follows to set
-	 */
-	public void setFollows(Set<User> follows) {
-		this.follows = follows;
-	}
 	
 	/**
 	 * Username is returned as String
@@ -191,21 +177,7 @@ public class User {
 	{
 		return this.username;
 	}
-	//TODO need to see if we persist something related with reps or need to calculate in runtime
-
-	/**
-	 * @return the userId
-	 */
-	public String getUserId() {
-		return userId;
-	}
-
-	/**
-	 * @param userId the userId to set
-	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+	
 
 	/**
 	 * @return the insertTime
@@ -359,6 +331,20 @@ public class User {
 	 */
 	public void setYear(int year) {
 		this.year = year;
+	}
+
+	/**
+	 * @return the totalScore
+	 */
+	public double getTotalScore() {
+		return totalScore;
+	}
+
+	/**
+	 * @param totalScore the totalScore to set
+	 */
+	public void setTotalScore(double totalScore) {
+		this.totalScore = totalScore;
 	}
 
 }

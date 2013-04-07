@@ -23,13 +23,12 @@ import com.google.code.morphia.annotations.Id;
 public class Article {
 	
 	@Id
-	ObjectId id;
+	ObjectId id;	
 	private String title;
 	private String body;
 	private String creationDate;
 	private Date insertTime;
-	private Date updateTime;
-	private String articleId;
+	private Date updateTime;	
 	private double score; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
 	
 	@Embedded
@@ -159,20 +158,6 @@ public class Article {
 	 */
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
-	}
-
-	/**
-	 * @return the articleId
-	 */
-	public String getArticleId() {
-		return articleId;
-	}
-
-	/**
-	 * @param articleId the articleId to set
-	 */
-	public void setArticleId(String articleId) {
-		this.articleId = articleId;
 	}
 
 	/**
