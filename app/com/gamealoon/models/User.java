@@ -1,7 +1,6 @@
 package com.gamealoon.models;
 
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,8 +39,8 @@ public class User {
 	private int month;
 	private int year;
 	private String avatarPath; //path to avatar image file for user	
-	private Date insertTime;
-	private Date updateTime;
+	private String insertTime;
+	private String updateTime;
 	private String gameBio; //This is a game related bio for user, which will be shown on article page
     private double articleBasedScore; // This is something like How often articles uploaded+other user score for articles uploaded
     private double videoUploadBasedScore; //This is something like how often videos uploaded+other user score for videos uploaded
@@ -182,28 +181,28 @@ public class User {
 	/**
 	 * @return the insertTime
 	 */
-	public Date getInsertTime() {
+	public String getInsertTime() {
 		return insertTime;
 	}
 
 	/**
 	 * @param insertTime the insertTime to set
 	 */
-	public void setInsertTime(Date insertTime) {
+	public void setInsertTime(String insertTime) {
 		this.insertTime = insertTime;
 	}
 
 	/**
 	 * @return the updateTime
 	 */
-	public Date getUpdateTime() {
+	public String getUpdateTime() {
 		return updateTime;
 	}
 
 	/**
 	 * @param updateTime the updateTime to set
 	 */
-	public void setUpdateTime(Date updateTime) {
+	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
 	}
 

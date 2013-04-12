@@ -7,6 +7,7 @@ import com.gamealoon.database.GloonDAO;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.User;
+import com.google.code.morphia.Datastore;
 
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -21,7 +22,7 @@ import static play.libs.Json.toJson;
 public class HomeController extends Controller{
 	
 	static final GloonDAO gloonDaoInstance = GloonDAO.instantiateDAO();
- 
+    static final Datastore gloonDatastore = gloonDaoInstance.initDatastore();
 
 			
 	
@@ -32,13 +33,13 @@ public class HomeController extends Controller{
    */
    public static Result index()
    {
-	   List<HashMap<String, Object>> carouselArticles = getAllArticlesForCarousel();
+	   List<HashMap<String, Object>> carouselArticleMaps = getAllArticlesForCarousel();
 	   List<Article> top10Articles = getAllRecent10Articles();
 	   List<Game> top10Games= getTop10Games();
 	   List<User> top5Users= getTop5Users();
 	   
 	   HashMap<String, Object> homeMap = new HashMap<>();
-	   homeMap.put("carouselArticles", carouselArticles);
+	   homeMap.put("carouselArticles", carouselArticleMaps);
 	   homeMap.put("top10Articles", top10Articles);
 	   homeMap.put("top10Games", top10Games);
 	   homeMap.put("top5Users", top5Users);
@@ -54,8 +55,9 @@ public class HomeController extends Controller{
 	 */
    private static List<HashMap<String, Object>> getAllArticlesForCarousel()
    {
-	  //TODO this method returns all latest articles by top users, i.e, reviews(unique), previews(unique), news, features, gloonicles
-	   return null;
+	 	   
+	   List<HashMap<String, Object>> carouselArticles = gloonDaoInstance.getAllArticlesForCarousel(gloonDatastore, "all");	   
+	   return carouselArticles;
    }
    
    /**

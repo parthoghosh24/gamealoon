@@ -23,7 +23,7 @@ public class Utility {
 	}
 	
 	/**
-	 * This utility method converts date into string into yyyy-mm-dd format
+	 * This utility method converts date into string into yyyy-mm-dd HH:mm:ss format
 	 * 
 	 * 
 	 * @param date
@@ -31,8 +31,9 @@ public class Utility {
 	 */
 	public static String convertDateToString(Date date)
 	{
-		return new SimpleDateFormat("yyyy-MM-dd").format(date);
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 	}
+		
 		
 		
 	

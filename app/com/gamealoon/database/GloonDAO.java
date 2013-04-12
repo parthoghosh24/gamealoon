@@ -1,14 +1,15 @@
 package com.gamealoon.database;
 
-import java.net.UnknownHostException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
 import com.gamealoon.models.Article;
+import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
+import com.gamealoon.utility.AppConstants;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;
@@ -23,55 +24,36 @@ import com.mongodb.Mongo;
  */
 public class GloonDAO implements GloonDataInterface{
 	
-	static GloonDAO dataAccessLayer=null;
-	private static Mongo mongoInstance=null;
+	private static final GloonDAO DATA_ACCESS_LAYER=new GloonDAO();	
+	private GloonDatabase gloonDatabaseInstance=null;
 	private Datastore gloonDatastore=null;
-	private Morphia gloonMorphiaInstance=null;
 	private GloonDAO()
 	{
 	 
-		/**
-		 * Constructor logic
-		 * ->Instantiate mongo
-		 * -> Instantiate morphia
-		 */
-		try {
-			mongoInstance = GloonDatabase.instantiate();		
-			gloonMorphiaInstance = new Morphia();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		gloonDatabaseInstance = GloonDatabase.instantiate();
 	}
 	
 	/**
 	 * Singleton way to instantiate Gloon DAO
 	 * @return
 	 */
-	public static synchronized GloonDAO instantiateDAO()
-	{
-		
-		
-		if(dataAccessLayer == null)
-		{			
-			dataAccessLayer= new GloonDAO();
-		}
-		return dataAccessLayer;
+	public static GloonDAO instantiateDAO()
+	{								
+		return DATA_ACCESS_LAYER;
 	}
 	
 	
 
 	
 	/**
-	 * @param gloonMorphiaInstance is the morphia instance required for  datastore creation
-	 * morphia instances mapped with classes and datastore intantiated
+	 * 
+	 * gloonDatastore instantiated
 	 * @return gloonDatastore
 	 */
 	public Datastore initDatastore()
 	{		
-		gloonMorphiaInstance.map(User.class).map(Article.class).map(Game.class).map(Platform.class);
-		gloonDatastore = gloonMorphiaInstance.createDatastore(mongoInstance, GloonDataInterface.DB_NAME);	
-		gloonDatastore.ensureIndexes();		
+		System.out.println("databaseInstance: "+gloonDatabaseInstance);
+		gloonDatastore=gloonDatabaseInstance.gloonDatastoreInstance();
 		return gloonDatastore;
 	}
 
@@ -90,27 +72,208 @@ public class GloonDAO implements GloonDataInterface{
 	}
 
 	/**
-	 * This method returns 25 Articles to be precise of top users belonging to all categories, i.e, review, preview, etc.
-	 * It is somelike following(recent articles):
+	 * This method returns a List of hashTables or maps which is in the following format:
 	 * 
-	 * top user 1-> 1 rev, 1 prev, 1 news, 1 feat, 1 gloon
-	 * top user 2-> 1 rev, 1 prev, 1 news, 1 feat, 1 gloon
+	 * category: <Category> //Is one of Review, preview, news, feature and gloonicle	 
+	 * articles:[article1, article2, article3, ...]
 	 * 
+	 * The list will contain 5 hashMaps in general.
 	 */
 	@Override
 	public List<HashMap<String, Object>> getAllArticlesForCarousel(Datastore gloonDatastore,String type) {
 	
-		List<User> topUsers= getTopUsers(); 
-		return null;
+		List<User> topUsers= getTopUsers(gloonDatastore);
+		List<HashMap<String, Object>> allArticlesForCarousel= new ArrayList<HashMap<String,Object>>();
+		
+		//Generating reviews
+		HashMap<String, Object> reviewsMap = new HashMap<>();
+		reviewsMap.put("category", "review");
+		reviewsMap.put("articles", getReviews(topUsers, type) );
+		allArticlesForCarousel.add(reviewsMap);
+		
+		/*//Generating previews 
+		HashMap<String, Object> previewsMap = new HashMap<>();
+		previewsMap.put("category", "preview");
+		previewsMap.put("articles", getPreviews(topUsers, type) );
+		allArticlesForCarousel.add(previewsMap);
+		
+		//Generating feature
+		HashMap<String, Object> featuresMap = new HashMap<>();
+		featuresMap.put("category", "feature");
+		featuresMap.put("articles", getFeatures(topUsers, type) );
+		allArticlesForCarousel.add(featuresMap);
+		
+		//Generating news
+		HashMap<String, Object> newsMap = new HashMap<>();
+		newsMap.put("category", "news");
+		newsMap.put("articles", getNews(topUsers, type) );		
+		allArticlesForCarousel.add(newsMap);
+		
+		//Generating gloonicle
+        HashMap<String, Object> glooniclesMap = new HashMap<>();
+        glooniclesMap.put("category", "gloonicle");
+        glooniclesMap.put("articles", getGloonicles(topUsers, type) );
+		allArticlesForCarousel.add(glooniclesMap);*/
+		
+		return allArticlesForCarousel;
 	}
 	
 	
-	private List<User> getTopUsers()
+	/**
+	 * Fetch 5 Reviews of recently released games based on user ratings
+	 * 
+	 * @param topUsers
+	 * @param type
+	 * @return
+	 */
+	private List<Article> getReviews(List<User> topUsers, String type)
 	{
-	  List<User> topUsers=null;
+		List<Game> recentlyReleased5Games= getRecentReleasedGames(gloonDatastore);
+		
+		List<Article> fetchedReviews = new ArrayList<>();
+		
+		for(Game game: recentlyReleased5Games)
+		{
+			if(topUsers.size()>0)
+			{
+				//TODO Handle all types
+				for(User user: topUsers)
+				{
+					Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.Review).get();
+					if(article!=null)
+					{
+						fetchedReviews.add(article);
+						topUsers.remove(user);
+						break;
+					}
+				}
+				
+			}			
+			else
+			{
+				break;
+			}
+			
+			
+		}
+		
+		return fetchedReviews;
+	}
+	
+	/**
+	 * Fetch 5 Previews of recently released games based on user ratings
+	 * 
+	 * @param topUsers
+	 * @param type
+	 * @return
+	 */
+	private List<Article> getPreviews(List<User> topUsers, String type)
+	{
+		List<Game> recentlyReleased5Games= getRecentGames(gloonDatastore);
+		
+		List<Article> fetchedPreviews = new ArrayList<>();
+		
+		for(Game game: recentlyReleased5Games)
+		{
+			if(topUsers.size()>0)
+			{
+				//TODO Handle all types
+				for(User user: topUsers)
+				{
+					Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.Preview).get();
+					if(article!=null)
+					{
+						fetchedPreviews.add(article);
+						topUsers.remove(user);
+						break;
+					}
+				}
+				
+			}			
+			else
+			{
+				break;
+			}
+			
+			
+		}
+		
+		return fetchedPreviews;
+	}
+	
+	/**
+	 * Fetch 5 Features of recently released games based on user ratings
+	 * 
+	 * @param topUsers
+	 * @param type
+	 * @return
+	 */
+	private List<Article> getFeatures(List<User> topUsers, String type)
+	{
+		List<Game> recentlyReleased5Games= getRecentGames(gloonDatastore);
+		
+		List<Article> fetchedReviews = new ArrayList<>();
+		
+		for(Game game: recentlyReleased5Games)
+		{
+			if(topUsers.size()>0)
+			{
+				//TODO Handle all types
+				for(User user: topUsers)
+				{
+					Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.Review).get();
+					if(article!=null)
+					{
+						fetchedReviews.add(article);
+						topUsers.remove(user);
+						break;
+					}
+				}
+				
+			}			
+			else
+			{
+				break;
+			}
+			
+			
+		}
+		
+		return fetchedReviews;
+	}
+	
+	/**
+	 * Get sorted users based on their ranks
+	 * 
+	 * @param gloonDatastore
+	 * @return
+	 */
+	public List<User> getTopUsers(Datastore gloonDatastore)
+	{
+	  List<User> topUsers=gloonDatastore.createQuery(User.class).order("-totalScore").asList();
 	  return topUsers;
 	}
 	
+	/**
+	 * Get recent top 5 released games
+	 * 
+	 * @param gloonDatastore
+	 * @return
+	 */
+	public List<Game> getRecentReleasedGames(Datastore gloonDatastore)
+	{
+	  return gloonDatastore.createQuery(Game.class).filter("releaseDate <", "2012-04-01").order("-releaseDate").limit(5).asList();	
+	}
 	
+	/**
+	 * 
+	 * 
+	 * @param gloonDatastore
+	 * @return
+	 */	
+	public List<Game> getRecentGames(Datastore gloonDatastore)	
+	{
+		return gloonDatastore.createQuery(Game.class).order("-releaseDate").limit(5).asList();
+	}
 
 }

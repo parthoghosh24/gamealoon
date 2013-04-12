@@ -1,6 +1,9 @@
 package com.gamealoon.models;
 
-import java.util.Date;
+
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 
@@ -27,9 +30,13 @@ public class Article {
 	private String title;
 	private String body;
 	private String creationDate;
-	private Date insertTime;
-	private Date updateTime;	
+	private String insertTime;
+	private String updateTime;	
 	private double score; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
+	private String featuredImagePath;
+	
+	@Embedded
+	private Set<Platform> platforms = new HashSet<>();
 	
 	@Embedded
 	private User author;
@@ -135,28 +142,28 @@ public class Article {
 	/**
 	 * @return the insertTime
 	 */
-	public Date getInsertTime() {
+	public String getInsertTime() {
 		return insertTime;
 	}
 
 	/**
 	 * @param insertTime the insertTime to set
 	 */
-	public void setInsertTime(Date insertTime) {
+	public void setInsertTime(String insertTime) {
 		this.insertTime = insertTime;
 	}
 
 	/**
 	 * @return the updateTime
 	 */
-	public Date getUpdateTime() {
+	public String getUpdateTime() {
 		return updateTime;
 	}
 
 	/**
 	 * @param updateTime the updateTime to set
 	 */
-	public void setUpdateTime(Date updateTime) {
+	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
 	}
 
@@ -172,6 +179,34 @@ public class Article {
 	 */
 	public void setScore(double score) {
 		this.score = score;
+	}
+
+	/**
+	 * @return the featuredImagePath
+	 */
+	public String getFeaturedImagePath() {
+		return featuredImagePath;
+	}
+
+	/**
+	 * @param featuredImagePath the featuredImagePath to set
+	 */
+	public void setFeaturedImagePath(String featuredImagePath) {
+		this.featuredImagePath = featuredImagePath;
+	}
+
+	/**
+	 * @return the platforms
+	 */
+	public Set<Platform> getPlatforms() {
+		return platforms;
+	}
+
+	/**
+	 * @param platforms the platforms to set
+	 */
+	public void setPlatforms(Set<Platform> platforms) {
+		this.platforms = platforms;
 	}
 
 }

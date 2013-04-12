@@ -1,12 +1,15 @@
 package com.gamealoon.models;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Indexed;
+import com.google.code.morphia.utils.IndexDirection;
 
 
 /**
@@ -27,18 +30,20 @@ public class Game{
 	
 	private String title;
 	private String description; //a little description about the game
+	
+	 @Indexed(value=IndexDirection.ASC, name="game_rls_dt")
 	private String releaseDate;
 	private String price; //keep it in dollars, can modify it in runtime when showing
 	private String rating; //mature, adults only, everyone, etc. This should ideally modify according to region. 
 	private String publisher;
 	private String developer;
-	private String Genere;
+	private String genere;
 	private double score; //This will be a calculated value. Need to work on the formula to device the score. Normal distribution might help.
 	
 	
 	@Embedded
 	//Game has many plaforms
-	private ArrayList<Platform> platforms= new ArrayList<>();
+	private Set<Platform> platforms= new HashSet<>();
 
 
 	/**
@@ -157,7 +162,7 @@ public class Game{
 	 * @return the genere
 	 */
 	public String getGenere() {
-		return Genere;
+		return genere;
 	}
 
 
@@ -165,7 +170,7 @@ public class Game{
 	 * @param genere the genere to set
 	 */
 	public void setGenere(String genere) {
-		Genere = genere;
+		this.genere = genere;
 	}
 
 
@@ -188,16 +193,16 @@ public class Game{
 	/**
 	 * @return the platforms
 	 */
-	public ArrayList<Platform> getPlatforms() {
+	public Set<Platform> getPlatforms() {
 		return platforms;
 	}
 
 
 	/**
-	 * @param platforms the platforms to set
+	 * @param platforms2 the platforms to set
 	 */
-	public void setPlatforms(ArrayList<Platform> platforms) {
-		this.platforms = platforms;
+	public void setPlatforms(Set<Platform> platforms2) {
+		this.platforms = platforms2;
 	}
 	
 
