@@ -33,7 +33,18 @@ public class Utility {
 	{
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 	}
-		
+	
+	
+	/**
+	 * This method converts date to string without time details. Returns only in yyy-MM-dd format.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String convertDateToStringWithoutTime(Date date)
+	{
+		return new SimpleDateFormat("yyyy-MM-dd").format(date);
+	}
 		
 		
 	

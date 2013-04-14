@@ -29,14 +29,12 @@ public class GloonDatabase {
 	{
 		String host = ConfigFactory.load().getString("mongo.host"); 
 		int port = (int) Long.parseLong(ConfigFactory.load().getString("mongo.port"));
-		try {
-			System.out.println("In here.....");
+		try {			
 			Mongo result = new Mongo(host,port);
 			Morphia gloonMorphiaInstance = new Morphia();
 			gloonMorphiaInstance.map(User.class).map(Article.class).map(Game.class).map(Platform.class);
 			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME);
-			gloonDatastoreInstance.ensureIndexes();
-			System.out.println("gloonDatastore:------> "+gloonDatastoreInstance.getDB().getName());
+			gloonDatastoreInstance.ensureIndexes();			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,8 +47,7 @@ public class GloonDatabase {
 	}
 	
 	public Datastore gloonDatastoreInstance()
-	{
-		System.out.println("gloonDatastore------->"+gloonDatastoreInstance);
+	{		
 		return gloonDatastoreInstance;
 	}
 	
