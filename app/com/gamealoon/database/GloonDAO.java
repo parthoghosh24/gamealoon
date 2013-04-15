@@ -8,13 +8,9 @@ import java.util.List;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
-import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
-import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.mongodb.Mongo;
 
 /**
  * This is the application data access layer.
@@ -83,7 +79,7 @@ public class GloonDAO implements GloonDataInterface{
 	@Override
 	public List<HashMap<String, Object>> getAllArticlesForCarousel(Datastore gloonDatastore,String type) {
 	
-		List<User> topUsers= getTopUsers(gloonDatastore,5);
+		List<User> topUsers= getTopUsers(gloonDatastore,0);
 		List<HashMap<String, Object>> allArticlesForCarousel= new ArrayList<HashMap<String,Object>>();
 		
 		//Generating reviews
@@ -91,33 +87,27 @@ public class GloonDAO implements GloonDataInterface{
 		reviewsMap.put("category", "review");
 		reviewsMap.put("articles", getReviews(topUsers, type) );
 		allArticlesForCarousel.add(reviewsMap);
-		
-		topUsers= getTopUsers(gloonDatastore,5);
+				
 		//Generating feature
+		topUsers= getTopUsers(gloonDatastore,5);
 		HashMap<String, Object> featuresMap = new HashMap<>();
 		featuresMap.put("category", "feature");
-		featuresMap.put("articles", getFeatures(topUsers, type) );
+		featuresMap.put("articles", getArticles(topUsers, type, Category.Feature));
 		allArticlesForCarousel.add(featuresMap);
-		
-		/*//Generating previews 
-		HashMap<String, Object> previewsMap = new HashMap<>();
-		previewsMap.put("category", "preview");
-		previewsMap.put("articles", getPreviews(topUsers, type) );
-		allArticlesForCarousel.add(previewsMap);
-		
-		
-		
+							
 		//Generating news
+		topUsers= getTopUsers(gloonDatastore,5);
 		HashMap<String, Object> newsMap = new HashMap<>();
 		newsMap.put("category", "news");
-		newsMap.put("articles", getNews(topUsers, type) );		
+		newsMap.put("articles", getArticles(topUsers, type, Category.News));		
 		allArticlesForCarousel.add(newsMap);
 		
 		//Generating gloonicle
+		topUsers= getTopUsers(gloonDatastore,5);
         HashMap<String, Object> glooniclesMap = new HashMap<>();
         glooniclesMap.put("category", "gloonicle");
-        glooniclesMap.put("articles", getGloonicles(topUsers, type) );
-		allArticlesForCarousel.add(glooniclesMap);*/
+        glooniclesMap.put("articles", getArticles(topUsers, type, Category.Gloonicle));
+		allArticlesForCarousel.add(glooniclesMap);
 		
 		return allArticlesForCarousel;
 	}
@@ -130,11 +120,11 @@ public class GloonDAO implements GloonDataInterface{
 	 * @param type
 	 * @return
 	 */
-	private List<Article> getReviews(List<User> topUsers, String type)
+	private List<HashMap<String, Object>> getReviews(List<User> topUsers, String type)
 	{
 		List<Game> recentlyReleased5Games= getRecentReleasedGames(gloonDatastore,5);
 		
-		List<Article> fetchedReviews = new ArrayList<>();
+		List<HashMap<String, Object>> fetchedReviews = new ArrayList<>();
 		
 		for(Game game: recentlyReleased5Games)
 		{
@@ -146,7 +136,19 @@ public class GloonDAO implements GloonDataInterface{
 					Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.Review).get();
 					if(article!=null)
 					{
-						fetchedReviews.add(article);
+						HashMap<String, Object> articleMap = new HashMap<String, Object>();
+						articleMap.put("articleTitle", article.getTitle());
+						articleMap.put("articleBody", article.getBody());
+						articleMap.put("articleAuthor", article.getAuthor().getUsername());
+						if(article.getGame()!=null)
+						{
+							articleMap.put("articleGame", article.getGame());
+						}
+						
+						articleMap.put("articleCreationDate", article.getCreationDate());
+						articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
+						articleMap.put("articlePlatforms",  Utility.titleList(article.getPlatforms()));
+						fetchedReviews.add(articleMap);
 						topUsers.remove(user); //This adds variety to carousel section. This restricts addition of different article by same user in carousel.
 						break;
 					}
@@ -164,34 +166,45 @@ public class GloonDAO implements GloonDataInterface{
 		return fetchedReviews;
 	}
 	
+	
+	
 	/**
-	 * Fetch 5 Features of recently released games based on user ratings
+	 * Fetch 5 Features/News/Gloonicles of recently released games based on user ratings
 	 * 
 	 * @param topUsers
 	 * @param type
 	 * @return
 	 */
-	private List<Article> getFeatures(List<User> topUsers, String type)
+	private List<HashMap<String, Object>> getArticles(List<User> topUsers, String type, Category category)
 	{		
 		
-		List<Article> fetchedFeatures = new ArrayList<>();				
+		List<HashMap<String, Object>> fetchedArticles = new ArrayList<>();				
 			
 		//TODO Handle all types
 		for(User user: topUsers)
 		{			
-			Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("category", Category.Feature).order("creationDate").get();			
+			Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("category", category).order("-creationDate").get();			
 			if(article!=null)
 			{
-				fetchedFeatures.add(article);			    
+				HashMap<String, Object> articleMap = new HashMap<String, Object>();
+				articleMap.put("articleTitle", article.getTitle());
+				articleMap.put("articleBody", article.getBody());
+				articleMap.put("articleAuthor", article.getAuthor().getUsername());
+				if(article.getGame()!=null)
+				{
+					articleMap.put("articleGame", article.getGame());
+				}
+				
+				articleMap.put("articleCreationDate", article.getCreationDate());
+				articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
+				articleMap.put("articlePlatforms",Utility.titleList(article.getPlatforms()));
+				fetchedArticles.add(articleMap);			    
 			}
-		}
-									
-			
-			
-		
-		
-		return fetchedFeatures;
+		}		
+		return fetchedArticles;
 	}
+	
+
 	
 	/**
 	 * Get sorted users based on their ranks
@@ -213,7 +226,7 @@ public class GloonDAO implements GloonDataInterface{
 	}
 	
 	/**
-	 * Get recent top 5 released games
+	 * Get N recently released games
 	 * 
 	 * @param gloonDatastore
 	 * @return
@@ -232,7 +245,7 @@ public class GloonDAO implements GloonDataInterface{
 	}
 	
 	/**
-	 * 
+	 * Get N recent released games
 	 * 
 	 * @param gloonDatastore
 	 * @return
@@ -248,6 +261,40 @@ public class GloonDAO implements GloonDataInterface{
 			return gloonDatastore.createQuery(Game.class).order("-releaseDate").asList();
 		}
 		
+	}
+	
+	/**
+	 * Get 10 recent article of all types
+	 * 
+	 * @param gloonDatastore
+	 * @param limit
+	 * @return
+	 */
+	public List<Article> get10RecentArticles(Datastore gloonDatastore, int limit, String type)
+	{
+		List<Article> recent10Articles=new ArrayList<Article>();
+		if("all".equals(type))
+		{
+			recent10Articles=gloonDatastore.createQuery(Article.class).order("-creationDate").limit(limit).asList();
+		}
+		if("reviews".equals(type))
+		{
+			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).order("-creationDate").limit(limit).asList();
+		}
+		if("features".equals(type))
+		{
+			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).order("-creationDate").limit(limit).asList();
+		}
+		if("news".equals(type))
+		{
+			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).order("-creationDate").limit(limit).asList();
+		}
+		if("gloonicles".equals(type))
+		{
+			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).order("-creationDate").limit(limit).asList();	
+		}				
+		
+		return recent10Articles;
 	}
 
 }

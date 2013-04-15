@@ -1164,215 +1164,179 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRisingFeature.setPlatforms(platforms);
 			gloonDatastore.save(mgsRisingFeature);
 			
+			Article defianceFeature = new Article();
+			defianceFeature.setTitle("Defiance Feature: Marrying TV with games");							
+			defianceFeature.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
+			defianceFeature.setBody("Defiance tries to pull a brave move by clubbing tv with video gaming.");
+			defianceFeature.setCategory(Category.Feature);
+			defianceFeature.setCreationDate("2013-03-30 16:45:00");			
+			defianceFeature.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
+			defianceFeature.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			defianceFeature.setInsertTime("2013-03-30 16:45:00");
+			defianceFeature.setScore(0.78);
+			defianceFeature.setPlatforms(platforms);
+			gloonDatastore.save(defianceFeature);
+			
+			Article motocrossFeature = new Article();
+			motocrossFeature.setTitle("Motocross Madness: Xbox live motocross");							
+			motocrossFeature.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
+			motocrossFeature.setBody("This motocross madness looks the same");
+			motocrossFeature.setCategory(Category.Feature);
+			motocrossFeature.setCreationDate("2013-04-10 15:45:00");			
+			motocrossFeature.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
+			motocrossFeature.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			motocrossFeature.setInsertTime("2013-04-10 15:45:00");
+			motocrossFeature.setScore(0.78);
+			motocrossFeature.setPlatforms(platforms);
+			gloonDatastore.save(motocrossFeature);
+			
+			Article ageOfWushuFeature = new Article();
+			ageOfWushuFeature.setTitle("Age of Wushu Feature: The rise of asian gaming out of Japan");							
+			ageOfWushuFeature.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
+			ageOfWushuFeature.setBody("Age of wushu brings asian gaming out of japan and puts on face of the planet. There is hope for other asian countries.");
+			ageOfWushuFeature.setCategory(Category.Feature);
+			ageOfWushuFeature.setCreationDate("2013-04-14 15:45:00");			
+			ageOfWushuFeature.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
+			ageOfWushuFeature.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			ageOfWushuFeature.setInsertTime("2013-04-14 15:45:00");
+			ageOfWushuFeature.setScore(0.78);
+			ageOfWushuFeature.setPlatforms(platforms);
+			gloonDatastore.save(ageOfWushuFeature);
+			
+			Article cricketGloonicle = new Article();
+			cricketGloonicle.setTitle("Why do we have to starve for a good cricket game?");							
+			cricketGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
+			cricketGloonicle.setBody("When on earth we are going to get next decent cricket game? Come on big great gaming companies, give us our next great cricket game");
+			cricketGloonicle.setCategory(Category.Gloonicle);
+			cricketGloonicle.setCreationDate("2013-04-15 09:45:00");						
+			cricketGloonicle.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			cricketGloonicle.setInsertTime("2013-04-15 09:45:00");
+			cricketGloonicle.setScore(0.90);
+			cricketGloonicle.setPlatforms(platforms);
+			gloonDatastore.save(cricketGloonicle);
+			
+			Article freemiumGloonicle = new Article();
+			freemiumGloonicle.setTitle("The birth of \"Free\" gaming");							
+			freemiumGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
+			freemiumGloonicle.setBody("Freemium gaming is the new way to go");
+			freemiumGloonicle.setCategory(Category.Gloonicle);
+			freemiumGloonicle.setCreationDate("2013-01-15 10:45:00");						
+			freemiumGloonicle.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			freemiumGloonicle.setInsertTime("2013-01-15 10:45:00");
+			freemiumGloonicle.setScore(0.60);
+			freemiumGloonicle.setPlatforms(platforms);
+			gloonDatastore.save(freemiumGloonicle);
+			
+			Article top10horrorGloonicle = new Article();
+			top10horrorGloonicle.setTitle("Top 10 horror games");							
+			top10horrorGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
+			top10horrorGloonicle.setBody("My top 10 horrors are: 1) Silent hill 2) Resident Evil...");
+			top10horrorGloonicle.setCategory(Category.Gloonicle);
+			top10horrorGloonicle.setCreationDate("2013-04-15 21:45:00");						
+			top10horrorGloonicle.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			top10horrorGloonicle.setInsertTime("2013-04-15 21:45:00");
+			top10horrorGloonicle.setScore(0.80);
+			top10horrorGloonicle.setPlatforms(platforms);
+			gloonDatastore.save(top10horrorGloonicle);
+			
+			Article top10ActionGloonicle = new Article();
+			top10ActionGloonicle.setTitle("Top 10 action games");							
+			top10ActionGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
+			top10ActionGloonicle.setBody("My top 10 action games: 1)Max Payne 3 2) Halo 4 3)Splinter cell series");
+			top10ActionGloonicle.setCategory(Category.Gloonicle);
+			top10ActionGloonicle.setCreationDate("2013-01-13 20:02:00");						
+			top10ActionGloonicle.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			top10ActionGloonicle.setInsertTime("2013-01-13 20:02:00");
+			top10ActionGloonicle.setScore(0.75);
+			top10ActionGloonicle.setPlatforms(platforms);
+			gloonDatastore.save(top10ActionGloonicle);
+			
+			Article myWeeklyShow = new Article();
+			myWeeklyShow.setTitle("My weekly gaming adventure");							
+			myWeeklyShow.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
+			myWeeklyShow.setBody("I will share my daily gaming adventure in this series.");
+			myWeeklyShow.setCategory(Category.Gloonicle);
+			myWeeklyShow.setCreationDate("2013-01-14 00:02:00");						
+			myWeeklyShow.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			myWeeklyShow.setInsertTime("2013-01-14 00:02:00");
+			myWeeklyShow.setScore(0.90);
+			myWeeklyShow.setPlatforms(platforms);
+			gloonDatastore.save(myWeeklyShow);
+			
+			Article eaDisasterNews = new Article();
+			eaDisasterNews.setTitle("EA has been again ranked as worst company in America");							
+			eaDisasterNews.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
+			eaDisasterNews.setBody("EA has been again ranked as worst company in America. This is the second time they have been rated like this.");
+			eaDisasterNews.setCategory(Category.News);
+			eaDisasterNews.setCreationDate("2013-01-12 10:02:00");						
+			eaDisasterNews.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			eaDisasterNews.setInsertTime("2013-01-12 10:02:00");
+			eaDisasterNews.setScore(0.80);
+			eaDisasterNews.setPlatforms(platforms);
+			gloonDatastore.save(eaDisasterNews);
+			
+			Article ps4News = new Article();
+			ps4News.setTitle("PS4 launch price revealed");							
+			ps4News.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
+			ps4News.setBody("PS4 is said to launch at a starting price of $430");
+			ps4News.setCategory(Category.News);
+			ps4News.setCreationDate("2013-04-02 10:02:00");						
+			ps4News.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			ps4News.setInsertTime("2013-04-02 10:02:00");
+			ps4News.setScore(0.95);
+			ps4News.setPlatforms(platforms);
+			gloonDatastore.save(ps4News);
+			
+			Article warnerBrothersNews = new Article();
+			warnerBrothersNews.setTitle("Warner Brothers registers Mad Max domains");							
+			warnerBrothersNews.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
+			warnerBrothersNews.setBody("Warner Brothers registers multiple domains based on Mad Max");
+			warnerBrothersNews.setCategory(Category.News);
+			warnerBrothersNews.setCreationDate("2013-04-14 10:02:00");						
+			warnerBrothersNews.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			warnerBrothersNews.setInsertTime("2013-04-14 10:02:00");
+			warnerBrothersNews.setScore(0.80);
+			warnerBrothersNews.setPlatforms(platforms);
+			gloonDatastore.save(warnerBrothersNews);
+			
+			Article batmanOriginsNews = new Article();
+			batmanOriginsNews.setTitle("Batman Origins game revealed");							
+			batmanOriginsNews.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
+			batmanOriginsNews.setBody("A new batman arkham orignins game revealed. The important thing is rocksteady is not working on it.");
+			batmanOriginsNews.setCategory(Category.News);
+			batmanOriginsNews.setCreationDate("2013-04-10 10:02:00");						
+			batmanOriginsNews.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			batmanOriginsNews.setInsertTime("2013-04-10 10:02:00");
+			batmanOriginsNews.setScore(0.85);
+			batmanOriginsNews.setPlatforms(platforms);
+			gloonDatastore.save(batmanOriginsNews);
+			
+			Article supermanGameNews = new Article();
+			supermanGameNews.setTitle("Rocksteady is working on supposedly a Superman game.");							
+			supermanGameNews.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
+			supermanGameNews.setBody("Rocksteady studios is most probably working on a Superman game. No details are available till now");
+			supermanGameNews.setCategory(Category.News);
+			supermanGameNews.setCreationDate("2013-04-20 10:02:00");						
+			supermanGameNews.setFeaturedImagePath("articleFeaturedImage");
+			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			supermanGameNews.setInsertTime("2013-04-20 10:02:00");
+			supermanGameNews.setScore(0.90);
+			supermanGameNews.setPlatforms(platforms);
+			gloonDatastore.save(supermanGameNews);
+			
 			/*Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
-			
-			Article farCry3Review = new Article();
 			farCry3Review.setTitle("far cry 3 review");
 			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
 			farCry3Review.setAuthor(jaguarpaw80Author);

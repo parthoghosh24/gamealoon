@@ -3,24 +3,12 @@ package com.gamealoon.tests;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-
 import org.junit.Test;
-
 import com.gamealoon.database.GloonDAO;
-import com.gamealoon.models.Achievement;
-import com.gamealoon.models.Article;
-import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
-import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
-import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
 
@@ -165,19 +153,19 @@ public class ModelsTest {
 			private void getAllArticlesForCarousel()
 		    {
 				List<HashMap<String, Object>> allArticles = daoInstance.getAllArticlesForCarousel(gloonDatastore, "all");
-				for(HashMap<String, Object> articleMap: allArticles)
+				for(HashMap<String, Object> article: allArticles)
 				{
-					System.out.println("Category: "+articleMap.get("category"));					
-					List<Article> articles = (ArrayList<Article>)articleMap.get("articles");
-					if(articles.size()>0)
+					System.out.println("Category: "+article.get("category"));					
+					List<HashMap<String, Object>> articleMaps = (ArrayList<HashMap<String, Object>>)article.get("articles");
+					if(articleMaps.size()>0)
 					{
-						for(Article article: articles)
+						for(HashMap<String, Object> articleMap: articleMaps)
 						{
-							System.out.println("Article Title: "+ article.getTitle());
-							System.out.println("Article Body: "+article.getBody());
-							System.out.println("Article Game: "+article.getGame());
-							System.out.println("Article Author: "+article.getAuthor());
-							System.out.println("Article publish date: "+article.getCreationDate());
+							System.out.println("Article Title: "+ articleMap.get("articleTitle"));
+							System.out.println("Article Body: "+articleMap.get("articleBody"));
+							System.out.println("Article Game: "+articleMap.get("articleGame"));
+							System.out.println("Article Author: "+articleMap.get("articleAuthor"));
+							System.out.println("Article publish date: "+articleMap.get("articleCreationDate"));
 							System.out.println();
 							System.out.println();
 						}

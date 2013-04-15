@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
@@ -51,7 +52,8 @@ public class User {
     
     @Embedded
     private Set<Achievement> achievements = new HashSet<>(); //Achievements earned    
-		
+	
+    @JsonIgnore
 	@Reference
 	//User followed by many users- eyed by
 	private Set<User> followedBy = new HashSet<>();

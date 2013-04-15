@@ -1,7 +1,12 @@
 package com.gamealoon.utility;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import com.gamealoon.models.Platform;
 
 /**
  * Utility class which stores
@@ -47,5 +52,15 @@ public class Utility {
 	}
 		
 		
+	public static List<String> titleList(Set<Platform> platforms)
+	{
+		List<String> titleList = new ArrayList<>();
+		for(Platform platform: platforms)
+		{
+			
+				titleList.add(platform.getTitle());			
+		}
+		return titleList;
+	}
 	
 }
