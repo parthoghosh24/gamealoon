@@ -1336,23 +1336,20 @@ public class GloonGlobal extends GlobalSettings {
 			supermanGameNews.setPlatforms(platforms);
 			gloonDatastore.save(supermanGameNews);
 			
-			/*Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
-			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
-			farCry3Review.setAuthor(jaguarpaw80Author);
-			farCry3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			farCry3Review.setCategory(Category.Review);
-			farCry3Review.setCreationDate(Utility.convertDateToString(new Date()));
-			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
-			farCry3Review.setGame(farCry3);
-			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
+			Article newPrinceOfPersiaGame = new Article();
+			newPrinceOfPersiaGame.setTitle("New Prince of Persia Game surfaced");								
+			newPrinceOfPersiaGame.setAuthor(gloonDatastore.find(User.class, "username", "loonatic87").get());
+			newPrinceOfPersiaGame.setBody("Climax Studio is supposedly working on a new prince of persia game.");
+			newPrinceOfPersiaGame.setCategory(Category.News);
+			newPrinceOfPersiaGame.setCreationDate(Utility.convertDateToString(new Date()));			
+			newPrinceOfPersiaGame.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2013-04-11 09:00:00");
-			farCry3Review.setScore(0.78);
-			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);
+			newPrinceOfPersiaGame.setInsertTime(Utility.convertDateToString(new Date()));
+			newPrinceOfPersiaGame.setScore(0.80);
+			newPrinceOfPersiaGame.setPlatforms(platforms);
+			gloonDatastore.save(newPrinceOfPersiaGame);
 			
-			Article farCry3Review = new Article();
+			/*Article farCry3Review = new Article();
 			farCry3Review.setTitle("far cry 3 review");
 			User jaguarpaw80Author = gloonDatastore.find(User.class, "username", "jaguarpaw80").get();						
 			farCry3Review.setAuthor(jaguarpaw80Author);

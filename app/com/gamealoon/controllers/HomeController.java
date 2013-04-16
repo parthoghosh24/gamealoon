@@ -9,7 +9,7 @@ import com.gamealoon.models.Article;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.User;
 import com.google.code.morphia.Datastore;
-
+import com.gamealoon.views.html.index;
 import play.mvc.Controller;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
@@ -32,7 +32,13 @@ public class HomeController extends Controller{
    * 
    * @return
    */
+    
+    
    public static Result index()
+   {
+	   return ok(index.render("Home Page"));
+   }
+   public static Result getHomeData()
    {
 	   List<HashMap<String, Object>> carouselArticleMaps = getAllArticlesForCarousel();
 	   List<HashMap<String, Object>> top10Articles = getAllRecent10Articles();
@@ -99,8 +105,7 @@ public class HomeController extends Controller{
 	  List<Article> all10News = gloonDaoInstance.get10RecentArticles(gloonDatastore, 10, "news");
 	  List<Article> all10Gloonicles = gloonDaoInstance.get10RecentArticles(gloonDatastore, 10, "gloonicles");
 	  
-	  HashMap<String, Object> allCategory = new HashMap<>();
-	  allCategory.put("category", "all");
+	  HashMap<String, Object> allCategory = new HashMap<>();	  
 	  
 	  if(all10Articles.size()>0)
 	  {
@@ -113,15 +118,14 @@ public class HomeController extends Controller{
 			  allArticleMap.put("articlePublishDate", article.getCreationDate());
 			  allArticles.add(allArticleMap);
 		  }
-		  allCategory.put("articles", allArticles);
+		  allCategory.put("recentAllArticles", allArticles);
 	  }
 	  
 	  allRecentArticles.add(allCategory);
 	  
 	  
 	  
-	  HashMap<String, Object> reviewCategory = new HashMap<>();
-	  reviewCategory.put("category", "reviews");
+	  HashMap<String, Object> reviewCategory = new HashMap<>();	  
 	  
 	  if(all10Reviews.size()>0)   
 	  {
@@ -135,13 +139,12 @@ public class HomeController extends Controller{
 			  allReviews.add(allArticleMap);
 			  
 		  } 
-		  reviewCategory.put("articles", allReviews);
+		  reviewCategory.put("recentReviews", allReviews);
 	  }
 	  allRecentArticles.add(reviewCategory);
 	  
 	  
-	  HashMap<String, Object> featureCategory = new HashMap<>();
-	  featureCategory.put("category", "features");
+	  HashMap<String, Object> featureCategory = new HashMap<>();	  
 	  
 	  if(all10Features.size()>0)
 	  {
@@ -154,13 +157,12 @@ public class HomeController extends Controller{
 			  allArticleMap.put("articlePublishDate", article.getCreationDate());
 			  allFeatures.add(allArticleMap);
 		  }
-		  featureCategory.put("articles", allFeatures);
+		  featureCategory.put("recentFeatures", allFeatures);
 	  }
 	  allRecentArticles.add(featureCategory);
 	  
 	  
-	  HashMap<String, Object> newsCategory = new HashMap<>();
-	  newsCategory.put("category", "news");
+	  HashMap<String, Object> newsCategory = new HashMap<>();	  
 	  
 	  if(all10News.size()>0)
 	  {
@@ -173,12 +175,11 @@ public class HomeController extends Controller{
 			  allArticleMap.put("articlePublishDate", article.getCreationDate());
 			  allNews.add(allArticleMap);
 		  } 
-		  newsCategory.put("articles", allNews);
+		  newsCategory.put("recentNews", allNews);
 	  }
 	  allRecentArticles.add(newsCategory);
 	  
-	  HashMap<String, Object> gloonicleCategory = new HashMap<>();
-	  gloonicleCategory.put("category", "gloonicles");
+	  HashMap<String, Object> gloonicleCategory = new HashMap<>();	  
 	 
 	  if(all10Gloonicles.size()>0)
 	  {
@@ -191,7 +192,7 @@ public class HomeController extends Controller{
 			  allArticleMap.put("articlePublishDate", article.getCreationDate());
 			  allGloonicles.add(allArticleMap);
 		  }
-		  gloonicleCategory.put("articles", allGloonicles);
+		  gloonicleCategory.put("recentGloonicles", allGloonicles);
 	  }
 	  allRecentArticles.add(gloonicleCategory);
 	  

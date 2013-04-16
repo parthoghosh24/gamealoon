@@ -1,7 +1,72 @@
 @(message: String)
 
-@main("Welcome to Play 2.0") {
-    
-    @play20.welcome(message, style = "Java")
-    
+@main("Welcome to Gamealoon") {
+
+<h1>@message</h1>
+<h2>Carousel Articles</h2>
+<ul id='carouselArticles'>
+	<li>
+		Reviews <ul id='carouselReviews'>
+
+		</ul>
+	</li>
+	<li>
+		Features <ul id='carouselFeatures'>
+
+		</ul>
+	</li>
+	<li>
+		News <ul id='carouselNews'>
+
+		</ul>
+	</li>
+	<li>
+		Gloonicles <ul id='carouselGloonicles'>
+
+		</ul>
+	</li>
+
+</ul>
+<h2>Top Users</h2>
+<ul id='top5users'>
+
+</ul>
+<h2>Recent Articles</h2>
+<ul id='top10articles'>
+
+	<li>
+		All <ul id='recentAllarticles'>
+
+		</ul>
+	</li>
+
+	<li>
+		Reviews <ul id='recentReviews'>
+
+		</ul>
+	</li>
+
+	<li>
+		Features <ul id='recentFeatures'>
+
+		</ul>
+	</li>
+
+	<li>
+		News <ul id='recentNews'>
+
+		</ul>
+	</li>
+	
+	<li>
+		Gloonicles <ul id='recentGloonicles'>
+
+		</ul>
+	</li>
+</ul>
+<h2>Top Games</h2>
+<ul id='top10games'>
+
+</ul>
+<script src='@routes.Assets.at("javascripts/gloon.js")'></script>
 }

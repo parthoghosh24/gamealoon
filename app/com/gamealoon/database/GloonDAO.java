@@ -83,30 +83,26 @@ public class GloonDAO implements GloonDataInterface{
 		List<HashMap<String, Object>> allArticlesForCarousel= new ArrayList<HashMap<String,Object>>();
 		
 		//Generating reviews
-		HashMap<String, Object> reviewsMap = new HashMap<>();
-		reviewsMap.put("category", "review");
-		reviewsMap.put("articles", getReviews(topUsers, type) );
+		HashMap<String, Object> reviewsMap = new HashMap<>();		
+		reviewsMap.put("carouselReviews", getReviews(topUsers, type) );
 		allArticlesForCarousel.add(reviewsMap);
 				
 		//Generating feature
 		topUsers= getTopUsers(gloonDatastore,5);
-		HashMap<String, Object> featuresMap = new HashMap<>();
-		featuresMap.put("category", "feature");
-		featuresMap.put("articles", getArticles(topUsers, type, Category.Feature));
+		HashMap<String, Object> featuresMap = new HashMap<>();		
+		featuresMap.put("carouselFeatures", getArticles(topUsers, type, Category.Feature));
 		allArticlesForCarousel.add(featuresMap);
 							
 		//Generating news
 		topUsers= getTopUsers(gloonDatastore,5);
-		HashMap<String, Object> newsMap = new HashMap<>();
-		newsMap.put("category", "news");
-		newsMap.put("articles", getArticles(topUsers, type, Category.News));		
+		HashMap<String, Object> newsMap = new HashMap<>();		
+		newsMap.put("carouselNews", getArticles(topUsers, type, Category.News));		
 		allArticlesForCarousel.add(newsMap);
 		
 		//Generating gloonicle
 		topUsers= getTopUsers(gloonDatastore,5);
-        HashMap<String, Object> glooniclesMap = new HashMap<>();
-        glooniclesMap.put("category", "gloonicle");
-        glooniclesMap.put("articles", getArticles(topUsers, type, Category.Gloonicle));
+        HashMap<String, Object> glooniclesMap = new HashMap<>();        
+        glooniclesMap.put("carouselGloonicles", getArticles(topUsers, type, Category.Gloonicle));
 		allArticlesForCarousel.add(glooniclesMap);
 		
 		return allArticlesForCarousel;
@@ -137,12 +133,13 @@ public class GloonDAO implements GloonDataInterface{
 					if(article!=null)
 					{
 						HashMap<String, Object> articleMap = new HashMap<String, Object>();
+						articleMap.put("articleCarouselCategory", Category.Review);
 						articleMap.put("articleTitle", article.getTitle());
 						articleMap.put("articleBody", article.getBody());
 						articleMap.put("articleAuthor", article.getAuthor().getUsername());
 						if(article.getGame()!=null)
 						{
-							articleMap.put("articleGame", article.getGame());
+							articleMap.put("articleGame", article.getGame().getTitle());
 						}
 						
 						articleMap.put("articleCreationDate", article.getCreationDate());
@@ -187,12 +184,13 @@ public class GloonDAO implements GloonDataInterface{
 			if(article!=null)
 			{
 				HashMap<String, Object> articleMap = new HashMap<String, Object>();
+				articleMap.put("articleCarouselCategory", category);
 				articleMap.put("articleTitle", article.getTitle());
 				articleMap.put("articleBody", article.getBody());
 				articleMap.put("articleAuthor", article.getAuthor().getUsername());
 				if(article.getGame()!=null)
 				{
-					articleMap.put("articleGame", article.getGame());
+					articleMap.put("articleGame", article.getGame().getTitle());
 				}
 				
 				articleMap.put("articleCreationDate", article.getCreationDate());
