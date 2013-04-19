@@ -2,71 +2,113 @@
 
 @main("Welcome to Gamealoon") {
 
-<h1>@message</h1>
-<h2>Carousel Articles</h2>
-<ul id='carouselArticles'>
-	<li>
-		Reviews <ul id='carouselReviews'>
+<div id="homeContent">
+	<div id="logo">
+    		Gamealoon
+    	</div>
+	<div id="carousel">
+		<div id="cVideoAndCnews">
 
-		</ul>
-	</li>
-	<li>
-		Features <ul id='carouselFeatures'>
+			<div id="cVideos">
 
-		</ul>
-	</li>
-	<li>
-		News <ul id='carouselNews'>
+				Videos
+				<ul id='carouselVideos'>
+					<li>
+						Video 1
+					</li>
+					<li>
+						Video 2
+					</li>
+					<li>
+						Video 3
+					</li>
+					<li>
+						Video 4
+					</li>
+					<li>
+						Video 5
+					</li>
+				</ul>
+			</div>
 
-		</ul>
-	</li>
-	<li>
-		Gloonicles <ul id='carouselGloonicles'>
+			<div id="cNews">
+				News <ul id='carouselNews'>
 
-		</ul>
-	</li>
+				</ul>
+			</div>
+		</div>
 
-</ul>
-<h2>Top Users</h2>
-<ul id='top5users'>
+		<div id="cReview">
+			Reviews <ul id='carouselReviews'>
 
-</ul>
-<h2>Recent Articles</h2>
-<ul id='top10articles'>
+			</ul>
+		</div>
 
-	<li>
-		All <ul id='recentAllarticles'>
+		<div id="cFeaturesAndcGloonicles">
+			<div id="cFeatures">
+				Features <ul id='carouselFeatures'>
 
-		</ul>
-	</li>
+				</ul>
+			</div>
+			<div id="cGloonicles">
+				Gloonicles <ul id='carouselGloonicles'>
 
-	<li>
-		Reviews <ul id='recentReviews'>
+				</ul>
+			</div>
 
-		</ul>
-	</li>
+		</div>
 
-	<li>
-		Features <ul id='recentFeatures'>
-
-		</ul>
-	</li>
-
-	<li>
-		News <ul id='recentNews'>
-
-		</ul>
-	</li>
+	</div>
 	
-	<li>
-		Gloonicles <ul id='recentGloonicles'>
+	<div id="recentArticles">
+		<h2>Recent Articles</h2>
+		<ul id='top10articles'>
+
+			<li>
+				All <ul id='recentAllarticles'>
+
+				</ul>
+			</li>
+
+			<li>
+				Reviews <ul id='recentReviews'>
+
+				</ul>
+			</li>
+
+			<li>
+				Features <ul id='recentFeatures'>
+
+				</ul>
+			</li>
+
+			<li>
+				News <ul id='recentNews'>
+
+				</ul>
+			</li>
+
+			<li>
+				Gloonicles <ul id='recentGloonicles'>
+
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div id="topUsers">
+		<h2>Top Users</h2>
+		<ul id='top5users'>
 
 		</ul>
-	</li>
-</ul>
-<h2>Top Games</h2>
-<ul id='top10games'>
 
-</ul>
+	</div>
+	<div id="topGames">
+		<h2>Top Games</h2>
+		<ul id='top10games'>
+
+		</ul>
+	</div>
+</div>
+
 <script src='@routes.Assets.at("javascripts/gloon.js")'></script>
 }

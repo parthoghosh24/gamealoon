@@ -75,7 +75,7 @@ public class HomeController extends Controller{
    private static List<HashMap<String, Object>> getTop10Games()
    {
 	  List <HashMap<String, Object>> topGames = new ArrayList<>();
-	  List <Game> recentGames = gloonDaoInstance.getRecentGames(gloonDatastore, 10);
+	  List <Game> recentGames = gloonDaoInstance.getRecentGames(gloonDatastore, 5);
 	  if(recentGames.size()>0)
 	  {
 		  for(Game game: recentGames)
