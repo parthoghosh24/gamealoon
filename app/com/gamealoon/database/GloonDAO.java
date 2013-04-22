@@ -122,11 +122,11 @@ public class GloonDAO implements GloonDataInterface{
 	
 	@Override
 	public HashMap<String, Object> getRecentAllNArticles(Datastore gloonDatastore, int limit, String platform) {		 
-		  List<Article> all10Articles = getNRecentArticles(gloonDatastore, limit, "all");
-		  List<Article> all10Reviews = getNRecentArticles(gloonDatastore, limit, "reviews");
-		  List<Article> all10Features =getNRecentArticles(gloonDatastore, limit, "features");
-		  List<Article> all10News = getNRecentArticles(gloonDatastore, limit, "news");
-		  List<Article> all10Gloonicles = getNRecentArticles(gloonDatastore, limit, "gloonicles");
+		  List<Article> all10Articles = getNRecentArticles(gloonDatastore, limit, "all",platform);
+		  List<Article> all10Reviews = getNRecentArticles(gloonDatastore, limit, "reviews",platform);
+		  List<Article> all10Features =getNRecentArticles(gloonDatastore, limit, "features",platform);
+		  List<Article> all10News = getNRecentArticles(gloonDatastore, limit, "news",platform);
+		  List<Article> all10Gloonicles = getNRecentArticles(gloonDatastore, limit, "gloonicles",platform);
 		  
 		  HashMap<String, Object> recentNArticles = new HashMap<>();	  
 		  
@@ -455,28 +455,201 @@ public class GloonDAO implements GloonDataInterface{
 	 * @param limit
 	 * @return
 	 */
-	private List<Article> getNRecentArticles(Datastore gloonDatastore, int limit, String type)
+	private List<Article> getNRecentArticles(Datastore gloonDatastore, int limit, String type, String platform)
 	{
 		List<Article> recent10Articles=new ArrayList<Article>();
 		if("all".equals(type))
 		{
-			recent10Articles=gloonDatastore.createQuery(Article.class).order("-creationDate").limit(limit).asList();
+			switch(platform)
+			{
+			case "all":
+				recent10Articles=gloonDatastore.createQuery(Article.class).order("-creationDate").limit(limit).asList();
+				break;
+			case "pc":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","PC").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps3":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				break;
+			case "xbox360":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps4":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				break;
+			case "wiiu":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","WII-U").order("-creationDate").limit(limit).asList();
+				break;
+			case "ios":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","IOS").order("-creationDate").limit(limit).asList();
+				break;
+			case "android":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","Android").order("-creationDate").limit(limit).asList();
+				break;
+			case "vita":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				break;
+			case "3ds":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platform.title","3DS").order("-creationDate").limit(limit).asList();
+				break;
+			}			
 		}
+		
+		
 		if("reviews".equals(type))
 		{
-			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).order("-creationDate").limit(limit).asList();
+			switch(platform)
+			{
+			case "all":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).order("-creationDate").limit(limit).asList();
+				break;
+			case "pc":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","PC").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps3":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				break;
+			case "xbox360":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps4":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				break;
+			case "wiiu":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","WII-U").order("-creationDate").limit(limit).asList();
+				break;
+			case "ios":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","IOS").order("-creationDate").limit(limit).asList();
+				break;
+			case "android":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","Android").order("-creationDate").limit(limit).asList();
+				break;
+			case "vita":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				break;
+			case "3ds":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Review).filter("platform.title","3DS").order("-creationDate").limit(limit).asList();
+				break;
+			}
+			
 		}
+		
+		
 		if("features".equals(type))
 		{
-			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).order("-creationDate").limit(limit).asList();
+			
+			switch(platform)
+			{
+			case "all":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).order("-creationDate").limit(limit).asList();
+				break;
+			case "pc":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","PC").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps3":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				break;
+			case "xbox360":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps4":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				break;
+			case "wiiu":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","WII-U").order("-creationDate").limit(limit).asList();
+				break;
+			case "ios":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","IOS").order("-creationDate").limit(limit).asList();
+				break;
+			case "android":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","Android").order("-creationDate").limit(limit).asList();
+				break;
+			case "vita":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				break;
+			case "3ds":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Feature).filter("platform.title","3DS").order("-creationDate").limit(limit).asList();
+				break;
+			}
+			
 		}
+		
+		
+		
 		if("news".equals(type))
 		{
-			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).order("-creationDate").limit(limit).asList();
+			switch(platform)
+			{
+			case "all":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).order("-creationDate").limit(limit).asList();
+				break;
+			case "pc":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","PC").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps3":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				break;
+			case "xbox360":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps4":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				break;
+			case "wiiu":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","WII-U").order("-creationDate").limit(limit).asList();
+				break;
+			case "ios":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","IOS").order("-creationDate").limit(limit).asList();
+				break;
+			case "android":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","Android").order("-creationDate").limit(limit).asList();
+				break;
+			case "vita":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				break;
+			case "3ds":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.News).filter("platform.title","3DS").order("-creationDate").limit(limit).asList();
+				break;
+			}
+			
 		}
+		
+		
 		if("gloonicles".equals(type))
 		{
-			recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).order("-creationDate").limit(limit).asList();	
+			switch(platform)
+			{
+			case "all":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).order("-creationDate").limit(limit).asList();
+				break;
+			case "pc":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","PC").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps3":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				break;
+			case "xbox360":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				break;
+			case "ps4":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				break;
+			case "wiiu":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","WII-U").order("-creationDate").limit(limit).asList();
+				break;
+			case "ios":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","IOS").order("-creationDate").limit(limit).asList();
+				break;
+			case "android":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","Android").order("-creationDate").limit(limit).asList();
+				break;
+			case "vita":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				break;
+			case "3ds":
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.Gloonicle).filter("platform.title","3DS").order("-creationDate").limit(limit).asList();
+				break;
+			}			
 		}				
 		
 		return recent10Articles;

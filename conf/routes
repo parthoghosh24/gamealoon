@@ -3,10 +3,17 @@
 # ~~~~
 
 # Home page
-#GET     /                           com.gamealoon.controllers.Application.index()
+
 GET     /                           com.gamealoon.controllers.HomeController.index()
 POST   /                            com.gamealoon.controllers.HomeController.getHomeData()
 GET   /test                         com.gamealoon.controllers.HomeController.getHomeData()
+
+
+# Platforms
+GET    /platform/                       com.gamealoon.controllers.PlatformController.index()  
+POST  /platform/:platform				com.gamealoon.controllers.PlatformController.getPlatformData(platform:String)
+
+
 #GET   /game/:title                            com.gamealoon.controllers.GloonAPI.getGame(title:String)
 GET   /game/                            com.gamealoon.controllers.GloonAPIController.getGames()
 

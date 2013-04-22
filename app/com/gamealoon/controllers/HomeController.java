@@ -22,17 +22,19 @@ public class HomeController extends Controller{
 
 			
 	
-  /**
-   * This is the action method for fetching all Home content	
-   * 
-   * @return
-   */
+
     
     
    public static Result index()
    {
 	   return ok(index.render("Home Page"));
    }
+   
+   /**
+    * This is the action method for fetching all Home content	
+    * 
+    * @return
+    */
    public static Result getHomeData()
    {
 	   HashMap<String, Object> carouselArticleMaps = getAllArticlesForCarousel();
@@ -44,7 +46,7 @@ public class HomeController extends Controller{
 	   homeMap.put("carouselArticles", carouselArticleMaps);
 	   homeMap.put("top10Articles", top10Articles);
 	   homeMap.put("top10Games", top10Games);
-	   homeMap.put("top5Users", top5Users);
+	   homeMap.put("top5Users", top5Users);	   
 	   return ok(toJson(homeMap));
 
 	   
