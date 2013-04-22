@@ -2,8 +2,6 @@ package com.gamealoon.tests;
 
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
 import com.gamealoon.database.GloonDAO;
@@ -42,8 +40,7 @@ public class ModelsTest {
 				    findAllGames();
 				    findAllUsers();				    
 				    findAllRecentGames();
-				    findAllRecentReleasedGames();
-				    getAllArticlesForCarousel();
+				    findAllRecentReleasedGames();				    
 				
 			}
 			
@@ -76,7 +73,7 @@ public class ModelsTest {
 			
 			private void findAllUsers()
 			{
-				List<User> sortedUsers = daoInstance.getTopUsers(gloonDatastore, 0);
+				List<User> sortedUsers = gloonDatastore.find(User.class).order("-totalScore").asList();
 //				List<User> users = gloonDatastore.find(User.class).asList();
 				  
 				  if(sortedUsers.size()>0)
@@ -100,7 +97,7 @@ public class ModelsTest {
 			
 			private void findAllRecentGames()
 			{
-				List<Game> sortedGames = daoInstance.getRecentGames(gloonDatastore,0);
+				List<Game> sortedGames = gloonDatastore.find(Game.class).order("-releaseDate").asList();
 				
 				System.out.println("Recent sorted games list size: "+ sortedGames.size());
 				
@@ -148,31 +145,7 @@ public class ModelsTest {
 				}	
 			}
 			
-			
-			@SuppressWarnings("unchecked")
-			private void getAllArticlesForCarousel()
-		    {
-				List<HashMap<String, Object>> allArticles = daoInstance.getAllArticlesForCarousel(gloonDatastore, "all");
-				for(HashMap<String, Object> article: allArticles)
-				{
-					System.out.println("Category: "+article.get("category"));					
-					List<HashMap<String, Object>> articleMaps = (ArrayList<HashMap<String, Object>>)article.get("articles");
-					if(articleMaps.size()>0)
-					{
-						for(HashMap<String, Object> articleMap: articleMaps)
-						{
-							System.out.println("Article Title: "+ articleMap.get("articleTitle"));
-							System.out.println("Article Body: "+articleMap.get("articleBody"));
-							System.out.println("Article Game: "+articleMap.get("articleGame"));
-							System.out.println("Article Author: "+articleMap.get("articleAuthor"));
-							System.out.println("Article publish date: "+articleMap.get("articleCreationDate"));
-							System.out.println();
-							System.out.println();
-						}
-					}
-										
-				}
-		    }
+						
 			
 			
 		});

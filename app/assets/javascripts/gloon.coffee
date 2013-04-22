@@ -2,10 +2,10 @@ $ ->
   $.post "/", (data)->
     
     #Carousel Articles
-    cReviews=data.carouselArticles[0].carouselReviews
-    cFeatures=data.carouselArticles[1].carouselFeatures
-    cNews=data.carouselArticles[2].carouselNews
-    cGloonicles=data.carouselArticles[3].carouselGloonicles
+    cReviews=data.carouselArticles.carouselReviews
+    cFeatures=data.carouselArticles.carouselFeatures
+    cNews=data.carouselArticles.carouselNews
+    cGloonicles=data.carouselArticles.carouselGloonicles
     
     
     #top users
@@ -13,11 +13,11 @@ $ ->
     
     
     #Recemt Articles
-    recentAll=data.top10Articles[0].recentAllArticles
-    recentReviews=data.top10Articles[1].recentReviews
-    recentFeatures=data.top10Articles[2].recentFeatures
-    recentNews=data.top10Articles[3].recentNews
-    recentGloonicles=data.top10Articles[4].recentGloonicles
+    recentAll=data.top10Articles.recentAllArticles
+    recentReviews=data.top10Articles.recentReviews
+    recentFeatures=data.top10Articles.recentFeatures
+    recentNews=data.top10Articles.recentNews
+    recentGloonicles=data.top10Articles.recentGloonicles
     
     
     #top games

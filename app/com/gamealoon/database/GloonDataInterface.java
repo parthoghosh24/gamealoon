@@ -9,5 +9,8 @@ public interface GloonDataInterface {
 
 	
 	public List<Game> allGames(Datastore gloonDatastore);
-	public List<HashMap<String, Object>> getAllArticlesForCarousel(Datastore gloonDatastore, String type);
+	public HashMap<String, Object> getAllArticlesForCarousel(Datastore gloonDatastore, String type);
+	public List<HashMap<String, Object>> getTopNGames(Datastore gloonDatastore, int limit, String platform);
+	public HashMap<String, Object> getRecentAllNArticles(Datastore gloonDatastore, int limit, String platform);
+	public List<HashMap<String, Object>> getTopNUsers(Datastore gloonDatastore, int limit);
 }

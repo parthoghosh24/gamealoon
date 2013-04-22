@@ -77,35 +77,153 @@ public class GloonDAO implements GloonDataInterface{
 	 * The list will contain 5 hashMaps in general.
 	 */
 	@Override
-	public List<HashMap<String, Object>> getAllArticlesForCarousel(Datastore gloonDatastore,String type) {
+	public HashMap<String, Object> getAllArticlesForCarousel(Datastore gloonDatastore,String type) {
 	
 		List<User> topUsers= getTopUsers(gloonDatastore,0);
-		List<HashMap<String, Object>> allArticlesForCarousel= new ArrayList<HashMap<String,Object>>();
+		HashMap<String, Object> allArticlesForCarouselMap= new HashMap<String,Object>();
 		
-		//Generating reviews
-		HashMap<String, Object> reviewsMap = new HashMap<>();		
-		reviewsMap.put("carouselReviews", getReviews(topUsers, type) );
-		allArticlesForCarousel.add(reviewsMap);
+		//Generating reviews		
+		allArticlesForCarouselMap.put("carouselReviews", getReviews(topUsers, type) );		
 				
 		//Generating feature
-		topUsers= getTopUsers(gloonDatastore,5);
-		HashMap<String, Object> featuresMap = new HashMap<>();		
-		featuresMap.put("carouselFeatures", getArticles(topUsers, type, Category.Feature));
-		allArticlesForCarousel.add(featuresMap);
+		topUsers= getTopUsers(gloonDatastore,5);		
+		allArticlesForCarouselMap.put("carouselFeatures", getArticles(topUsers, type, Category.Feature));		
 							
 		//Generating news
-		topUsers= getTopUsers(gloonDatastore,5);
-		HashMap<String, Object> newsMap = new HashMap<>();		
-		newsMap.put("carouselNews", getArticles(topUsers, type, Category.News));		
-		allArticlesForCarousel.add(newsMap);
+		topUsers= getTopUsers(gloonDatastore,5);			
+		allArticlesForCarouselMap.put("carouselNews", getArticles(topUsers, type, Category.News));		
+		
 		
 		//Generating gloonicle
-		topUsers= getTopUsers(gloonDatastore,5);
-        HashMap<String, Object> glooniclesMap = new HashMap<>();        
-        glooniclesMap.put("carouselGloonicles", getArticles(topUsers, type, Category.Gloonicle));
-		allArticlesForCarousel.add(glooniclesMap);
+		topUsers= getTopUsers(gloonDatastore,5);               
+        allArticlesForCarouselMap.put("carouselGloonicles", getArticles(topUsers, type, Category.Gloonicle));		
 		
-		return allArticlesForCarousel;
+		return allArticlesForCarouselMap;
+	}
+	
+	@Override
+	public List<HashMap<String, Object>> getTopNGames(Datastore gloonDatastore,int limit, String platform) {
+		 List <HashMap<String, Object>> topGames = new ArrayList<>();
+		  List <Game> recentGames = getRecentGames(gloonDatastore, limit);
+		  if(recentGames.size()>0)
+		  {
+			  for(Game game: recentGames)
+			  {
+				HashMap<String, Object> gameMap = new HashMap<String, Object>();
+				gameMap.put("gameTitle", game.getTitle());
+				gameMap.put("gameReleaseDate", game.getReleaseDate());
+				gameMap.put("gameScore", game.getScore());
+				topGames.add(gameMap);
+			  }  
+		  }
+		  
+	 	   return topGames;
+	}
+	
+	@Override
+	public HashMap<String, Object> getRecentAllNArticles(Datastore gloonDatastore, int limit, String platform) {		 
+		  List<Article> all10Articles = getNRecentArticles(gloonDatastore, limit, "all");
+		  List<Article> all10Reviews = getNRecentArticles(gloonDatastore, limit, "reviews");
+		  List<Article> all10Features =getNRecentArticles(gloonDatastore, limit, "features");
+		  List<Article> all10News = getNRecentArticles(gloonDatastore, limit, "news");
+		  List<Article> all10Gloonicles = getNRecentArticles(gloonDatastore, limit, "gloonicles");
+		  
+		  HashMap<String, Object> recentNArticles = new HashMap<>();	  
+		  
+		  if(all10Articles.size()>0)
+		  {
+			  List<HashMap<String, Object>> allArticles = new ArrayList<HashMap<String,Object>>();
+			  for(Article article: all10Articles)
+			  {
+				  HashMap<String, Object> allArticleMap = new HashMap<String, Object>();
+				  allArticleMap.put("articleTitle", article.getTitle());
+				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
+				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allArticles.add(allArticleMap);
+			  }
+			  recentNArticles.put("recentAllArticles", allArticles);
+		  }
+		  		  
+		  
+		  if(all10Reviews.size()>0)   
+		  {
+			  List<HashMap<String, Object>> allReviews = new ArrayList<HashMap<String,Object>>();
+			  for(Article article: all10Reviews)
+			  {
+				  HashMap<String, Object> allArticleMap = new HashMap<String, Object>();
+				  allArticleMap.put("articleTitle", article.getTitle());
+				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
+				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allReviews.add(allArticleMap);
+				  
+			  } 
+			  recentNArticles.put("recentReviews", allReviews);
+		  }		  	 
+		  
+		  if(all10Features.size()>0)
+		  {
+			  List<HashMap<String, Object>> allFeatures = new ArrayList<HashMap<String,Object>>();
+			  for(Article article: all10Features)
+			  {
+				  HashMap<String, Object> allArticleMap = new HashMap<String, Object>();
+				  allArticleMap.put("articleTitle", article.getTitle());
+				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
+				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allFeatures.add(allArticleMap);
+			  }
+			  recentNArticles.put("recentFeatures", allFeatures);
+		  }		  	  
+		  
+		  if(all10News.size()>0)
+		  {
+			  List<HashMap<String, Object>> allNews = new ArrayList<HashMap<String,Object>>();
+			  for(Article article: all10News)
+			  {
+				  HashMap<String, Object> allArticleMap = new HashMap<String, Object>();
+				  allArticleMap.put("articleTitle", article.getTitle());
+				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
+				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allNews.add(allArticleMap);
+			  } 
+			  recentNArticles.put("recentNews", allNews);
+		  }		  	 
+		 
+		  if(all10Gloonicles.size()>0)
+		  {
+			  List<HashMap<String, Object>> allGloonicles = new ArrayList<HashMap<String,Object>>();
+			  for(Article article: all10Gloonicles)
+			  {
+				  HashMap<String, Object> allArticleMap = new HashMap<String, Object>();
+				  allArticleMap.put("articleTitle", article.getTitle());
+				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
+				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allGloonicles.add(allArticleMap);
+			  }
+			  recentNArticles.put("recentGloonicles", allGloonicles);
+		  }		  
+		  
+		   return recentNArticles;
+	}
+	
+	
+	@Override
+	public List<HashMap<String, Object>> getTopNUsers(Datastore gloonDatastore,int limit) {
+		 List<HashMap<String, Object>> userMaps = new ArrayList<>();
+		   List<User> topUsers = getTopUsers(gloonDatastore, limit);
+		   if(topUsers.size()>0)
+		   {
+			   for(User user: topUsers)
+			   {
+				   HashMap<String, Object> userMap = new HashMap<>();
+				   userMap.put("userUserName", user.getUsername());
+				   userMap.put("userAvatar", user.getAvatarPath());
+				   userMap.put("userAchievementCount", user.getAchievements().size());
+				   userMaps.add(userMap);
+						   
+			   }  
+		   }
+		   
+		   return userMaps;
 	}
 	
 	
@@ -129,7 +247,41 @@ public class GloonDAO implements GloonDataInterface{
 				//TODO Handle all types
 				for(User user: topUsers)
 				{
-					Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.Review).get();
+					Article article=null;
+					switch(type)
+					{
+					case "all":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.Review).get();
+						break;
+					case "ps3":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","Playstation 3").filter("category", Category.Review).get();
+						break;
+					case "xbox360":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","Xbox 360").filter("category", Category.Review).get();
+						break;
+					case "ps4":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","Playstation 4").filter("category", Category.Review).get();
+						break;
+					case "wiiu":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","WII-U").filter("category", Category.Review).get();
+						break;
+					case "pc":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","PC").filter("category", Category.Review).get();
+						break;
+					case "ios":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","IOS").filter("category", Category.Review).get();
+						break;
+					case "android":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","Android").filter("category", Category.Review).get();
+						break;
+					case "3ds":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","3DS").filter("category", Category.Review).get();
+						break;	
+					case "vita":
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platform.title","PS-VITA").filter("category", Category.Review).get();
+						break;	
+						
+					}
 					if(article!=null)
 					{
 						HashMap<String, Object> articleMap = new HashMap<String, Object>();
@@ -180,7 +332,42 @@ public class GloonDAO implements GloonDataInterface{
 		//TODO Handle all types
 		for(User user: topUsers)
 		{			
-			Article article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("category", category).order("-creationDate").get();			
+			Article article=null;
+			switch(type)
+			{
+			case "all":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("category", category).get();
+				break;
+			case "ps3":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","Playstation 3").filter("category", category).get();
+				break;
+			case "xbox360":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","Xbox 360").filter("category", category).get();
+				break;
+			case "ps4":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","Playstation 4").filter("category", category).get();
+				break;
+			case "wiiu":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","WII-U").filter("category", category).get();
+				break;
+			case "pc":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","PC").filter("category", category).get();
+				break;
+			case "ios":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","IOS").filter("category", category).get();
+				break;
+			case "android":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","Android").filter("category", category).get();
+				break;
+			case "3ds":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","3DS").filter("category", category).get();
+				break;	
+			case "vita":
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platform.title","PS-VITA").filter("category", category).get();
+				break;	
+				
+			}
+									
 			if(article!=null)
 			{
 				HashMap<String, Object> articleMap = new HashMap<String, Object>();
@@ -210,7 +397,7 @@ public class GloonDAO implements GloonDataInterface{
 	 * @param gloonDatastore
 	 * @return
 	 */
-	public List<User> getTopUsers(Datastore gloonDatastore, int limit)
+	private List<User> getTopUsers(Datastore gloonDatastore, int limit)
 	{
 	
 	  if(limit>0)
@@ -243,12 +430,12 @@ public class GloonDAO implements GloonDataInterface{
 	}
 	
 	/**
-	 * Get N recent released games
+	 * Get N recent games
 	 * 
 	 * @param gloonDatastore
 	 * @return
 	 */	
-	public List<Game> getRecentGames(Datastore gloonDatastore, int limit)	
+	private List<Game> getRecentGames(Datastore gloonDatastore, int limit)	
 	{
 		if(limit >0)
 		{
@@ -268,7 +455,7 @@ public class GloonDAO implements GloonDataInterface{
 	 * @param limit
 	 * @return
 	 */
-	public List<Article> get10RecentArticles(Datastore gloonDatastore, int limit, String type)
+	private List<Article> getNRecentArticles(Datastore gloonDatastore, int limit, String type)
 	{
 		List<Article> recent10Articles=new ArrayList<Article>();
 		if("all".equals(type))
@@ -294,5 +481,11 @@ public class GloonDAO implements GloonDataInterface{
 		
 		return recent10Articles;
 	}
+
+	
+
+	
+
+	
 
 }
