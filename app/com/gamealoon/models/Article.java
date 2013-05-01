@@ -26,15 +26,16 @@ import com.google.code.morphia.annotations.Id;
 public class Article {
 	
 	@Id
-	ObjectId id;	
-	private String title;
+	private ObjectId id;	
+	private String title;	
 	private String body;
 	private String creationDate;
 	private String insertTime;
 	private String updateTime;	
-	private double score; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
+	private double wilsonScore; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
 	private String featuredImagePath;
-	
+	private double coolScore;
+	private double notCoolScore;
 	@Embedded
 	private Set<Platform> platforms = new HashSet<>();
 	
@@ -46,6 +47,12 @@ public class Article {
 	
 	@Embedded
 	private Game game;
+	
+	
+	public ObjectId getId()
+	{
+		return this.id;
+	}
 
 	/**
 	 * @return the title
@@ -171,14 +178,14 @@ public class Article {
 	 * @return the score
 	 */
 	public double getScore() {
-		return score;
+		return wilsonScore;
 	}
 
 	/**
 	 * @param score the score to set
 	 */
 	public void setScore(double score) {
-		this.score = score;
+		this.wilsonScore = score;
 	}
 
 	/**
@@ -208,5 +215,35 @@ public class Article {
 	public void setPlatforms(Set<Platform> platforms) {
 		this.platforms = platforms;
 	}
+
+	/**
+	 * @return the coolScore
+	 */
+	public double getCoolScore() {
+		return coolScore;
+	}
+
+	/**
+	 * @param coolScore the coolScore to set
+	 */
+	public void setCoolScore(double coolScore) {
+		this.coolScore = coolScore;
+	}
+
+	/**
+	 * @return the notCoolScore
+	 */
+	public double getNotCoolScore() {
+		return notCoolScore;
+	}
+
+	/**
+	 * @param notCoolScore the notCoolScore to set
+	 */
+	public void setNotCoolScore(double notCoolScore) {
+		this.notCoolScore = notCoolScore;
+	}
+
+
 
 }

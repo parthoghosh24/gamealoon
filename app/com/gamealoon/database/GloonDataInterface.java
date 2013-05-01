@@ -13,4 +13,7 @@ public interface GloonDataInterface {
 	public List<HashMap<String, Object>> getTopNGames(Datastore gloonDatastore, int limit, String platform);
 	public HashMap<String, Object> getRecentAllNArticles(Datastore gloonDatastore, int limit, String platform);
 	public List<HashMap<String, Object>> getTopNUsers(Datastore gloonDatastore, int limit);
+	public HashMap<String, Object> getArticle(Datastore gloonDatastore, String userName, String title);	
+	public List<HashMap<String, Object>> getAllArticlesByKey(Datastore gloonDatastore, String key);	
+	public HashMap<String, Object> getUser(Datastore gloonDatastore, String username);
 }

@@ -7,6 +7,7 @@ import org.junit.Test;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.User;
+import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
 
@@ -40,7 +41,9 @@ public class ModelsTest {
 				    findAllGames();
 				    findAllUsers();				    
 				    findAllRecentGames();
-				    findAllRecentReleasedGames();				    
+				    findAllRecentReleasedGames();	
+				    testStringEncoder();
+				    testFetchIdFromTitle();
 				
 			}
 			
@@ -146,7 +149,15 @@ public class ModelsTest {
 			}
 			
 						
+			private void testStringEncoder()
+			{
+				System.out.println(Utility.encodeForUrl("Far Cry 3 Feature: The sense of wild"));
+			}
 			
+			private void testFetchIdFromTitle()
+			{
+				System.out.println(Utility.fetchIdFromTitle("rocksteady-is-working-on-supposedly-a-superman-game-517c1668ed7eb00e4adb8c61"));
+			}
 			
 		});
 	}

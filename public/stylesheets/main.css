@@ -17,7 +17,8 @@
 
 
 #logo {
- position: relative;
+ position: absolute;
+ display: block;
  top:1em;
  left: 1em;	
 }

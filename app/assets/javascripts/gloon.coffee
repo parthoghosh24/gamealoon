@@ -1,5 +1,6 @@
 $ ->
-  $.post "/", (data)->
+  
+  $.get "/home", (data)->
     
     #Carousel Articles
     cReviews=data.carouselArticles.carouselReviews

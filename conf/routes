@@ -2,16 +2,18 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-
-GET     /                           com.gamealoon.controllers.HomeController.index()
-POST   /                            com.gamealoon.controllers.HomeController.getHomeData()
-GET   /test                         com.gamealoon.controllers.HomeController.getHomeData()
-
 
 # Platforms
-GET    /platform/                       com.gamealoon.controllers.PlatformController.index()  
-POST  /platform/:platform				com.gamealoon.controllers.PlatformController.getPlatformData(platform:String)
+GET  /platform/:platform				com.gamealoon.controllers.PlatformController.getPlatformData(platform:String)
+
+# Articles
+GET /article/:username/:title           com.gamealoon.controllers.ArticleController.getArticle(username:String, title:String)
+GET /articles/:key                      com.gamealoon.controllers.ArticleController.getAllArticlesByKey(key:String)
+
+
+# Users
+GET /user/:username                com.gamealoon.controllers.UserController.getUser(username:String)   
+GET /users                        com.gamealoon.controllers.UserController.getUsers()
 
 
 #GET   /game/:title                            com.gamealoon.controllers.GloonAPI.getGame(title:String)
