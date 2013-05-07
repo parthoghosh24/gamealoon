@@ -11,4 +11,6 @@ public class AppConstants {
 	public static final String NEWS="news";
 	public static final String GLOONICLE="gloonicle";
 	public static final String PREVIEW="preview";
+	public static final String COOL ="cool";
+	public static final String UNCOOL ="uncool";
 }

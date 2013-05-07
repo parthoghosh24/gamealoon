@@ -44,6 +44,7 @@ public class ModelsTest {
 				    findAllRecentReleasedGames();	
 				    testStringEncoder();
 				    testFetchIdFromTitle();
+				    testMapReduceTotalPageHitsCalc();
 				
 			}
 			
@@ -157,6 +158,11 @@ public class ModelsTest {
 			private void testFetchIdFromTitle()
 			{
 				System.out.println(Utility.fetchIdFromTitle("rocksteady-is-working-on-supposedly-a-superman-game-517c1668ed7eb00e4adb8c61"));
+			}
+			
+			private void testMapReduceTotalPageHitsCalc()
+			{
+				System.out.println("TOTAL PAGE HITS: "+daoInstance.getTotalPageHits());
 			}
 			
 		});

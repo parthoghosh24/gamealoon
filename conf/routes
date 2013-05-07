@@ -8,16 +8,13 @@ GET  /platform/:platform				com.gamealoon.controllers.PlatformController.getPlat
 
 # Articles
 GET /article/:username/:title           com.gamealoon.controllers.ArticleController.getArticle(username:String, title:String)
-GET /articles/:key                      com.gamealoon.controllers.ArticleController.getAllArticlesByKey(key:String)
+GET /articles/:key/:sortField                    com.gamealoon.controllers.ArticleController.getAllArticlesByKey(key:String, sortField:String)
 
 
 # Users
 GET /user/:username                com.gamealoon.controllers.UserController.getUser(username:String)   
 GET /users                        com.gamealoon.controllers.UserController.getUsers()
 
-
-#GET   /game/:title                            com.gamealoon.controllers.GloonAPI.getGame(title:String)
-GET   /game/                            com.gamealoon.controllers.GloonAPIController.getGames()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

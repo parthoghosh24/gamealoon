@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.gamealoon.algorithm.Algorithm;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
@@ -15,6 +16,15 @@ import com.gamealoon.models.User;
 import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
+import com.google.code.morphia.mapping.Mapper;
+import com.google.code.morphia.query.Query;
+import com.google.code.morphia.query.UpdateOperations;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MapReduceCommand;
+import com.mongodb.MapReduceOutput;
+import com.mongodb.Mongo;
 
 /**
  * This is the application data access layer.
@@ -29,6 +39,7 @@ public class GloonDAO implements GloonDataInterface{
 	private static final GloonDAO DATA_ACCESS_LAYER=new GloonDAO();	
 	private GloonDatabase gloonDatabaseInstance=null;
 	private Datastore gloonDatastore=null;
+	private Algorithm scoreAlgorithm = new Algorithm();
 	private GloonDAO()
 	{
 	 
@@ -56,21 +67,7 @@ public class GloonDAO implements GloonDataInterface{
 	{				
 		gloonDatastore=gloonDatabaseInstance.gloonDatastoreInstance();
 		return gloonDatastore;
-	}
-
-	@Override
-	public List<Game> allGames(Datastore gloonDatastore) {
-		List<Game> games = gloonDatastore.find(Game.class).asList();
-		if(games.size()>0)
-		{
-			return games;
-		}
-		else
-		{
-			throw new RuntimeException("No games available"); 
-		}
-		
-	}
+	}	
 
 	/**
 	 * This method returns a List of hashTables or maps which is in the following format:
@@ -253,7 +250,7 @@ public class GloonDAO implements GloonDataInterface{
 				response.put("articleGame",article.getGame().getTitle());
 			}
 			response.put("articlePlatforms", Utility.titleList(article.getPlatforms()));
-			response.put("articleScore", article.getScore());
+			response.put("articleScore", article.getTotalScore());
 		}
 		return response;
 	}
@@ -261,8 +258,8 @@ public class GloonDAO implements GloonDataInterface{
 	
 	
 	@Override
-	public List<HashMap<String, Object>> getAllArticlesByKey(Datastore gloonDatastore, String key) {
-		List<Article> articles = getArticlesByKey(gloonDatastore, key);
+	public List<HashMap<String, Object>> getAllArticlesByKey(Datastore gloonDatastore, String key, String sortField) {
+		List<Article> articles = getArticlesByKey(gloonDatastore, key, sortField);
 		List<HashMap<String, Object>> articleLists = new ArrayList<>();
 		if(articles.size()>0)
 		{
@@ -283,7 +280,7 @@ public class GloonDAO implements GloonDataInterface{
 						response.put("articleGame",article.getGame().getTitle());
 					}
 					response.put("articlePlatforms", Utility.titleList(article.getPlatforms()));
-					response.put("articleScore", article.getScore());
+					response.put("articleScore", article.getTotalScore());
 					articleLists.add(response);
 				}
 				
@@ -308,6 +305,88 @@ public class GloonDAO implements GloonDataInterface{
 		return userMap;
 	}
 	
+	@Override
+	public void updateArticleCoolUncoolScore(Datastore gloonDatastore, String urlTitle, String type) {
+		
+		
+		UpdateOperations<Article> update=null;		
+		ObjectId _id =Utility.fetchIdFromTitle(urlTitle);
+		Query<Article> article= gloonDatastore.createQuery(Article.class).field(Mapper.ID_KEY).equal(_id);
+		Article articleInstance =article.get();		
+		if(AppConstants.COOL.equalsIgnoreCase(type))
+		{								
+			update=gloonDatastore.createUpdateOperations(Article.class).inc("coolScore");								
+		}
+		else
+		{			
+			update=gloonDatastore.createUpdateOperations(Article.class).inc("notCoolScore");								
+		}
+		gloonDatastore.update(article, update);
+		updateArticleWilsonScore(article, gloonDatastore, articleInstance.getCoolScore(), articleInstance.getNotCoolScore(), "coolnotcool");
+		
+	}
+	
+	
+	@Override
+	public void updateArticlePageHitCount(Datastore gloonDatastore, String urlTitle) {		
+		ObjectId _id =Utility.fetchIdFromTitle(urlTitle);
+		Query<Article> article= gloonDatastore.createQuery(Article.class).field(Mapper.ID_KEY).equal(_id);		
+		UpdateOperations<Article> update=gloonDatastore.createUpdateOperations(Article.class).inc("pageHitCount");
+		gloonDatastore.update(article, update);				
+		double articlePageHit = article.get().getPageHitCount();
+		double totalPageHits = getTotalPageHits();
+		updateArticleWilsonScore(article, gloonDatastore, articlePageHit, (totalPageHits-articlePageHit), "pagehit");			
+	}
+	
+	
+	/**
+	 * Get total page hits of All articles
+	 * 
+	 * @param articleInstance
+	 * @return
+	 */
+	public double getTotalPageHits()
+	{
+		double totalPageHits=0.0;
+	    Mongo instance = gloonDatabaseInstance.getMongoInstance();
+	    DB db = instance.getDB(AppConstants.DB_NAME);
+	    DBCollection articleCollection = db.getCollection("Article");	
+	    String mapFunction="function(){emit(\"total\",this.pageHitCount);};";
+	    String reduceFunction="function(key, values){return Array.sum(values);};";	    
+	    MapReduceOutput output = articleCollection.mapReduce(mapFunction, reduceFunction, null, MapReduceCommand.OutputType.INLINE,null);
+	    
+	    for(DBObject object: output.results())
+	    {	    	
+	    	totalPageHits=(double)object.get("value");
+	    }
+		return totalPageHits;
+	}
+	
+	/**
+	 * This method upates Article's wilson score based on cools and not cools
+	 * 
+	 * @param article
+	 * @param gloonDatastore
+	 * @param cools
+	 * @param uncools
+	 * @return
+	 */
+	private boolean updateArticleWilsonScore(Query<Article> article, Datastore gloonDatastore, double cools, double uncools, String type)
+	{	
+		UpdateOperations<Article> update=null;
+		if("coolnotcool".equalsIgnoreCase(type))
+		{
+			update = gloonDatastore.createUpdateOperations(Article.class).set("wilsonScore", scoreAlgorithm.wilsonScoreCalculator(cools, uncools));
+		}
+		else
+		{
+			update = gloonDatastore.createUpdateOperations(Article.class).set("pageHitScore", scoreAlgorithm.wilsonScoreCalculator(cools, uncools));
+		}
+	    
+	    gloonDatastore.update(article, update);
+		return true;
+	}
+		
 	/**
 	 * Get user based on username
 	 * 
@@ -327,19 +406,19 @@ public class GloonDAO implements GloonDataInterface{
 	 * @param key
 	 * @return
 	 */
-	private List<Article> getArticlesByKey(Datastore gloonDatastore, String key)
+	private List<Article> getArticlesByKey(Datastore gloonDatastore, String key, String sortField)
 	{		
 		if("all".equalsIgnoreCase(key))
-		{
-			return gloonDatastore.createQuery(Article.class).order("-creationDate").asList();
+		{			
+			return gloonDatastore.createQuery(Article.class).order("-"+sortField).asList();
 		}
 		if(AppConstants.REVIEW.equalsIgnoreCase(key)|| AppConstants.FEATURE.equalsIgnoreCase(key)|| AppConstants.NEWS.equalsIgnoreCase(key)||AppConstants.GLOONICLE.equalsIgnoreCase(key))
 		{
-			return gloonDatastore.createQuery(Article.class).filter("category", key).order("-creationDate").asList();
+			return gloonDatastore.createQuery(Article.class).filter("category", key).order("-"+sortField).asList();
 		}
 		else
 		{
-			return gloonDatastore.createQuery(Article.class).filter("author.username", key).order("-creationDate").asList();
+			return gloonDatastore.createQuery(Article.class).filter("author.username", key).order("-"+sortField).asList();
 		}
 		
 		
@@ -780,6 +859,10 @@ public class GloonDAO implements GloonDataInterface{
 		
 		return recent10Articles;
 	}
+
+	
+
+	
 
 	
 

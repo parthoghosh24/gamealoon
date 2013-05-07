@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.gamealoon.algorithm.Algorithm;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.models.Achievement;
 import com.gamealoon.models.Article;
@@ -898,7 +899,16 @@ public class GloonGlobal extends GlobalSettings {
 		}
 		
 		private void createArticles()
-		{				
+		{	
+			final GloonDAO daoInstance = GloonDAO.instantiateDAO();	
+			final Datastore gloonDatastore = daoInstance.initDatastore();
+			double totalPageHits = daoInstance.getTotalPageHits();
+			Algorithm algorithm = new Algorithm();	
+			double coolScore=0.0;
+			double notCoolScore=0.0;
+			double coolNotCoolWilsonScore = 0.0;
+			double pageCount=0.0;
+			double pageHitWilsonScore=0.0;
 			Set<Platform> platforms = new HashSet<>();
 			platforms.add(gloonDatastore.find(Platform.class, "title", "Playstation 3").get());
 			platforms.add(gloonDatastore.find(Platform.class, "title", "Xbox 360").get());
@@ -916,11 +926,21 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Review.setGame(maxPayne3);
 			maxPayne3Review.setFeaturedImagePath("articleFeaturedImage");
 			//maxPayne3Review.setInsertTime(Utility.convertDateToString(new Date()));
-			maxPayne3Review.setInsertTime("2012-05-16 22:05:59");
-			maxPayne3Review.setScore(0.56); //not game score, its article score			
-			maxPayne3Review.setPlatforms(platforms);
+			maxPayne3Review.setInsertTime("2012-05-16 22:05:59");						
+			maxPayne3Review.setPlatforms(platforms);						
+			coolScore=50;
+			notCoolScore=35;
+			maxPayne3Review.setCoolScore(coolScore);
+			maxPayne3Review.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			maxPayne3Review.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=500;
+			maxPayne3Review.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			maxPayne3Review.setPageHitWilsonScore(pageHitWilsonScore);
+			maxPayne3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
 			gloonDatastore.save(maxPayne3Review);
-			
 			
 			Article farCry3Review = new Article();
 			farCry3Review.setTitle("far cry 3 review");
@@ -933,9 +953,20 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3Review.setGame(farCry3);
 			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Review.setInsertTime("2012-12-15 09:30:00");
-			farCry3Review.setScore(0.78);
+			farCry3Review.setInsertTime("2012-12-15 09:30:00");			
 			farCry3Review.setPlatforms(platforms);
+			coolScore=60;
+			notCoolScore=29;
+			farCry3Review.setCoolScore(coolScore);
+			farCry3Review.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			farCry3Review.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=100;
+			farCry3Review.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			farCry3Review.setPageHitWilsonScore(pageHitWilsonScore);
+			farCry3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score												
 			gloonDatastore.save(farCry3Review);
 			
 			
@@ -954,9 +985,20 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview1.setGame(gloonDatastore.find(Game.class, "title", "Guacamelee!").get());
 			guacameleeReview1.setFeaturedImagePath("articleFeaturedImage");
 			//guacameleeReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			guacameleeReview1.setInsertTime("2013-04-10 09:00:00");
-			guacameleeReview1.setScore(0.80);
+			guacameleeReview1.setInsertTime("2013-04-10 09:00:00");			
 			guacameleeReview1.setPlatforms(guacameleePlatforms);
+			coolScore=10;
+			notCoolScore=4;
+			guacameleeReview1.setCoolScore(coolScore);
+			guacameleeReview1.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			guacameleeReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=50;
+			guacameleeReview1.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			guacameleeReview1.setPageHitWilsonScore(pageHitWilsonScore);
+			guacameleeReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score																							
 			gloonDatastore.save(guacameleeReview1);
 			
 			Article guacameleeReview2 = new Article();
@@ -968,9 +1010,20 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview2.setGame(gloonDatastore.find(Game.class, "title", "Guacamelee!").get());
 			guacameleeReview2.setFeaturedImagePath("articleFeaturedImage");
 			//guacameleeReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			guacameleeReview2.setInsertTime("2013-04-10 10:00:00");
-			guacameleeReview2.setScore(0.90);
+			guacameleeReview2.setInsertTime("2013-04-10 10:00:00");			
 			guacameleeReview2.setPlatforms(guacameleePlatforms);
+			coolScore=20;
+			notCoolScore=5;
+			guacameleeReview2.setCoolScore(coolScore);
+			guacameleeReview2.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			guacameleeReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=100;
+			guacameleeReview2.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			guacameleeReview2.setPageHitWilsonScore(pageHitWilsonScore);
+			guacameleeReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score																										
 			gloonDatastore.save(guacameleeReview2);
 			
 			Article guacameleeReview3 = new Article();
@@ -982,9 +1035,20 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview3.setGame(gloonDatastore.find(Game.class, "title", "Guacamelee!").get());
 			guacameleeReview3.setFeaturedImagePath("articleFeaturedImage");
 			//guacameleeReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			guacameleeReview3.setInsertTime("2013-04-10 11:00:00");
-			guacameleeReview3.setScore(0.91);
+			guacameleeReview3.setInsertTime("2013-04-10 11:00:00");			
 			guacameleeReview3.setPlatforms(guacameleePlatforms);
+			coolScore=20;
+			notCoolScore=5;
+			guacameleeReview3.setCoolScore(coolScore);
+			guacameleeReview3.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			guacameleeReview3.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=100;
+			guacameleeReview3.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			guacameleeReview3.setPageHitWilsonScore(pageHitWilsonScore);
+			guacameleeReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score				
 			gloonDatastore.save(guacameleeReview3);
 			
 			Article ageOfWushuReview1 = new Article();
@@ -996,9 +1060,20 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview1.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
 			ageOfWushuReview1.setFeaturedImagePath("articleFeaturedImage");
 			//ageOfWushuReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			ageOfWushuReview1.setInsertTime("2013-04-11 09:00:00");
-			ageOfWushuReview1.setScore(0.80);
+			ageOfWushuReview1.setInsertTime("2013-04-11 09:00:00");			
 			ageOfWushuReview1.setPlatforms(platforms);
+			coolScore=10;
+			notCoolScore=5;
+			ageOfWushuReview1.setCoolScore(coolScore);
+			ageOfWushuReview1.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			ageOfWushuReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=80;
+			ageOfWushuReview1.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			ageOfWushuReview1.setPageHitWilsonScore(pageHitWilsonScore);
+			ageOfWushuReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score		
 			gloonDatastore.save(ageOfWushuReview1);
 			
 			Article ageOfWushuReview2 = new Article();
@@ -1010,9 +1085,20 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview2.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
 			ageOfWushuReview2.setFeaturedImagePath("articleFeaturedImage");
 			//ageOfWushuReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			ageOfWushuReview2.setInsertTime("2013-04-11 12:20:00");
-			ageOfWushuReview2.setScore(0.85);
+			ageOfWushuReview2.setInsertTime("2013-04-11 12:20:00");			
 			ageOfWushuReview2.setPlatforms(platforms);
+			coolScore=90;
+			notCoolScore=15;
+			ageOfWushuReview2.setCoolScore(coolScore);
+			ageOfWushuReview2.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			ageOfWushuReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=150;
+			ageOfWushuReview2.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			ageOfWushuReview2.setPageHitWilsonScore(pageHitWilsonScore);
+			ageOfWushuReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(ageOfWushuReview2);
 			
 			
@@ -1029,9 +1115,20 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadnessReview1.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
 			motocrossMadnessReview1.setFeaturedImagePath("articleFeaturedImage");
 			//motocrossMadnessReview1.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			motocrossMadnessReview1.setInsertTime("2013-04-11 00:30:00");
-			motocrossMadnessReview1.setScore(0.78);
+			motocrossMadnessReview1.setInsertTime("2013-04-11 00:30:00");			
 			motocrossMadnessReview1.setPlatforms(motocrossPlatforms);
+			coolScore=150;
+			notCoolScore=140;
+			motocrossMadnessReview1.setCoolScore(coolScore);
+			motocrossMadnessReview1.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			motocrossMadnessReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=200;
+			motocrossMadnessReview1.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			motocrossMadnessReview1.setPageHitWilsonScore(pageHitWilsonScore);
+			motocrossMadnessReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(motocrossMadnessReview1);
 			
 			Article motocrossMadnessReview2 = new Article();
@@ -1043,9 +1140,20 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadnessReview2.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
 			motocrossMadnessReview2.setFeaturedImagePath("articleFeaturedImage");
 			//motocrossMadnessReview2.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			motocrossMadnessReview2.setInsertTime("2013-04-11 09:30:00");
-			motocrossMadnessReview2.setScore(0.70);						
+			motocrossMadnessReview2.setInsertTime("2013-04-11 09:30:00");					
 			motocrossMadnessReview2.setPlatforms(motocrossPlatforms);
+			coolScore=100;
+			notCoolScore=95;
+			motocrossMadnessReview2.setCoolScore(coolScore);
+			motocrossMadnessReview2.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			motocrossMadnessReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=178;
+			motocrossMadnessReview2.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			motocrossMadnessReview2.setPageHitWilsonScore(pageHitWilsonScore);
+			motocrossMadnessReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(motocrossMadnessReview2);
 			
 			Article terrariaReview1 = new Article();
@@ -1057,9 +1165,20 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview1.setGame(gloonDatastore.find(Game.class, "title", "Terraria").get());
 			terrariaReview1.setFeaturedImagePath("articleFeaturedImage");
 			//terraria.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			terrariaReview1.setInsertTime("2013-03-28 09:00:00");
-			terrariaReview1.setScore(0.78);
+			terrariaReview1.setInsertTime("2013-03-28 09:00:00");			
 			terrariaReview1.setPlatforms(platforms);
+			coolScore=300;
+			notCoolScore=17;
+			terrariaReview1.setCoolScore(coolScore);
+			terrariaReview1.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			terrariaReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=200;
+			terrariaReview1.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			terrariaReview1.setPageHitWilsonScore(pageHitWilsonScore);
+			terrariaReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(terrariaReview1);
 			
 			Article terrariaReview2= new Article();
@@ -1071,9 +1190,20 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview2.setGame(gloonDatastore.find(Game.class, "title", "Terraria").get());
 			terrariaReview2.setFeaturedImagePath("articleFeaturedImage");
 			//terraria.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			terrariaReview2.setInsertTime("2013-03-28 10:00:00");
-			terrariaReview2.setScore(0.90);
+			terrariaReview2.setInsertTime("2013-03-28 10:00:00");			
 			terrariaReview2.setPlatforms(platforms);
+			coolScore=565;
+			notCoolScore=20;
+			terrariaReview2.setCoolScore(coolScore);
+			terrariaReview2.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			terrariaReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=350;
+			terrariaReview2.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			terrariaReview2.setPageHitWilsonScore(pageHitWilsonScore);
+			terrariaReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(terrariaReview2);
 			
 			Article terrariaReview3= new Article();
@@ -1085,9 +1215,20 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview3.setGame(gloonDatastore.find(Game.class, "title", "Terraria").get());
 			terrariaReview3.setFeaturedImagePath("articleFeaturedImage");
 			//terraria.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			terrariaReview3.setInsertTime("2013-03-28 08:00:00");
-			terrariaReview3.setScore(0.87);
+			terrariaReview3.setInsertTime("2013-03-28 08:00:00");			
 			terrariaReview3.setPlatforms(platforms);
+			coolScore=400;
+			notCoolScore=75;
+			terrariaReview3.setCoolScore(coolScore);
+			terrariaReview3.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			terrariaReview3.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=258;
+			terrariaReview3.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			terrariaReview3.setPageHitWilsonScore(pageHitWilsonScore);
+			terrariaReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(terrariaReview3);
 			
 			Article defianceReview1 = new Article();
@@ -1099,9 +1240,20 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview1.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceReview1.setFeaturedImagePath("articleFeaturedImage");
 			//defianceReview1.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			defianceReview1.setInsertTime("2013-04-03 00:30:00");
-			defianceReview1.setScore(0.95);
+			defianceReview1.setInsertTime("2013-04-03 00:30:00");			
 			defianceReview1.setPlatforms(platforms);
+			coolScore=900;
+			notCoolScore=100;
+			defianceReview1.setCoolScore(coolScore);
+			defianceReview1.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			defianceReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1010;
+			defianceReview1.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			defianceReview1.setPageHitWilsonScore(pageHitWilsonScore);
+			defianceReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceReview1);
 			
 			Article defianceReview2 = new Article();
@@ -1113,9 +1265,20 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview2.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceReview2.setFeaturedImagePath("articleFeaturedImage");
 			//defianceReview2.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			defianceReview2.setInsertTime("2013-04-03 01:30:00");
-			defianceReview2.setScore(0.90);
+			defianceReview2.setInsertTime("2013-04-03 01:30:00");			
 			defianceReview2.setPlatforms(platforms);
+			coolScore=800;
+			notCoolScore=90;
+			defianceReview2.setCoolScore(coolScore);
+			defianceReview2.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			defianceReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=978;
+			defianceReview2.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			defianceReview2.setPageHitWilsonScore(pageHitWilsonScore);
+			defianceReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceReview2);
 			
 			Article defianceReview3 = new Article();
@@ -1127,9 +1290,20 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview3.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceReview3.setFeaturedImagePath("articleFeaturedImage");
 			//defianceReview3.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			defianceReview3.setInsertTime("2013-04-03 01:30:00");
-			defianceReview3.setScore(0.91);
+			defianceReview3.setInsertTime("2013-04-03 01:30:00");			
 			defianceReview3.setPlatforms(platforms);
+			coolScore=858;
+			notCoolScore=103;
+			defianceReview3.setCoolScore(coolScore);
+			defianceReview3.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			defianceReview3.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1024;
+			defianceReview3.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			defianceReview3.setPageHitWilsonScore(pageHitWilsonScore);
+			defianceReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceReview3);
 			
 			Article maxPayne3Feature = new Article();
@@ -1141,9 +1315,20 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Feature.setGame(gloonDatastore.find(Game.class, "title", "Max Payne 3").get());
 			maxPayne3Feature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			maxPayne3Feature.setInsertTime("2013-04-13 11:05:00");
-			maxPayne3Feature.setScore(0.80);
+			maxPayne3Feature.setInsertTime("2013-04-13 11:05:00");			
 			maxPayne3Feature.setPlatforms(platforms);
+			coolScore=654;
+			notCoolScore=103;
+			maxPayne3Feature.setCoolScore(coolScore);
+			maxPayne3Feature.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			maxPayne3Feature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=951;
+			maxPayne3Feature.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			maxPayne3Feature.setPageHitWilsonScore(pageHitWilsonScore);
+			maxPayne3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(maxPayne3Feature);
 			
 			Article farCry3Feature = new Article();
@@ -1155,9 +1340,20 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3Feature.setGame(gloonDatastore.find(Game.class, "title", "Far Cry 3").get());
 			farCry3Feature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			farCry3Feature.setInsertTime("2013-04-11 15:00:00");
-			farCry3Feature.setScore(0.78);
+			farCry3Feature.setInsertTime("2013-04-11 15:00:00");			
 			farCry3Feature.setPlatforms(platforms);
+			coolScore=755;
+			notCoolScore=16;
+			farCry3Feature.setCoolScore(coolScore);
+			farCry3Feature.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			farCry3Feature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=800;
+			farCry3Feature.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			farCry3Feature.setPageHitWilsonScore(pageHitWilsonScore);
+			farCry3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(farCry3Feature);
 			
 			Article mgsRisingFeature = new Article();
@@ -1169,9 +1365,20 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRisingFeature.setGame(gloonDatastore.find(Game.class, "title", "Metal Gear Rising: Revengence").get());
 			mgsRisingFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			mgsRisingFeature.setInsertTime("2013-03-29 15:45:00");
-			mgsRisingFeature.setScore(0.78);
+			mgsRisingFeature.setInsertTime("2013-03-29 15:45:00");			
 			mgsRisingFeature.setPlatforms(platforms);
+			coolScore=900;
+			notCoolScore=25;
+			mgsRisingFeature.setCoolScore(coolScore);
+			mgsRisingFeature.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			mgsRisingFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=929;
+			mgsRisingFeature.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			mgsRisingFeature.setPageHitWilsonScore(pageHitWilsonScore);
+			mgsRisingFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(mgsRisingFeature);
 			
 			Article defianceFeature = new Article();
@@ -1183,9 +1390,20 @@ public class GloonGlobal extends GlobalSettings {
 			defianceFeature.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			defianceFeature.setInsertTime("2013-03-30 16:45:00");
-			defianceFeature.setScore(0.78);
+			defianceFeature.setInsertTime("2013-03-30 16:45:00");			
 			defianceFeature.setPlatforms(platforms);
+			coolScore=900;
+			notCoolScore=25;
+			defianceFeature.setCoolScore(coolScore);
+			defianceFeature.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			defianceFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=929;
+			defianceFeature.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			defianceFeature.setPageHitWilsonScore(pageHitWilsonScore);
+			defianceFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceFeature);
 			
 			Article motocrossFeature = new Article();
@@ -1197,9 +1415,20 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossFeature.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
 			motocrossFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			motocrossFeature.setInsertTime("2013-04-10 15:45:00");
-			motocrossFeature.setScore(0.78);
+			motocrossFeature.setInsertTime("2013-04-10 15:45:00");			
 			motocrossFeature.setPlatforms(platforms);
+			coolScore=827;
+			notCoolScore=25;
+			motocrossFeature.setCoolScore(coolScore);
+			motocrossFeature.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			motocrossFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1000;
+			motocrossFeature.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			motocrossFeature.setPageHitWilsonScore(pageHitWilsonScore);
+			motocrossFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(motocrossFeature);
 			
 			Article ageOfWushuFeature = new Article();
@@ -1211,9 +1440,20 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuFeature.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
 			ageOfWushuFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			ageOfWushuFeature.setInsertTime("2013-04-14 15:45:00");
-			ageOfWushuFeature.setScore(0.78);
+			ageOfWushuFeature.setInsertTime("2013-04-14 15:45:00");			
 			ageOfWushuFeature.setPlatforms(platforms);
+			coolScore=830;
+			notCoolScore=29;
+			ageOfWushuFeature.setCoolScore(coolScore);
+			ageOfWushuFeature.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			ageOfWushuFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1002;
+			ageOfWushuFeature.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			ageOfWushuFeature.setPageHitWilsonScore(pageHitWilsonScore);
+			ageOfWushuFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(ageOfWushuFeature);
 			
 			Article cricketGloonicle = new Article();
@@ -1224,9 +1464,20 @@ public class GloonGlobal extends GlobalSettings {
 			cricketGloonicle.setCreationDate("2013-04-15 09:45:00");						
 			cricketGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			cricketGloonicle.setInsertTime("2013-04-15 09:45:00");
-			cricketGloonicle.setScore(0.90);
+			cricketGloonicle.setInsertTime("2013-04-15 09:45:00");			
 			cricketGloonicle.setPlatforms(platforms);
+			coolScore=910;
+			notCoolScore=20;
+			cricketGloonicle.setCoolScore(coolScore);
+			cricketGloonicle.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			cricketGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1000;
+			cricketGloonicle.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			cricketGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
+			cricketGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(cricketGloonicle);
 			
 			Article freemiumGloonicle = new Article();
@@ -1237,9 +1488,20 @@ public class GloonGlobal extends GlobalSettings {
 			freemiumGloonicle.setCreationDate("2013-01-15 10:45:00");						
 			freemiumGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			freemiumGloonicle.setInsertTime("2013-01-15 10:45:00");
-			freemiumGloonicle.setScore(0.60);
+			freemiumGloonicle.setInsertTime("2013-01-15 10:45:00");			
 			freemiumGloonicle.setPlatforms(platforms);
+			coolScore=877;
+			notCoolScore=356;
+			freemiumGloonicle.setCoolScore(coolScore);
+			freemiumGloonicle.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			freemiumGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1500;
+			freemiumGloonicle.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			freemiumGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
+			freemiumGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(freemiumGloonicle);
 			
 			Article top10horrorGloonicle = new Article();
@@ -1250,9 +1512,20 @@ public class GloonGlobal extends GlobalSettings {
 			top10horrorGloonicle.setCreationDate("2013-04-15 21:45:00");						
 			top10horrorGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			top10horrorGloonicle.setInsertTime("2013-04-15 21:45:00");
-			top10horrorGloonicle.setScore(0.80);
+			top10horrorGloonicle.setInsertTime("2013-04-15 21:45:00");			
 			top10horrorGloonicle.setPlatforms(platforms);
+			coolScore=800;
+			notCoolScore=25;
+			top10horrorGloonicle.setCoolScore(coolScore);
+			top10horrorGloonicle.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			top10horrorGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1000;
+			top10horrorGloonicle.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			top10horrorGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
+			top10horrorGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(top10horrorGloonicle);
 			
 			Article top10ActionGloonicle = new Article();
@@ -1263,9 +1536,20 @@ public class GloonGlobal extends GlobalSettings {
 			top10ActionGloonicle.setCreationDate("2013-01-13 20:02:00");						
 			top10ActionGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			top10ActionGloonicle.setInsertTime("2013-01-13 20:02:00");
-			top10ActionGloonicle.setScore(0.75);
+			top10ActionGloonicle.setInsertTime("2013-01-13 20:02:00");			
 			top10ActionGloonicle.setPlatforms(platforms);
+			coolScore=900;
+			notCoolScore=25;
+			top10ActionGloonicle.setCoolScore(coolScore);
+			top10ActionGloonicle.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			top10ActionGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1500;
+			top10ActionGloonicle.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			top10ActionGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
+			top10ActionGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(top10ActionGloonicle);
 			
 			Article myWeeklyShow = new Article();
@@ -1276,9 +1560,20 @@ public class GloonGlobal extends GlobalSettings {
 			myWeeklyShow.setCreationDate("2013-01-14 00:02:00");						
 			myWeeklyShow.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			myWeeklyShow.setInsertTime("2013-01-14 00:02:00");
-			myWeeklyShow.setScore(0.90);
+			myWeeklyShow.setInsertTime("2013-01-14 00:02:00");			
 			myWeeklyShow.setPlatforms(platforms);
+			coolScore=1500;
+			notCoolScore=25;
+			myWeeklyShow.setCoolScore(coolScore);
+			myWeeklyShow.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			myWeeklyShow.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=4000;
+			myWeeklyShow.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			myWeeklyShow.setPageHitWilsonScore(pageHitWilsonScore);
+			myWeeklyShow.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(myWeeklyShow);
 			
 			Article eaDisasterNews = new Article();
@@ -1289,9 +1584,20 @@ public class GloonGlobal extends GlobalSettings {
 			eaDisasterNews.setCreationDate("2013-01-12 10:02:00");						
 			eaDisasterNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			eaDisasterNews.setInsertTime("2013-01-12 10:02:00");
-			eaDisasterNews.setScore(0.80);
+			eaDisasterNews.setInsertTime("2013-01-12 10:02:00");			
 			eaDisasterNews.setPlatforms(platforms);
+			coolScore=800;
+			notCoolScore=56;
+			eaDisasterNews.setCoolScore(coolScore);
+			eaDisasterNews.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			eaDisasterNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=1000;
+			eaDisasterNews.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			eaDisasterNews.setPageHitWilsonScore(pageHitWilsonScore);
+			eaDisasterNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(eaDisasterNews);
 			
 			Article ps4News = new Article();
@@ -1302,9 +1608,20 @@ public class GloonGlobal extends GlobalSettings {
 			ps4News.setCreationDate("2013-04-02 10:02:00");						
 			ps4News.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			ps4News.setInsertTime("2013-04-02 10:02:00");
-			ps4News.setScore(0.95);
+			ps4News.setInsertTime("2013-04-02 10:02:00");			
 			ps4News.setPlatforms(platforms);
+			coolScore=870;
+			notCoolScore=10;
+			ps4News.setCoolScore(coolScore);
+			ps4News.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			ps4News.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=5600;
+			ps4News.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			ps4News.setPageHitWilsonScore(pageHitWilsonScore);
+			ps4News.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(ps4News);
 			
 			Article warnerBrothersNews = new Article();
@@ -1315,9 +1632,20 @@ public class GloonGlobal extends GlobalSettings {
 			warnerBrothersNews.setCreationDate("2013-04-14 10:02:00");						
 			warnerBrothersNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			warnerBrothersNews.setInsertTime("2013-04-14 10:02:00");
-			warnerBrothersNews.setScore(0.80);
+			warnerBrothersNews.setInsertTime("2013-04-14 10:02:00");			
 			warnerBrothersNews.setPlatforms(platforms);
+			coolScore=500;
+			notCoolScore=10;
+			warnerBrothersNews.setCoolScore(coolScore);
+			warnerBrothersNews.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			warnerBrothersNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=5000;
+			warnerBrothersNews.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			warnerBrothersNews.setPageHitWilsonScore(pageHitWilsonScore);
+			warnerBrothersNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(warnerBrothersNews);
 			
 			Article batmanOriginsNews = new Article();
@@ -1328,9 +1656,20 @@ public class GloonGlobal extends GlobalSettings {
 			batmanOriginsNews.setCreationDate("2013-04-10 10:02:00");						
 			batmanOriginsNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			batmanOriginsNews.setInsertTime("2013-04-10 10:02:00");
-			batmanOriginsNews.setScore(0.85);
+			batmanOriginsNews.setInsertTime("2013-04-10 10:02:00");			
 			batmanOriginsNews.setPlatforms(platforms);
+			coolScore=1678;
+			notCoolScore=12;
+			batmanOriginsNews.setCoolScore(coolScore);
+			batmanOriginsNews.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			batmanOriginsNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=7985;
+			batmanOriginsNews.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			batmanOriginsNews.setPageHitWilsonScore(pageHitWilsonScore);
+			batmanOriginsNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(batmanOriginsNews);
 			
 			Article supermanGameNews = new Article();
@@ -1341,9 +1680,20 @@ public class GloonGlobal extends GlobalSettings {
 			supermanGameNews.setCreationDate("2013-04-20 10:02:00");						
 			supermanGameNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			supermanGameNews.setInsertTime("2013-04-20 10:02:00");
-			supermanGameNews.setScore(0.90);
+			supermanGameNews.setInsertTime("2013-04-20 10:02:00");			
 			supermanGameNews.setPlatforms(platforms);
+			coolScore=2526;
+			notCoolScore=12;
+			supermanGameNews.setCoolScore(coolScore);
+			supermanGameNews.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			supermanGameNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=8995;
+			supermanGameNews.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			supermanGameNews.setPageHitWilsonScore(pageHitWilsonScore);
+			supermanGameNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(supermanGameNews);
 			
 			Article newPrinceOfPersiaGame = new Article();
@@ -1354,9 +1704,20 @@ public class GloonGlobal extends GlobalSettings {
 			newPrinceOfPersiaGame.setCreationDate(Utility.convertDateToString(new Date()));			
 			newPrinceOfPersiaGame.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
-			newPrinceOfPersiaGame.setInsertTime(Utility.convertDateToString(new Date()));
-			newPrinceOfPersiaGame.setScore(0.80);
+			newPrinceOfPersiaGame.setInsertTime(Utility.convertDateToString(new Date()));			
 			newPrinceOfPersiaGame.setPlatforms(platforms);
+			coolScore=1026;
+			notCoolScore=17;
+			newPrinceOfPersiaGame.setCoolScore(coolScore);
+			newPrinceOfPersiaGame.setNotCoolScore(notCoolScore);
+			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			newPrinceOfPersiaGame.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
+			pageCount=9656;
+			newPrinceOfPersiaGame.setPageHitCount(pageCount);
+			totalPageHits = daoInstance.getTotalPageHits();
+			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			newPrinceOfPersiaGame.setPageHitWilsonScore(pageHitWilsonScore);
+			newPrinceOfPersiaGame.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(newPrinceOfPersiaGame);
 			
 			/*Article farCry3Review = new Article();

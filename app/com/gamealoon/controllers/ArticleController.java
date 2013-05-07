@@ -21,10 +21,10 @@ public class ArticleController extends Controller{
 		return ok(toJson(articleMap));
 	}
 	
-	public static Result getAllArticlesByKey(String key)
+	public static Result getAllArticlesByKey(String key, String sortField)
 	{		
 		
-		List<HashMap<String, Object>> articleListMap  = getArticlesByKey(gloonDataStore, key);		
+		List<HashMap<String, Object>> articleListMap  = getArticlesByKey(gloonDataStore, key, sortField);		
 		//TODO add href element to json
 		return ok(toJson(articleListMap));
 	}
@@ -51,9 +51,9 @@ public class ArticleController extends Controller{
 	 * @param key
 	 * @return
 	 */	
-	private static List<HashMap<String, Object>> getArticlesByKey(Datastore gloonDatastore, String key)
+	private static List<HashMap<String, Object>> getArticlesByKey(Datastore gloonDatastore, String key, String sortField)
 	{
-		return gloonDaoInstance.getAllArticlesByKey(gloonDatastore, key);
+		return gloonDaoInstance.getAllArticlesByKey(gloonDatastore, key, sortField);
 	}
 		
 }

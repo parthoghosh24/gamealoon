@@ -32,10 +32,15 @@ public class Article {
 	private String creationDate;
 	private String insertTime;
 	private String updateTime;	
-	private double wilsonScore; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
-	private String featuredImagePath;
 	private double coolScore;
 	private double notCoolScore;
+	private double coolNotCoolwilsonScore; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
+	private double pageHitCount; //Count of page hit
+	private double pageHitWilsonScore;	
+	private double commentScore;
+	private double totalScore; //sum of wilson+pagehit+comment
+	private String featuredImagePath;
+	
 	@Embedded
 	private Set<Platform> platforms = new HashSet<>();
 	
@@ -175,17 +180,17 @@ public class Article {
 	}
 
 	/**
-	 * @return the score
+	 * @return the wilson score for cool/not cool
 	 */
-	public double getScore() {
-		return wilsonScore;
+	public double getCoolNotCoolwilsonScore() {
+		return coolNotCoolwilsonScore;
 	}
 
 	/**
-	 * @param score the score to set
+	 * @param coolNotCoolwilsonScore the score for cool/not cool to set
 	 */
-	public void setScore(double score) {
-		this.wilsonScore = score;
+	public void setCoolNotCoolwilsonScore(double coolNotCoolwilsonScore) {
+		this.coolNotCoolwilsonScore = coolNotCoolwilsonScore;
 	}
 
 	/**
@@ -242,6 +247,62 @@ public class Article {
 	 */
 	public void setNotCoolScore(double notCoolScore) {
 		this.notCoolScore = notCoolScore;
+	}
+
+	/**
+	 * @return the pageHitScore
+	 */
+	public double getPageHitWilsonScore() {
+		return pageHitWilsonScore;
+	}
+
+	/**
+	 * @param pageHitWilsonScore the pageHitScore to set
+	 */
+	public void setPageHitWilsonScore(double pageHitWilsonScore) {
+		this.pageHitWilsonScore = pageHitWilsonScore;
+	}
+
+	/**
+	 * @return the commentScore
+	 */
+	public double getCommentScore() {
+		return commentScore;
+	}
+
+	/**
+	 * @param commentScore the commentScore to set
+	 */
+	public void setCommentScore(double commentScore) {
+		this.commentScore = commentScore;
+	}
+
+	/**
+	 * @return the totalScore
+	 */
+	public double getTotalScore() {
+		return totalScore;
+	}
+
+	/**
+	 * @param totalScore the totalScore to set
+	 */
+	public void setTotalScore(double totalScore) {
+		this.totalScore = totalScore;
+	}
+
+	/**
+	 * @return the pageviews
+	 */
+	public double getPageHitCount() {
+		return pageHitCount;
+	}
+
+	/**
+	 * @param pageviews the pageviews to set
+	 */
+	public void setPageHitCount(double pageHitCount) {
+		this.pageHitCount = pageHitCount;
 	}
 
 

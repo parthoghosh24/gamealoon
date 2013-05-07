@@ -24,13 +24,13 @@ public class GloonDatabase {
 
 	private static final GloonDatabase INSTANCE =new GloonDatabase();	
 	private  Datastore gloonDatastoreInstance =null;
-	
+	private Mongo result = null;
 	private GloonDatabase()
 	{
 		String host = ConfigFactory.load().getString("mongo.host"); 
 		int port = (int) Long.parseLong(ConfigFactory.load().getString("mongo.port"));
 		try {			
-			Mongo result = new Mongo(host,port);
+			result = new Mongo(host,port);
 			Morphia gloonMorphiaInstance = new Morphia();
 			gloonMorphiaInstance.map(User.class).map(Article.class).map(Game.class).map(Platform.class);
 			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME);
@@ -51,4 +51,8 @@ public class GloonDatabase {
 		return gloonDatastoreInstance;
 	}
 	
+	public Mongo getMongoInstance()
+	{
+		return result;
+	}
 }
