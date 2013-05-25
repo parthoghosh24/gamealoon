@@ -2,9 +2,7 @@ package com.gamealoon.controllers;
 
 import java.util.HashMap;
 import java.util.List;
-
 import com.gamealoon.database.GloonDAO;
-import com.gamealoon.views.html.platforms.platformindex;
 import com.google.code.morphia.Datastore;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -22,9 +20,6 @@ public class PlatformController extends Controller {
 	static final GloonDAO gloonDaoInstance = GloonDAO.instantiateDAO();
 	static final Datastore gloonDatastore = gloonDaoInstance.initDatastore();
 
-	public static Result index() {
-		return ok(platformindex.render());
-	}
 
 	  public static Result checkPlatformState(String platform)
 	   {

@@ -1,0 +1,229 @@
+package com.gamealoon.algorithm;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Stack;
+
+/**
+ * 
+ * @author Partho
+ * 
+ * First version of Gamealoon Search engine. Goal is to build a basic search engine which returns a list of urls against a keyword requested.
+ * The flow of the search engine is as follows:
+ * -> Crawl website
+ * -> build index
+ * -> perform lookups on the index
+ *
+ */
+public class Search {
+	HashMap<String, ArrayList<String>> index;
+	ArrayList<String> tokens;
+	String seed;
+	public Search() {
+		index = new HashMap<>();
+		tokens= new ArrayList<>();
+		seed ="";
+	}
+	
+	//inits and refreshes the index
+	public void initAndRefresh(String seed) throws MalformedURLException, IOException
+	{
+		this.seed=seed;
+		index= crawlSite(seed);
+	}
+	
+	private void union(Stack<String> first, ArrayList<String >second)
+	{
+		for(int index=0; index<second.size(); ++index)
+		{
+			if(!first.contains(second.get(index)))
+			{
+				first.push(second.get(index));
+			}
+		}
+	}
+
+	/**
+	 * Crawler for Gamealoon Searchengine. Algorithm for the crawler is as follows:
+	 * -> Maintain two stacks called Crawled(to keep all the crawled links of the site) and toCrawl(to maintain what to crawl)
+	 * -> Init toCrawl with the seed/homepage link/route
+	 * -> loop until toCrawl is not empty:
+	 * ->-> pop the link from TOS of toCrawl so that this link can be Crawled.
+	 * ->-> if the popped link is not crawled,i.e, not in crawled stack, 
+	 * ->->->-> get content from the link
+	 * ->->->-> populate index with content
+	 * ->->->-> do a union of toCrawl with all links extracted from the link so that toCrawl is populated with new unique links
+	 * ->->->-> push the crawled link to Crawled stack
+	 * @param seedUrl
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	private HashMap<String, ArrayList<String>> crawlSite(String seedUrl) throws MalformedURLException, IOException
+	{		
+		Stack<String> crawled=new Stack<>();
+		Stack<String> toCrawl = new Stack<>();
+		toCrawl.push(seedUrl);
+		while(!toCrawl.isEmpty())
+		{
+			String link = toCrawl.pop();
+			if(!link.equalsIgnoreCase(seedUrl))
+			{
+				link=(!link.startsWith("/"))?(seedUrl+"/"+link):(seedUrl+link);
+				if(!link.startsWith("/"))
+				{
+					link=seedUrl+"/"+link;
+				}
+				else
+				{
+					link=seedUrl+link;
+				}
+			}
+			
+			if(!crawled.contains(link))
+			{
+				String content = getPage(link);
+				addPageToIndex(index,link,content);
+				union(toCrawl, getAllLinksFromPage(content));
+				crawled.push(link);
+			}
+		}
+		
+		
+		return index;
+	} 
+	
+	/**
+	 * Lookup method for looking up keyword in index 
+	 * 
+	 * @param keyword
+	 * @return
+	 * @throws IllegalAccessException
+	 */
+	public ArrayList<String> lookup(String keyword) throws IllegalAccessException
+	{
+		return lookup(index, keyword);
+	}
+	
+	private ArrayList<String> lookup(HashMap<String, ArrayList<String>> index, String keyword) throws IllegalAccessException
+	{
+		if(index.containsKey(keyword))
+		{
+			return index.get(keyword);
+		}
+		else
+		{
+			throw new IllegalAccessException("Keyword not found");
+		}
+	}
+	
+	/**
+	 * Fetch each word from content and make a list out of it so that we can store it in index along with link
+	 * 
+	 * @param index
+	 * @param link
+	 * @param content
+	 */
+	private void addPageToIndex(HashMap<String, ArrayList<String>> index, String link, String content)
+	{
+		String[] wordList = content.split("[^A-Za-z0-9]+");
+		
+		for(String word: wordList)
+		{
+			addToIndex(index, word, link);
+		}
+	}
+	
+	/**
+	 * This method actually add the <Keyword, List<URL>> to index
+	 * 
+	 * @param index
+	 * @param keyword
+	 * @param url
+	 */
+	private void addToIndex(HashMap<String, ArrayList<String>> index, String keyword, String url)
+	{
+		ArrayList<String> urls=null;
+		if(!index.containsKey(keyword))
+		{
+			urls= new ArrayList<>();					
+		}
+		else
+		{
+			urls=index.get(keyword);						
+		}
+		urls.add(url);
+		index.put(keyword, urls);
+	}
+	
+	private ArrayList<String> getAllLinksFromPage(String page)
+	{
+		ArrayList<String> links = new ArrayList<>();
+		int startIndex=page.indexOf("<a");		
+		
+		while(startIndex!=-1)
+		{
+			int hrefIndex= page.indexOf("href=\"", startIndex);			
+			int endIndex=page.indexOf('"',hrefIndex+6);
+			String link =page.substring(hrefIndex+6, endIndex);			
+			links.add(link);
+			startIndex=page.indexOf("<a", endIndex);			
+		}
+		return links;
+	}
+	
+	public String getPage(String link) throws MalformedURLException,IOException
+	{
+		String output="";		
+		URL url = new URL(link);		
+		HttpURLConnection  urlConn = (HttpURLConnection) url.openConnection();
+		BufferedReader read = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+		String line="";
+			
+		while(((line=read.readLine())!=null)){
+				output+=line;
+				output+="\n";
+		}		
+		output = output.substring(output.indexOf("<body>")+6, output.indexOf("</body>"));
+		return output;
+				
+	}
+	
+	public static void main(String[] args)
+	{
+		Search search = new Search();
+		try
+		{			
+			search.initAndRefresh("http://localhost:8080");
+			try {
+				String[] keywords={"prince","Superman", "ps3"};
+				for(String keyword:keywords)
+				{
+					
+					System.out.println(search.lookup(keyword));
+				}
+				
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+		
+		}catch(MalformedURLException ex)
+		{
+			System.out.println(ex);
+		}
+		catch(IOException ie)
+		{
+			System.out.println(ie);
+		}
+	}
+	
+
+}

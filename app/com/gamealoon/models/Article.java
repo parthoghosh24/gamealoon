@@ -28,6 +28,7 @@ public class Article {
 	@Id
 	private ObjectId id;	
 	private String title;	
+	private String subtitle;
 	private String body;
 	private String creationDate;
 	private String insertTime;
@@ -73,6 +74,21 @@ public class Article {
 		this.title = title;
 	}
 
+	/**
+	 * @return the subtitle
+	 */
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+	/**
+	 * @param subtitle the subtitle to set
+	 */
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
+	}
+	
+	
 	/**
 	 * @return the body
 	 */
@@ -304,6 +320,8 @@ public class Article {
 	public void setPageHitCount(double pageHitCount) {
 		this.pageHitCount = pageHitCount;
 	}
+
+	
 
 
 

@@ -38,7 +38,7 @@ public class Game{
 	private String publisher;
 	private String developer;
 	private String genere;
-	private double score; //This will be a calculated value. Need to work on the formula to device the score. Normal distribution might help.
+	private double score; //This is review score.
 	
 	
 	@Embedded

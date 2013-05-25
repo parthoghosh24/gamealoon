@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.gamealoon.algorithm.Algorithm;
+import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
@@ -39,7 +39,7 @@ public class GloonDAO implements GloonDataInterface{
 	private static final GloonDAO DATA_ACCESS_LAYER=new GloonDAO();	
 	private GloonDatabase gloonDatabaseInstance=null;
 	private Datastore gloonDatastore=null;
-	private Algorithm scoreAlgorithm = new Algorithm();
+	private RankAlgorithm scoreAlgorithm = new RankAlgorithm();
 	private GloonDAO()
 	{
 	 

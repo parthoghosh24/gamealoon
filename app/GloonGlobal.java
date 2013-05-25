@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.gamealoon.algorithm.Algorithm;
+import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.models.Achievement;
 import com.gamealoon.models.Article;
@@ -903,7 +903,7 @@ public class GloonGlobal extends GlobalSettings {
 			final GloonDAO daoInstance = GloonDAO.instantiateDAO();	
 			final Datastore gloonDatastore = daoInstance.initDatastore();
 			double totalPageHits = daoInstance.getTotalPageHits();
-			Algorithm algorithm = new Algorithm();	
+			RankAlgorithm rankAlgorithm = new RankAlgorithm();	
 			double coolScore=0.0;
 			double notCoolScore=0.0;
 			double coolNotCoolWilsonScore = 0.0;
@@ -932,12 +932,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=35;
 			maxPayne3Review.setCoolScore(coolScore);
 			maxPayne3Review.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			maxPayne3Review.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=500;
 			maxPayne3Review.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			maxPayne3Review.setPageHitWilsonScore(pageHitWilsonScore);
 			maxPayne3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
 			gloonDatastore.save(maxPayne3Review);
@@ -959,12 +959,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=29;
 			farCry3Review.setCoolScore(coolScore);
 			farCry3Review.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			farCry3Review.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=100;
 			farCry3Review.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			farCry3Review.setPageHitWilsonScore(pageHitWilsonScore);
 			farCry3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score												
 			gloonDatastore.save(farCry3Review);
@@ -991,12 +991,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=4;
 			guacameleeReview1.setCoolScore(coolScore);
 			guacameleeReview1.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			guacameleeReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=50;
 			guacameleeReview1.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			guacameleeReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			guacameleeReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score																							
 			gloonDatastore.save(guacameleeReview1);
@@ -1016,12 +1016,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=5;
 			guacameleeReview2.setCoolScore(coolScore);
 			guacameleeReview2.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			guacameleeReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=100;
 			guacameleeReview2.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			guacameleeReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			guacameleeReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score																										
 			gloonDatastore.save(guacameleeReview2);
@@ -1041,12 +1041,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=5;
 			guacameleeReview3.setCoolScore(coolScore);
 			guacameleeReview3.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			guacameleeReview3.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=100;
 			guacameleeReview3.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			guacameleeReview3.setPageHitWilsonScore(pageHitWilsonScore);
 			guacameleeReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score				
 			gloonDatastore.save(guacameleeReview3);
@@ -1066,12 +1066,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=5;
 			ageOfWushuReview1.setCoolScore(coolScore);
 			ageOfWushuReview1.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			ageOfWushuReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=80;
 			ageOfWushuReview1.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ageOfWushuReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			ageOfWushuReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score		
 			gloonDatastore.save(ageOfWushuReview1);
@@ -1091,12 +1091,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=15;
 			ageOfWushuReview2.setCoolScore(coolScore);
 			ageOfWushuReview2.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			ageOfWushuReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=150;
 			ageOfWushuReview2.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ageOfWushuReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			ageOfWushuReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(ageOfWushuReview2);
@@ -1121,12 +1121,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=140;
 			motocrossMadnessReview1.setCoolScore(coolScore);
 			motocrossMadnessReview1.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			motocrossMadnessReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=200;
 			motocrossMadnessReview1.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			motocrossMadnessReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			motocrossMadnessReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(motocrossMadnessReview1);
@@ -1146,12 +1146,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=95;
 			motocrossMadnessReview2.setCoolScore(coolScore);
 			motocrossMadnessReview2.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			motocrossMadnessReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=178;
 			motocrossMadnessReview2.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			motocrossMadnessReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			motocrossMadnessReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(motocrossMadnessReview2);
@@ -1171,12 +1171,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=17;
 			terrariaReview1.setCoolScore(coolScore);
 			terrariaReview1.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			terrariaReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=200;
 			terrariaReview1.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			terrariaReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			terrariaReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(terrariaReview1);
@@ -1196,12 +1196,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=20;
 			terrariaReview2.setCoolScore(coolScore);
 			terrariaReview2.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			terrariaReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=350;
 			terrariaReview2.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			terrariaReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			terrariaReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(terrariaReview2);
@@ -1221,12 +1221,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=75;
 			terrariaReview3.setCoolScore(coolScore);
 			terrariaReview3.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			terrariaReview3.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=258;
 			terrariaReview3.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			terrariaReview3.setPageHitWilsonScore(pageHitWilsonScore);
 			terrariaReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(terrariaReview3);
@@ -1246,12 +1246,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=100;
 			defianceReview1.setCoolScore(coolScore);
 			defianceReview1.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			defianceReview1.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1010;
 			defianceReview1.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceReview1);
@@ -1271,12 +1271,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=90;
 			defianceReview2.setCoolScore(coolScore);
 			defianceReview2.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			defianceReview2.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=978;
 			defianceReview2.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceReview2);
@@ -1296,12 +1296,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=103;
 			defianceReview3.setCoolScore(coolScore);
 			defianceReview3.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			defianceReview3.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1024;
 			defianceReview3.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceReview3.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceReview3);
@@ -1321,12 +1321,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=103;
 			maxPayne3Feature.setCoolScore(coolScore);
 			maxPayne3Feature.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			maxPayne3Feature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=951;
 			maxPayne3Feature.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			maxPayne3Feature.setPageHitWilsonScore(pageHitWilsonScore);
 			maxPayne3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(maxPayne3Feature);
@@ -1346,12 +1346,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=16;
 			farCry3Feature.setCoolScore(coolScore);
 			farCry3Feature.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			farCry3Feature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=800;
 			farCry3Feature.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			farCry3Feature.setPageHitWilsonScore(pageHitWilsonScore);
 			farCry3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(farCry3Feature);
@@ -1371,12 +1371,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=25;
 			mgsRisingFeature.setCoolScore(coolScore);
 			mgsRisingFeature.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			mgsRisingFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=929;
 			mgsRisingFeature.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			mgsRisingFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			mgsRisingFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(mgsRisingFeature);
@@ -1396,12 +1396,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=25;
 			defianceFeature.setCoolScore(coolScore);
 			defianceFeature.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			defianceFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=929;
 			defianceFeature.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(defianceFeature);
@@ -1421,12 +1421,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=25;
 			motocrossFeature.setCoolScore(coolScore);
 			motocrossFeature.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			motocrossFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1000;
 			motocrossFeature.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			motocrossFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			motocrossFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(motocrossFeature);
@@ -1446,12 +1446,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=29;
 			ageOfWushuFeature.setCoolScore(coolScore);
 			ageOfWushuFeature.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			ageOfWushuFeature.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1002;
 			ageOfWushuFeature.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ageOfWushuFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			ageOfWushuFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(ageOfWushuFeature);
@@ -1470,12 +1470,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=20;
 			cricketGloonicle.setCoolScore(coolScore);
 			cricketGloonicle.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			cricketGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1000;
 			cricketGloonicle.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			cricketGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			cricketGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(cricketGloonicle);
@@ -1494,12 +1494,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=356;
 			freemiumGloonicle.setCoolScore(coolScore);
 			freemiumGloonicle.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			freemiumGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1500;
 			freemiumGloonicle.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			freemiumGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			freemiumGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(freemiumGloonicle);
@@ -1518,12 +1518,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=25;
 			top10horrorGloonicle.setCoolScore(coolScore);
 			top10horrorGloonicle.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			top10horrorGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1000;
 			top10horrorGloonicle.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			top10horrorGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			top10horrorGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(top10horrorGloonicle);
@@ -1542,12 +1542,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=25;
 			top10ActionGloonicle.setCoolScore(coolScore);
 			top10ActionGloonicle.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			top10ActionGloonicle.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1500;
 			top10ActionGloonicle.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			top10ActionGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			top10ActionGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(top10ActionGloonicle);
@@ -1566,12 +1566,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=25;
 			myWeeklyShow.setCoolScore(coolScore);
 			myWeeklyShow.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			myWeeklyShow.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=4000;
 			myWeeklyShow.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			myWeeklyShow.setPageHitWilsonScore(pageHitWilsonScore);
 			myWeeklyShow.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(myWeeklyShow);
@@ -1590,12 +1590,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=56;
 			eaDisasterNews.setCoolScore(coolScore);
 			eaDisasterNews.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			eaDisasterNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=1000;
 			eaDisasterNews.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			eaDisasterNews.setPageHitWilsonScore(pageHitWilsonScore);
 			eaDisasterNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(eaDisasterNews);
@@ -1614,12 +1614,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=10;
 			ps4News.setCoolScore(coolScore);
 			ps4News.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			ps4News.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=5600;
 			ps4News.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ps4News.setPageHitWilsonScore(pageHitWilsonScore);
 			ps4News.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(ps4News);
@@ -1638,12 +1638,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=10;
 			warnerBrothersNews.setCoolScore(coolScore);
 			warnerBrothersNews.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			warnerBrothersNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=5000;
 			warnerBrothersNews.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			warnerBrothersNews.setPageHitWilsonScore(pageHitWilsonScore);
 			warnerBrothersNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(warnerBrothersNews);
@@ -1662,12 +1662,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=12;
 			batmanOriginsNews.setCoolScore(coolScore);
 			batmanOriginsNews.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			batmanOriginsNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=7985;
 			batmanOriginsNews.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			batmanOriginsNews.setPageHitWilsonScore(pageHitWilsonScore);
 			batmanOriginsNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(batmanOriginsNews);
@@ -1686,12 +1686,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=12;
 			supermanGameNews.setCoolScore(coolScore);
 			supermanGameNews.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			supermanGameNews.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=8995;
 			supermanGameNews.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			supermanGameNews.setPageHitWilsonScore(pageHitWilsonScore);
 			supermanGameNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(supermanGameNews);
@@ -1710,12 +1710,12 @@ public class GloonGlobal extends GlobalSettings {
 			notCoolScore=17;
 			newPrinceOfPersiaGame.setCoolScore(coolScore);
 			newPrinceOfPersiaGame.setNotCoolScore(notCoolScore);
-			coolNotCoolWilsonScore=algorithm.wilsonScoreCalculator(coolScore, notCoolScore);
+			coolNotCoolWilsonScore=rankAlgorithm.wilsonScoreCalculator(coolScore, notCoolScore);
 			newPrinceOfPersiaGame.setCoolNotCoolwilsonScore(coolNotCoolWilsonScore);
 			pageCount=9656;
 			newPrinceOfPersiaGame.setPageHitCount(pageCount);
 			totalPageHits = daoInstance.getTotalPageHits();
-			pageHitWilsonScore=algorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
+			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			newPrinceOfPersiaGame.setPageHitWilsonScore(pageHitWilsonScore);
 			newPrinceOfPersiaGame.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			gloonDatastore.save(newPrinceOfPersiaGame);
