@@ -1,5 +1,7 @@
 package com.gamealoon.utility;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -102,4 +104,61 @@ public class Utility {
 		ObjectId _id = new ObjectId(id);		
 		return _id;
 	}
+	/**
+	 * Flatten a list
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public static ArrayList<Object> flattenList(ArrayList<?> list)
+	{
+		ArrayList<Object> result = new ArrayList<>();
+		for(Object item: list)
+		{
+			if(item instanceof ArrayList<?>)
+			{
+				for(Object data: (ArrayList<?>)item)
+				{
+					result.add(data);
+				}
+			}
+			else
+			{
+				result.add(item);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Query tokenizer. Just built it for fun :D
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static ArrayList<String> queryTokenize(String input)
+	{
+		ArrayList<String> tokens = new ArrayList<>();
+		input=input.substring(input.indexOf("q=")+2);
+		String keyword="";		
+		for(int index=0; index<input.length();++index)
+		{		
+		    keyword="";		    
+			while(index<=input.length()-1 && input.charAt(index)!=' ')
+			{ 
+				keyword+=input.charAt(index);
+				++index;						
+			}
+			tokens.add(keyword);			
+		}
+		return tokens;
+	}
+	
+	public static void main(String[] args) throws UnsupportedEncodingException
+	{
+		String link ="http://www.mysite.com/search/q=Superman";
+		System.out.println(URLEncoder.encode(link, "utf-8"));
+	}
+
+
 }

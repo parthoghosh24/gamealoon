@@ -1,7 +1,11 @@
 package com.gamealoon.database;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import com.google.code.morphia.Datastore;
 
 public interface GloonDataInterface {
@@ -15,4 +19,6 @@ public interface GloonDataInterface {
 	public HashMap<String, Object> getUser(Datastore gloonDatastore, String username);
 	public void updateArticleCoolUncoolScore(Datastore gloonDatastore, String urlTitle, String type);
 	public void updateArticlePageHitCount(Datastore gloonDatastore, String urlTitle);
+	public HashMap<String, Object> getSearchResponse(ArrayList<String> keywordList) throws IllegalAccessException, MalformedURLException, IOException;
+	public HashMap<String, Object> getLoggedInUser(Datastore gloonDatastore, String username, String password);
 }

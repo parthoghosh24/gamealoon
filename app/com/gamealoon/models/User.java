@@ -28,8 +28,8 @@ import com.google.code.morphia.utils.IndexDirection;
 @Entity
 public class User {
 
-	@Id
-	ObjectId id;
+    @Id
+	private ObjectId id;
 	private String username;
 	private String email; //should be a way to find out whether email is valid or not
 	private String password; //need to find out a way to encrypt the password
@@ -347,5 +347,12 @@ public class User {
 	public void setTotalScore(double totalScore) {
 		this.totalScore = totalScore;
 	}
+
+	/**
+	 * @return the id
+	 */
+	public ObjectId getId() {
+		return id;
+	}	
 
 }

@@ -28,6 +28,11 @@ public class UserController extends Controller{
 		return ok(toJson(userMaps));
 	}
 	
+	public static Result getLoggedInUser(String userName, String password)
+	{
+		HashMap<String, Object> userObject=getLoggedInUser(gloonDatastore,userName, password) ;
+		return ok(toJson(userObject));
+	}
 	/**
 	 * Get user based on userName
 	 * 
@@ -50,6 +55,18 @@ public class UserController extends Controller{
 	{
 		//-1 signifies all
 		return gloonDaoInstance.getTopNUsers(gloonDatastore, -1);
+	}
+	
+	/**
+	 * Get user information
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	private static HashMap<String, Object> getLoggedInUser(Datastore gloonDatastore, String username, String password)
+	{
+		return gloonDaoInstance.getLoggedInUser(gloonDatastore, username, password);
 	}
 
 }

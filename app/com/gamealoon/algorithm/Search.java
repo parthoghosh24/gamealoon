@@ -22,23 +22,23 @@ import java.util.Stack;
  *
  */
 public class Search {
-	HashMap<String, ArrayList<String>> index;
-	ArrayList<String> tokens;
-	String seed;
-	public Search() {
-		index = new HashMap<>();
-		tokens= new ArrayList<>();
-		seed ="";
-	}
+	public static HashMap<String, ArrayList<String>> index = new HashMap<>();
+	ArrayList<String> tokens= new ArrayList<>();
+	String seed="";
+	
 	
 	//inits and refreshes the index
-	public void initAndRefresh(String seed) throws MalformedURLException, IOException
-	{
-		this.seed=seed;
-		index= crawlSite(seed);
+	public static void  initAndRefresh(String seed) throws MalformedURLException, IOException
+	{	
+		if(index.size()==0)
+		{
+			index= crawlSite(seed);
+		}
+		
+		
 	}
 	
-	private void union(Stack<String> first, ArrayList<String >second)
+	private static void union(Stack<String> first, ArrayList<String >second)
 	{
 		for(int index=0; index<second.size(); ++index)
 		{
@@ -65,7 +65,7 @@ public class Search {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	private HashMap<String, ArrayList<String>> crawlSite(String seedUrl) throws MalformedURLException, IOException
+	private static HashMap<String, ArrayList<String>> crawlSite(String seedUrl) throws MalformedURLException, IOException
 	{		
 		Stack<String> crawled=new Stack<>();
 		Stack<String> toCrawl = new Stack<>();
@@ -75,15 +75,7 @@ public class Search {
 			String link = toCrawl.pop();
 			if(!link.equalsIgnoreCase(seedUrl))
 			{
-				link=(!link.startsWith("/"))?(seedUrl+"/"+link):(seedUrl+link);
-				if(!link.startsWith("/"))
-				{
-					link=seedUrl+"/"+link;
-				}
-				else
-				{
-					link=seedUrl+link;
-				}
+				link=(!link.startsWith("/"))?(seedUrl+"/"+link):(seedUrl+link);				
 			}
 			
 			if(!crawled.contains(link))
@@ -106,20 +98,20 @@ public class Search {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	public ArrayList<String> lookup(String keyword) throws IllegalAccessException
+	public static ArrayList<String> lookup(String keyword) throws IllegalAccessException
 	{
 		return lookup(index, keyword);
 	}
 	
-	private ArrayList<String> lookup(HashMap<String, ArrayList<String>> index, String keyword) throws IllegalAccessException
-	{
+	private  static ArrayList<String> lookup(HashMap<String, ArrayList<String>> index, String keyword) throws IllegalAccessException
+	{		
 		if(index.containsKey(keyword))
 		{
 			return index.get(keyword);
 		}
 		else
 		{
-			throw new IllegalAccessException("Keyword not found");
+			throw new IllegalAccessException("Keyword "+keyword+" not found");
 		}
 	}
 	
@@ -130,7 +122,7 @@ public class Search {
 	 * @param link
 	 * @param content
 	 */
-	private void addPageToIndex(HashMap<String, ArrayList<String>> index, String link, String content)
+	private static void addPageToIndex(HashMap<String, ArrayList<String>> index, String link, String content)
 	{
 		String[] wordList = content.split("[^A-Za-z0-9]+");
 		
@@ -147,7 +139,7 @@ public class Search {
 	 * @param keyword
 	 * @param url
 	 */
-	private void addToIndex(HashMap<String, ArrayList<String>> index, String keyword, String url)
+	private static void addToIndex(HashMap<String, ArrayList<String>> index, String keyword, String url)
 	{
 		ArrayList<String> urls=null;
 		if(!index.containsKey(keyword))
@@ -158,11 +150,15 @@ public class Search {
 		{
 			urls=index.get(keyword);						
 		}
-		urls.add(url);
+		if(!urls.contains(url))
+		{
+			urls.add(url);
+		}
+		
 		index.put(keyword, urls);
 	}
 	
-	private ArrayList<String> getAllLinksFromPage(String page)
+	private static ArrayList<String> getAllLinksFromPage(String page)
 	{
 		ArrayList<String> links = new ArrayList<>();
 		int startIndex=page.indexOf("<a");		
@@ -178,7 +174,7 @@ public class Search {
 		return links;
 	}
 	
-	public String getPage(String link) throws MalformedURLException,IOException
+	public static String getPage(String link) throws MalformedURLException,IOException
 	{
 		String output="";		
 		URL url = new URL(link);		
@@ -197,7 +193,7 @@ public class Search {
 	
 	public static void main(String[] args)
 	{
-		Search search = new Search();
+		/*Search search = new Search();
 		try
 		{			
 			search.initAndRefresh("http://localhost:8080");
@@ -222,7 +218,7 @@ public class Search {
 		catch(IOException ie)
 		{
 			System.out.println(ie);
-		}
+		}*/
 	}
 	
 

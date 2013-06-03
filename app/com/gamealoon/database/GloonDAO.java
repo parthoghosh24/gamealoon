@@ -1,6 +1,8 @@
 package com.gamealoon.database;
 
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.gamealoon.algorithm.RankAlgorithm;
+import com.gamealoon.algorithm.Search;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
@@ -54,8 +57,6 @@ public class GloonDAO implements GloonDataInterface{
 	{								
 		return DATA_ACCESS_LAYER;
 	}
-	
-	
 
 	
 	/**
@@ -336,6 +337,53 @@ public class GloonDAO implements GloonDataInterface{
 		double articlePageHit = article.get().getPageHitCount();
 		double totalPageHits = getTotalPageHits();
 		updateArticleWilsonScore(article, gloonDatastore, articlePageHit, (totalPageHits-articlePageHit), "pagehit");			
+	}
+	
+	@Override
+	public HashMap<String, Object> getSearchResponse(ArrayList<String> keywordList) throws IllegalAccessException, MalformedURLException, IOException {
+		/**
+		 * Temporary resolution... Need to improve
+		 */
+		Search.initAndRefresh(AppConstants.SEEDURL);
+		HashMap<String, Object> response=new HashMap<>();
+		ArrayList<String> responseUrlList= new ArrayList<>();
+		for(String keyword: keywordList)
+		{
+			ArrayList<String> urlList = Search.lookup(keyword);
+			responseUrlList.addAll(urlList);
+		}
+		response.put("queryResponse", responseUrlList);
+		return response;
+	}
+	
+	@Override
+	public HashMap<String, Object> getLoggedInUser(Datastore gloonDatastore,String username, String password) {
+		HashMap<String, Object> loggedInUserMap= new HashMap<>();		
+		loggedInUserMap.put("available", false);
+		User user = checkUser(gloonDatastore, username, password);
+        if(user!=null)
+        {
+        	loggedInUserMap.put("available", true);
+        	loggedInUserMap.put("username", user.getUsername());
+        	loggedInUserMap.put("firstName", user.getFirstName());
+        	loggedInUserMap.put("lastName", user.getLastName());
+        	loggedInUserMap.put("userid",user.getId().toString());
+        	
+        }
+		return loggedInUserMap;
+	}
+	
+	/**
+	 * Check whether the user exist or not. If exist, return user object else null
+	 * 
+	 * @param gloonDatastore
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public User checkUser(Datastore gloonDatastore, String username, String password)
+	{
+		return gloonDatastore.createQuery(User.class).filter("username", username).filter("password", password).get();		 
 	}
 	
 	
@@ -859,6 +907,10 @@ public class GloonDAO implements GloonDataInterface{
 		
 		return recent10Articles;
 	}
+
+	
+
+	
 
 	
 

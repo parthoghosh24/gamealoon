@@ -45,6 +45,7 @@ public class ModelsTest {
 				    testStringEncoder();
 				    testFetchIdFromTitle();
 				    testMapReduceTotalPageHitsCalc();
+//				    daoInstance.checkUser(gloonDatastore, "loonatic88", "secret");
 				
 			}
 			

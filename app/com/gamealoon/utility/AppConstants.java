@@ -13,4 +13,5 @@ public class AppConstants {
 	public static final String PREVIEW="preview";
 	public static final String COOL ="cool";
 	public static final String UNCOOL ="uncool";
+	public final static String SEEDURL ="http://localhost:8080";	//this is temp
 }

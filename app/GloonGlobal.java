@@ -1,9 +1,6 @@
-
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.models.Achievement;
@@ -14,7 +11,6 @@ import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
-
 import play.Application;
 import play.GlobalSettings;
 
@@ -37,9 +33,9 @@ public class GloonGlobal extends GlobalSettings {
 
 			}
 	}
-	 
-	 
-	 private void createAchievements()
+
+
+	private void createAchievements()
 		{
 			
 			Achievement newGloonie = new Achievement();

@@ -12,9 +12,13 @@ GET /articles/:key/:sortField                    com.gamealoon.controllers.Artic
 
 
 # Users
+GET /user/:username/:password      com.gamealoon.controllers.UserController.getLoggedInUser(username:String, password:String)  
 GET /user/:username                com.gamealoon.controllers.UserController.getUser(username:String)   
 GET /users                        com.gamealoon.controllers.UserController.getUsers()
 
+
+# Search
+GET /search/:keywords             com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
