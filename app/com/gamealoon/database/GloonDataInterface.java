@@ -21,4 +21,5 @@ public interface GloonDataInterface {
 	public void updateArticlePageHitCount(Datastore gloonDatastore, String urlTitle);
 	public HashMap<String, Object> getSearchResponse(ArrayList<String> keywordList) throws IllegalAccessException, MalformedURLException, IOException;
 	public HashMap<String, Object> getLoggedInUser(Datastore gloonDatastore, String username, String password);
+	public HashMap<String, Object> registerUser(Datastore gloonDatastore, String username, String password, String email);
 }

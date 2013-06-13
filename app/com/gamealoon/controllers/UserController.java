@@ -33,6 +33,14 @@ public class UserController extends Controller{
 		HashMap<String, Object> userObject=getLoggedInUser(gloonDatastore,userName, password) ;
 		return ok(toJson(userObject));
 	}
+	
+	public static Result registerUser(String username, String password, String email)
+	{
+		HashMap<String, Object> registeredUser=registerUser(gloonDatastore, username, password, email) ;
+		return ok(toJson(registeredUser));
+	}
+	
+
 	/**
 	 * Get user based on userName
 	 * 
@@ -58,7 +66,7 @@ public class UserController extends Controller{
 	}
 	
 	/**
-	 * Get user information
+	 * Check user exist or not. If yes, login the user else send false
 	 * 
 	 * @param username
 	 * @param password
@@ -67,6 +75,20 @@ public class UserController extends Controller{
 	private static HashMap<String, Object> getLoggedInUser(Datastore gloonDatastore, String username, String password)
 	{
 		return gloonDaoInstance.getLoggedInUser(gloonDatastore, username, password);
+	}
+	
+	/**
+	 * Register user
+	 * 
+	 * @param gloondatastore2
+	 * @param username
+	 * @param password
+	 * @param email
+	 * @return
+	 */
+	private static HashMap<String, Object> registerUser(Datastore gloondatastore2, String username, String password, String email) {
+		// TODO Auto-generated method stub
+		return gloonDaoInstance.registerUser(gloondatastore2, username, password, email);
 	}
 
 }

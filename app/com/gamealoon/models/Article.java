@@ -30,7 +30,7 @@ public class Article {
 	private String title;	
 	private String subtitle;
 	private String body;
-	private String creationDate;
+	private String publishDate;
 	private String insertTime;
 	private String updateTime;	
 	private double coolScore;
@@ -41,6 +41,7 @@ public class Article {
 	private double commentScore;
 	private double totalScore; //sum of wilson+pagehit+comment
 	private String featuredImagePath;
+	private int state; //1: draft, 2:publish
 	
 	@Embedded
 	private Set<Platform> platforms = new HashSet<>();
@@ -106,15 +107,15 @@ public class Article {
 	/**
 	 * @return the creationDate
 	 */
-	public String getCreationDate() {
-		return creationDate;
+	public String getPublishDate() {
+		return publishDate;
 	}
 
 	/**
 	 * @param creationDate the creationDate to set
 	 */
-	public void setCreationDate(String creationDate) {
-		this.creationDate = creationDate;
+	public void setPublishDate(String publishDate) {
+		this.publishDate = publishDate;
 	}
 
 	/**
@@ -319,6 +320,20 @@ public class Article {
 	 */
 	public void setPageHitCount(double pageHitCount) {
 		this.pageHitCount = pageHitCount;
+	}
+
+	/**
+	 * @return the state
+	 */
+	public int getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(int state) {
+		this.state = state;
 	}
 
 	

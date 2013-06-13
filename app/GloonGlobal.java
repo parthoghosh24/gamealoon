@@ -917,7 +917,7 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Review.setAuthor(author);
 			maxPayne3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
 			maxPayne3Review.setCategory(Category.review);
-			maxPayne3Review.setCreationDate("2012-05-16 22:05:59");
+			maxPayne3Review.setPublishDate("2012-05-16 22:05:59");
 			Game maxPayne3 = gloonDatastore.find(Game.class, "title", "Max Payne 3").get();
 			maxPayne3Review.setGame(maxPayne3);
 			maxPayne3Review.setFeaturedImagePath("articleFeaturedImage");
@@ -944,7 +944,7 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3Review.setAuthor(jaguarpaw80Author);
 			farCry3Review.setBody("The third game in the excellent series excels in every manner. Solid entry in Far Cry series.");
 			farCry3Review.setCategory(Category.review);
-			farCry3Review.setCreationDate("2012-12-15 09:30:00");
+			farCry3Review.setPublishDate("2012-12-15 09:30:00");
 			Game farCry3 = gloonDatastore.find(Game.class, "title", "Far Cry 3").get();
 			farCry3Review.setGame(farCry3);
 			farCry3Review.setFeaturedImagePath("articleFeaturedImage");
@@ -977,7 +977,7 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview1.setAuthor(gloonDatastore.find(User.class, "username", "jaguarpaw80").get());
 			guacameleeReview1.setBody("Guacamelee is an awseome metroid fueled mexican wave ride.");
 			guacameleeReview1.setCategory(Category.review);
-			guacameleeReview1.setCreationDate("2013-04-10 09:00:00");			
+			guacameleeReview1.setPublishDate("2013-04-10 09:00:00");			
 			guacameleeReview1.setGame(gloonDatastore.find(Game.class, "title", "Guacamelee!").get());
 			guacameleeReview1.setFeaturedImagePath("articleFeaturedImage");
 			//guacameleeReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1002,7 +1002,7 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview2.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
 			guacameleeReview2.setBody("Guacamelee is mexican luchador beauty.");
 			guacameleeReview2.setCategory(Category.review);
-			guacameleeReview2.setCreationDate("2013-04-10 10:00:00");			
+			guacameleeReview2.setPublishDate("2013-04-10 10:00:00");			
 			guacameleeReview2.setGame(gloonDatastore.find(Game.class, "title", "Guacamelee!").get());
 			guacameleeReview2.setFeaturedImagePath("articleFeaturedImage");
 			//guacameleeReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1027,7 +1027,7 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview3.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			guacameleeReview3.setBody("Being a mexican chicken is so fun.");
 			guacameleeReview3.setCategory(Category.review);
-			guacameleeReview3.setCreationDate("2013-04-10 11:00:00");			
+			guacameleeReview3.setPublishDate("2013-04-10 11:00:00");			
 			guacameleeReview3.setGame(gloonDatastore.find(Game.class, "title", "Guacamelee!").get());
 			guacameleeReview3.setFeaturedImagePath("articleFeaturedImage");
 			//guacameleeReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1052,7 +1052,7 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview1.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			ageOfWushuReview1.setBody("Age of Wushu lets you enjoy the world of Martial Arts in its purest form.");
 			ageOfWushuReview1.setCategory(Category.review);
-			ageOfWushuReview1.setCreationDate("2013-04-11 09:00:00");			
+			ageOfWushuReview1.setPublishDate("2013-04-11 09:00:00");			
 			ageOfWushuReview1.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
 			ageOfWushuReview1.setFeaturedImagePath("articleFeaturedImage");
 			//ageOfWushuReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1077,7 +1077,7 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview2.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
 			ageOfWushuReview2.setBody("If you are fan of sugar hardcore martial arts movie, you will find your salvation in Age of Wushu.");
 			ageOfWushuReview2.setCategory(Category.review);
-			ageOfWushuReview2.setCreationDate("2013-04-11 12:20:00");			
+			ageOfWushuReview2.setPublishDate("2013-04-11 12:20:00");			
 			ageOfWushuReview2.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
 			ageOfWushuReview2.setFeaturedImagePath("articleFeaturedImage");
 			//ageOfWushuReview.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1107,7 +1107,7 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadnessReview1.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
 			motocrossMadnessReview1.setBody("This Motocross Madness is medicore at its best.");
 			motocrossMadnessReview1.setCategory(Category.review);
-			motocrossMadnessReview1.setCreationDate("2013-04-11 00:30:00");			
+			motocrossMadnessReview1.setPublishDate("2013-04-11 00:30:00");			
 			motocrossMadnessReview1.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
 			motocrossMadnessReview1.setFeaturedImagePath("articleFeaturedImage");
 			//motocrossMadnessReview1.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1132,7 +1132,7 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadnessReview2.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
 			motocrossMadnessReview2.setBody("Common Microsoft, stop serving us enough garbage now!");
 			motocrossMadnessReview2.setCategory(Category.review);
-			motocrossMadnessReview2.setCreationDate("2013-04-11 09:30:00");			
+			motocrossMadnessReview2.setPublishDate("2013-04-11 09:30:00");			
 			motocrossMadnessReview2.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
 			motocrossMadnessReview2.setFeaturedImagePath("articleFeaturedImage");
 			//motocrossMadnessReview2.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1157,7 +1157,7 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview1.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			terrariaReview1.setBody("A game which lets you do EVERYTHING!!!");
 			terrariaReview1.setCategory(Category.review);
-			terrariaReview1.setCreationDate("2013-03-28 09:00:00");			
+			terrariaReview1.setPublishDate("2013-03-28 09:00:00");			
 			terrariaReview1.setGame(gloonDatastore.find(Game.class, "title", "Terraria").get());
 			terrariaReview1.setFeaturedImagePath("articleFeaturedImage");
 			//terraria.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1182,7 +1182,7 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview2.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
 			terrariaReview2.setBody("Its an action game, a rpg, an exploration game. In short, play it as any way possible. Its awesome in short. ");
 			terrariaReview2.setCategory(Category.review);
-			terrariaReview2.setCreationDate("2013-03-28 10:00:00");			
+			terrariaReview2.setPublishDate("2013-03-28 10:00:00");			
 			terrariaReview2.setGame(gloonDatastore.find(Game.class, "title", "Terraria").get());
 			terrariaReview2.setFeaturedImagePath("articleFeaturedImage");
 			//terraria.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1207,7 +1207,7 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview3.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
 			terrariaReview3.setBody("This game is fun and take you back into 90s bomberman and load runner era... ");
 			terrariaReview3.setCategory(Category.review);
-			terrariaReview3.setCreationDate("2013-03-28 08:00:00");			
+			terrariaReview3.setPublishDate("2013-03-28 08:00:00");			
 			terrariaReview3.setGame(gloonDatastore.find(Game.class, "title", "Terraria").get());
 			terrariaReview3.setFeaturedImagePath("articleFeaturedImage");
 			//terraria.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1232,7 +1232,7 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview1.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
 			defianceReview1.setBody("Seriously!!! What the heck was that?");
 			defianceReview1.setCategory(Category.review);
-			defianceReview1.setCreationDate("2013-04-03 00:30:00");			
+			defianceReview1.setPublishDate("2013-04-03 00:30:00");			
 			defianceReview1.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceReview1.setFeaturedImagePath("articleFeaturedImage");
 			//defianceReview1.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1257,7 +1257,7 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview2.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			defianceReview2.setBody("Concept was great on paper but the execution was not just right.");
 			defianceReview2.setCategory(Category.review);
-			defianceReview2.setCreationDate("2013-04-03 01:30:00");			
+			defianceReview2.setPublishDate("2013-04-03 01:30:00");			
 			defianceReview2.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceReview2.setFeaturedImagePath("articleFeaturedImage");
 			//defianceReview2.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1282,7 +1282,7 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview3.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
 			defianceReview3.setBody("Defiance just doesnt work. Period.");
 			defianceReview3.setCategory(Category.review);
-			defianceReview3.setCreationDate("2013-04-03 01:30:00");			
+			defianceReview3.setPublishDate("2013-04-03 01:30:00");			
 			defianceReview3.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceReview3.setFeaturedImagePath("articleFeaturedImage");
 			//defianceReview3.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1307,7 +1307,7 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Feature.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			maxPayne3Feature.setBody("Bullet time 3.0 felt kind of fresh even though bullet time used in games like anything. The new bullet time in Max Payne 3 enhance the poetic nature of Max thanks to rage engine and Euphoria.");
 			maxPayne3Feature.setCategory(Category.feature);
-			maxPayne3Feature.setCreationDate("2013-04-13 11:05:00");			
+			maxPayne3Feature.setPublishDate("2013-04-13 11:05:00");			
 			maxPayne3Feature.setGame(gloonDatastore.find(Game.class, "title", "Max Payne 3").get());
 			maxPayne3Feature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1332,7 +1332,7 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3Feature.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			farCry3Feature.setBody("Wild was really alive in the game. IMHO, this is the second game after Metal Gear Solid: Snake Eater in which I stay alerted while playing the game. Just that this game is more open and random in nature. Danger is lurking everywhere.");
 			farCry3Feature.setCategory(Category.feature);
-			farCry3Feature.setCreationDate("2013-04-11 15:00:00");			
+			farCry3Feature.setPublishDate("2013-04-11 15:00:00");			
 			farCry3Feature.setGame(gloonDatastore.find(Game.class, "title", "Far Cry 3").get());
 			farCry3Feature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1357,7 +1357,7 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRisingFeature.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
 			mgsRisingFeature.setBody("Atleast, Konami made sure that we get that same cut experience which they demoed in E3 2011. I was overwhelmed by it.");
 			mgsRisingFeature.setCategory(Category.feature);
-			mgsRisingFeature.setCreationDate("2013-03-29 15:45:00");			
+			mgsRisingFeature.setPublishDate("2013-03-29 15:45:00");			
 			mgsRisingFeature.setGame(gloonDatastore.find(Game.class, "title", "Metal Gear Rising: Revengence").get());
 			mgsRisingFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1382,7 +1382,7 @@ public class GloonGlobal extends GlobalSettings {
 			defianceFeature.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
 			defianceFeature.setBody("Defiance tries to pull a brave move by clubbing tv with video gaming.");
 			defianceFeature.setCategory(Category.feature);
-			defianceFeature.setCreationDate("2013-03-30 16:45:00");			
+			defianceFeature.setPublishDate("2013-03-30 16:45:00");			
 			defianceFeature.setGame(gloonDatastore.find(Game.class, "title", "Defiance").get());
 			defianceFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1407,7 +1407,7 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossFeature.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
 			motocrossFeature.setBody("This motocross madness looks the same");
 			motocrossFeature.setCategory(Category.feature);
-			motocrossFeature.setCreationDate("2013-04-10 15:45:00");			
+			motocrossFeature.setPublishDate("2013-04-10 15:45:00");			
 			motocrossFeature.setGame(gloonDatastore.find(Game.class, "title", "Motocross Madness").get());
 			motocrossFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1432,7 +1432,7 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuFeature.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
 			ageOfWushuFeature.setBody("Age of wushu brings asian gaming out of japan and puts on face of the planet. There is hope for other asian countries.");
 			ageOfWushuFeature.setCategory(Category.feature);
-			ageOfWushuFeature.setCreationDate("2013-04-14 15:45:00");			
+			ageOfWushuFeature.setPublishDate("2013-04-14 15:45:00");			
 			ageOfWushuFeature.setGame(gloonDatastore.find(Game.class, "title", "Age of Wushu").get());
 			ageOfWushuFeature.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -1457,7 +1457,7 @@ public class GloonGlobal extends GlobalSettings {
 			cricketGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			cricketGloonicle.setBody("When on earth we are going to get next decent cricket game? Come on big great gaming companies, give us our next great cricket game");
 			cricketGloonicle.setCategory(Category.gloonicle);
-			cricketGloonicle.setCreationDate("2013-04-15 09:45:00");						
+			cricketGloonicle.setPublishDate("2013-04-15 09:45:00");						
 			cricketGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			cricketGloonicle.setInsertTime("2013-04-15 09:45:00");			
@@ -1481,7 +1481,7 @@ public class GloonGlobal extends GlobalSettings {
 			freemiumGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
 			freemiumGloonicle.setBody("Freemium gaming is the new way to go");
 			freemiumGloonicle.setCategory(Category.gloonicle);
-			freemiumGloonicle.setCreationDate("2013-01-15 10:45:00");						
+			freemiumGloonicle.setPublishDate("2013-01-15 10:45:00");						
 			freemiumGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			freemiumGloonicle.setInsertTime("2013-01-15 10:45:00");			
@@ -1505,7 +1505,7 @@ public class GloonGlobal extends GlobalSettings {
 			top10horrorGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
 			top10horrorGloonicle.setBody("My top 10 horrors are: 1) Silent hill 2) Resident Evil...");
 			top10horrorGloonicle.setCategory(Category.gloonicle);
-			top10horrorGloonicle.setCreationDate("2013-04-15 21:45:00");						
+			top10horrorGloonicle.setPublishDate("2013-04-15 21:45:00");						
 			top10horrorGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			top10horrorGloonicle.setInsertTime("2013-04-15 21:45:00");			
@@ -1529,7 +1529,7 @@ public class GloonGlobal extends GlobalSettings {
 			top10ActionGloonicle.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
 			top10ActionGloonicle.setBody("My top 10 action games: 1)Max Payne 3 2) Halo 4 3)Splinter cell series");
 			top10ActionGloonicle.setCategory(Category.gloonicle);
-			top10ActionGloonicle.setCreationDate("2013-01-13 20:02:00");						
+			top10ActionGloonicle.setPublishDate("2013-01-13 20:02:00");						
 			top10ActionGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			top10ActionGloonicle.setInsertTime("2013-01-13 20:02:00");			
@@ -1553,7 +1553,7 @@ public class GloonGlobal extends GlobalSettings {
 			myWeeklyShow.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
 			myWeeklyShow.setBody("I will share my daily gaming adventure in this series.");
 			myWeeklyShow.setCategory(Category.gloonicle);
-			myWeeklyShow.setCreationDate("2013-01-14 00:02:00");						
+			myWeeklyShow.setPublishDate("2013-01-14 00:02:00");						
 			myWeeklyShow.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			myWeeklyShow.setInsertTime("2013-01-14 00:02:00");			
@@ -1577,7 +1577,7 @@ public class GloonGlobal extends GlobalSettings {
 			eaDisasterNews.setAuthor(gloonDatastore.find(User.class, "username", "theone90").get());
 			eaDisasterNews.setBody("EA has been again ranked as worst company in America. This is the second time they have been rated like this.");
 			eaDisasterNews.setCategory(Category.news);
-			eaDisasterNews.setCreationDate("2013-01-12 10:02:00");						
+			eaDisasterNews.setPublishDate("2013-01-12 10:02:00");						
 			eaDisasterNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			eaDisasterNews.setInsertTime("2013-01-12 10:02:00");			
@@ -1601,7 +1601,7 @@ public class GloonGlobal extends GlobalSettings {
 			ps4News.setAuthor(gloonDatastore.find(User.class, "username", "muchooomg90").get());
 			ps4News.setBody("PS4 is said to launch at a starting price of $430");
 			ps4News.setCategory(Category.news);
-			ps4News.setCreationDate("2013-04-02 10:02:00");						
+			ps4News.setPublishDate("2013-04-02 10:02:00");						
 			ps4News.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			ps4News.setInsertTime("2013-04-02 10:02:00");			
@@ -1625,7 +1625,7 @@ public class GloonGlobal extends GlobalSettings {
 			warnerBrothersNews.setAuthor(gloonDatastore.find(User.class, "username", "xwarior81").get());
 			warnerBrothersNews.setBody("Warner Brothers registers multiple domains based on Mad Max");
 			warnerBrothersNews.setCategory(Category.news);
-			warnerBrothersNews.setCreationDate("2013-04-14 10:02:00");						
+			warnerBrothersNews.setPublishDate("2013-04-14 10:02:00");						
 			warnerBrothersNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			warnerBrothersNews.setInsertTime("2013-04-14 10:02:00");			
@@ -1649,7 +1649,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanOriginsNews.setAuthor(gloonDatastore.find(User.class, "username", "kenhaduken82").get());
 			batmanOriginsNews.setBody("A new batman arkham orignins game revealed. The important thing is rocksteady is not working on it.");
 			batmanOriginsNews.setCategory(Category.news);
-			batmanOriginsNews.setCreationDate("2013-04-10 10:02:00");						
+			batmanOriginsNews.setPublishDate("2013-04-10 10:02:00");						
 			batmanOriginsNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			batmanOriginsNews.setInsertTime("2013-04-10 10:02:00");			
@@ -1673,7 +1673,7 @@ public class GloonGlobal extends GlobalSettings {
 			supermanGameNews.setAuthor(gloonDatastore.find(User.class, "username", "loonatic86").get());
 			supermanGameNews.setBody("Rocksteady studios is most probably working on a Superman game. No details are available till now");
 			supermanGameNews.setCategory(Category.news);
-			supermanGameNews.setCreationDate("2013-04-20 10:02:00");						
+			supermanGameNews.setPublishDate("2013-04-20 10:02:00");						
 			supermanGameNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			supermanGameNews.setInsertTime("2013-04-20 10:02:00");			
@@ -1697,7 +1697,7 @@ public class GloonGlobal extends GlobalSettings {
 			newPrinceOfPersiaGame.setAuthor(gloonDatastore.find(User.class, "username", "loonatic87").get());
 			newPrinceOfPersiaGame.setBody("Climax Studio is supposedly working on a new prince of persia game.");
 			newPrinceOfPersiaGame.setCategory(Category.news);
-			newPrinceOfPersiaGame.setCreationDate(Utility.convertDateToString(new Date()));			
+			newPrinceOfPersiaGame.setPublishDate(Utility.convertDateToString(new Date()));			
 			newPrinceOfPersiaGame.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
 			newPrinceOfPersiaGame.setInsertTime(Utility.convertDateToString(new Date()));			

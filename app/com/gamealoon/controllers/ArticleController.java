@@ -29,6 +29,10 @@ public class ArticleController extends Controller{
 		return ok(toJson(articleListMap));
 	}
 	
+	public static Result saveOrUpdateArticle()
+	{
+		return ok();
+	}
 	
 	/**
 	 * Fetch single article by username and article title

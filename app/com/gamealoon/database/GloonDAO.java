@@ -141,7 +141,7 @@ public class GloonDAO implements GloonDataInterface{
 				  allArticleMap.put("articleTitle", article.getTitle());
 				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
 				  allArticleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allArticleMap.put("articlePublishDate", article.getPublishDate());
 				  allArticles.add(allArticleMap);
 			  }
 			  recentNArticles.put("recentAllArticles", allArticles);
@@ -157,7 +157,7 @@ public class GloonDAO implements GloonDataInterface{
 				  allArticleMap.put("articleTitle", article.getTitle());
 				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
 				  allArticleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allArticleMap.put("articlePublishDate", article.getPublishDate());
 				  allReviews.add(allArticleMap);
 				  
 			  } 
@@ -173,7 +173,7 @@ public class GloonDAO implements GloonDataInterface{
 				  allArticleMap.put("articleTitle", article.getTitle());
 				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
 				  allArticleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allArticleMap.put("articlePublishDate", article.getPublishDate());
 				  allFeatures.add(allArticleMap);
 			  }
 			  recentNArticles.put("recentFeatures", allFeatures);
@@ -188,7 +188,7 @@ public class GloonDAO implements GloonDataInterface{
 				  allArticleMap.put("articleTitle", article.getTitle());
 				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
 				  allArticleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allArticleMap.put("articlePublishDate", article.getPublishDate());
 				  allNews.add(allArticleMap);
 			  } 
 			  recentNArticles.put("recentNews", allNews);
@@ -203,7 +203,7 @@ public class GloonDAO implements GloonDataInterface{
 				  allArticleMap.put("articleTitle", article.getTitle());
 				  allArticleMap.put("articleAuthor", article.getAuthor().getUsername());
 				  allArticleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-				  allArticleMap.put("articlePublishDate", article.getCreationDate());
+				  allArticleMap.put("articlePublishDate", article.getPublishDate());
 				  allGloonicles.add(allArticleMap);
 			  }
 			  recentNArticles.put("recentGloonicles", allGloonicles);
@@ -244,7 +244,7 @@ public class GloonDAO implements GloonDataInterface{
 			response.put("articleBody", article.getBody());
 			response.put("articleCategory", article.getCategory());
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-			response.put("articlePublishDate", article.getCreationDate());
+			response.put("articlePublishDate", article.getPublishDate());
 			response.put("articleAuthor", article.getAuthor().getUsername());
 			if(article.getGame()!=null)
 			{
@@ -274,7 +274,7 @@ public class GloonDAO implements GloonDataInterface{
 					response.put("articleBody", article.getBody());
 					response.put("articleCategory", article.getCategory());
 					response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-					response.put("articlePublishDate", article.getCreationDate());
+					response.put("articlePublishDate", article.getPublishDate());
 					response.put("articleAuthor", article.getAuthor().getUsername());
 					if(article.getGame()!=null)
 					{
@@ -373,15 +373,49 @@ public class GloonDAO implements GloonDataInterface{
 		return loggedInUserMap;
 	}
 	
+	@Override
+	public HashMap<String, Object> registerUser(Datastore gloonDatastore, String username, String password, String email) {
+		HashMap<String, Object> registerUser = new HashMap<>();
+		registerUser.put("Success", registerTheUser(gloonDatastore, username, password, email));		
+		return registerUser;
+	}
+	
 	/**
-	 * Check whether the user exist or not. If exist, return user object else null
+	 * Register user. simply create new user object and feed username, password and email
+	 * 
+	 * @param username
+	 * @param password
+	 * @param email
+	 * @return
+	 */
+	private Boolean registerTheUser(Datastore gloonDatastore, String username, String password, String email)
+	{
+		Boolean response=false;
+		try
+		{
+			User newUser = new User();
+			newUser.setUsername(username);
+			newUser.setPassword(password);
+			newUser.setEmail(email);
+			gloonDatastore.save(newUser);
+			response=true;
+		}
+		catch(Exception ex)
+		{
+			response=false;
+		}
+		return response;
+		
+	}
+	/**
+	 * Check whether the user exist or not for login. If exist, return user object else null
 	 * 
 	 * @param gloonDatastore
 	 * @param username
 	 * @param password
 	 * @return
 	 */
-	public User checkUser(Datastore gloonDatastore, String username, String password)
+	private User checkUser(Datastore gloonDatastore, String username, String password)
 	{
 		return gloonDatastore.createQuery(User.class).filter("username", username).filter("password", password).get();		 
 	}
@@ -546,7 +580,7 @@ public class GloonDAO implements GloonDataInterface{
 							articleMap.put("articleGame", article.getGame().getTitle());
 						}
 						
-						articleMap.put("articleCreationDate", article.getCreationDate());
+						articleMap.put("articleCreationDate", article.getPublishDate());
 						articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
 						articleMap.put("articlePlatforms",  Utility.titleList(article.getPlatforms()));
 						fetchedReviews.add(articleMap);
@@ -633,7 +667,7 @@ public class GloonDAO implements GloonDataInterface{
 					articleMap.put("articleGame", article.getGame().getTitle());
 				}
 				
-				articleMap.put("articleCreationDate", article.getCreationDate());
+				articleMap.put("articleCreationDate", article.getPublishDate());
 				articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
 				articleMap.put("articlePlatforms",Utility.titleList(article.getPlatforms()));
 				fetchedArticles.add(articleMap);			    
@@ -907,6 +941,8 @@ public class GloonDAO implements GloonDataInterface{
 		
 		return recent10Articles;
 	}
+
+	
 
 	
 
