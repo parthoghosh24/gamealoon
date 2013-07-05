@@ -2,8 +2,10 @@ package com.gamealoon.controllers;
 
 import java.util.HashMap;
 import java.util.List;
-import com.gamealoon.database.GloonDAO;
-import com.google.code.morphia.Datastore;
+//import com.gamealoon.database.GloonDAO;
+import com.gamealoon.database.daos.ArticleDAO;
+import com.gamealoon.database.daos.GameDAO;
+import com.gamealoon.database.daos.UserDAO;
 import play.mvc.Controller;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
@@ -17,18 +19,10 @@ import static play.libs.Json.toJson;
  */
 public class PlatformController extends Controller {
 
-	static final GloonDAO gloonDaoInstance = GloonDAO.instantiateDAO();
-	static final Datastore gloonDatastore = gloonDaoInstance.initDatastore();
-
-
-	  public static Result checkPlatformState(String platform)
-	   {
-		   response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
-		    response().setHeader("Access-Control-Allow-Methods", "GET");   // Only allow POST
-		    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
-		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
-		    return ok();
-	   }
+//	private static final GloonDAO gloonDaoInstance = GloonDAO.instantiateDAO();
+	private static final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
+	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();
+	private static final GameDAO gameDaoInstance = GameDAO.instantiateDAO();	
 	  
 	public static Result getPlatformData(String platform) {
 
@@ -56,7 +50,7 @@ public class PlatformController extends Controller {
 	private static HashMap<String, Object> getAllArticlesForPlatformCarousel(
 			String platform) {
 
-		return gloonDaoInstance.getAllArticlesForCarousel(gloonDatastore, platform);
+		return articleDaoInstance.getAllArticlesForCarousel(platform);
 	}
 
 	/**
@@ -65,7 +59,7 @@ public class PlatformController extends Controller {
 	 * @return
 	 */
 	private static List<HashMap<String, Object>> getTop10PlatformGames(String platform) {
-		return gloonDaoInstance.getTopNGames(gloonDatastore, 5, platform);
+		return gameDaoInstance.getTopNGames(5, platform);
 	}
 
 	/**
@@ -74,7 +68,7 @@ public class PlatformController extends Controller {
 	 * @return
 	 */
 	private static HashMap<String, Object> getAllRecent10PlatformArticles(String platform) {
-		return gloonDaoInstance.getRecentAllNArticles(gloonDatastore, 10,platform);
+		return articleDaoInstance.getRecentAllNArticles(10,platform);
 	}
 
 	/**
@@ -83,6 +77,6 @@ public class PlatformController extends Controller {
 	 * @return
 	 */
 	private static List<HashMap<String, Object>> getTop5Users() {
-		return gloonDaoInstance.getTopNUsers(gloonDatastore, 5);
+		return userDaoInstance.getTopNUsers(5);
 	}
 }

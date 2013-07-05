@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+
 
 import org.bson.types.ObjectId;
 
@@ -58,13 +58,13 @@ public class Utility {
 	/**
 	 * This actually converts Platform object list into list of strings containing platform names
 	 * 	
-	 * @param platforms
+	 * @param arrayList
 	 * @return
 	 */
-	public static List<String> titleList(Set<Platform> platforms)
+	public static List<String> titleList(ArrayList<Platform> arrayList)
 	{
 		List<String> titleList = new ArrayList<>();
-		for(Platform platform: platforms)
+		for(Platform platform: arrayList)
 		{
 			
 				titleList.add(platform.getTitle());			
@@ -104,6 +104,7 @@ public class Utility {
 		ObjectId _id = new ObjectId(id);		
 		return _id;
 	}
+	
 	/**
 	 * Flatten a list
 	 * 

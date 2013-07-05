@@ -2,13 +2,14 @@ package com.gamealoon.tests;
 
 
 
+import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
-import com.gamealoon.database.GloonDAO;
+import com.gamealoon.database.daos.ArticleDAO;
+import com.gamealoon.database.daos.GameDAO;
+import com.gamealoon.database.daos.UserDAO;
 import com.gamealoon.models.Game;
-import com.gamealoon.models.User;
 import com.gamealoon.utility.Utility;
-import com.google.code.morphia.Datastore;
 
 
 
@@ -24,8 +25,8 @@ import static play.test.Helpers.running;
  */
 public class ModelsTest {
 
-	final GloonDAO daoInstance = GloonDAO.instantiateDAO();	
-	final Datastore gloonDatastore = daoInstance.initDatastore();
+	final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
+	final GameDAO gameDaoInstance = GameDAO.instantiateDAO();	
 	/**
 	 * We are testing the db and various entites over here....
 	 * 
@@ -45,7 +46,6 @@ public class ModelsTest {
 				    testStringEncoder();
 				    testFetchIdFromTitle();
 				    testMapReduceTotalPageHitsCalc();
-//				    daoInstance.checkUser(gloonDatastore, "loonatic88", "secret");
 				
 			}
 			
@@ -56,7 +56,7 @@ public class ModelsTest {
 			
 			private void findAllGames()
 			{
-			  List<Game> games = gloonDatastore.find(Game.class).asList();
+			 /* List<Game> games = gloonDatastore.find(Game.class).asList();
 			  
 			  if(games.size()>0)
 			  {
@@ -73,25 +73,26 @@ public class ModelsTest {
 					  }
 				  }
 				  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-			  }
+			  }*/
 			}
 			
 			private void findAllUsers()
 			{
-				List<User> sortedUsers = gloonDatastore.find(User.class).order("-totalScore").asList();
-//				List<User> users = gloonDatastore.find(User.class).asList();
+				UserDAO userInstance =UserDAO.instantiateDAO();
+				List<HashMap<String, Object>> sortedUsers = userInstance.getTopNUsers(-1);
 				  
 				  if(sortedUsers.size()>0)
 				  {
 					  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-					  for(User user: sortedUsers)
+					  for(HashMap<String, Object> user: sortedUsers)
 					  {
 						  if(user!=null)
-						  {
-							  System.out.println("User username: "+user.getUsername());
-							  System.out.println("User gamebio: "+user.getGameBio());
-							  System.out.println("User score: "+user.getTotalScore());
-							  System.out.println("User followers: "+user.getFollowedBy());
+						  {							  
+							   
+							  System.out.println("User username: "+user.get("userUserName"));
+							  System.out.println("User Avatar: "+user.get("userAvatar"));
+							  System.out.println("User Total Achievements: "+user.get("userAchievementCount"));
+							  System.out.println("User Total Followers: "+user.get("totalFollowers"));
 							  System.out.println("--------------->><<----------------------");
 						  }
 					  }
@@ -102,7 +103,7 @@ public class ModelsTest {
 			
 			private void findAllRecentGames()
 			{
-				List<Game> sortedGames = gloonDatastore.find(Game.class).order("-releaseDate").asList();
+				List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(-1);
 				
 				System.out.println("Recent sorted games list size: "+ sortedGames.size());
 				
@@ -127,8 +128,8 @@ public class ModelsTest {
 			
 			
 			private void findAllRecentReleasedGames()
-			{
-				List<Game> sortedGames = daoInstance.getRecentReleasedGames(gloonDatastore,5);
+			{				
+				List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(5);
 				
 				System.out.println("Released sorted games list size: "+ sortedGames.size());
 				if(sortedGames.size()>0)
@@ -162,8 +163,8 @@ public class ModelsTest {
 			}
 			
 			private void testMapReduceTotalPageHitsCalc()
-			{
-				System.out.println("TOTAL PAGE HITS: "+daoInstance.getTotalPageHits());
+			{				
+				System.out.println("TOTAL PAGE HITS: "+articleDaoInstance.getTotalPageHits());
 			}
 			
 		});

@@ -12,10 +12,11 @@ GET /articles/:key/:sortField           com.gamealoon.controllers.ArticleControl
 
 
 # Users
-POST /user/register 			   com.gamealoon.controllers.UserController.registerUser(username:String, password:String, email:String)
-GET /login/:username/:password      com.gamealoon.controllers.UserController.getLoggedInUser(username:String, password:String)  
-GET /user/:username                com.gamealoon.controllers.UserController.getUser(username:String)   
-GET /users                         com.gamealoon.controllers.UserController.getUsers()
+
+POST /user/register 			   			com.gamealoon.controllers.UserController.registerUser()
+GET /login/:username/:password      		com.gamealoon.controllers.UserController.getLoggedInUser(username:String, password:String)  
+GET /user/:usernameOrId/:mode               com.gamealoon.controllers.UserController.getUser(usernameOrId:String, mode:Integer)   
+GET /users                         			com.gamealoon.controllers.UserController.getUsers()
 
 
 # Search

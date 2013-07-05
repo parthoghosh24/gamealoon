@@ -2,11 +2,8 @@ package com.gamealoon.models;
 
 
 
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.ArrayList;
 import org.bson.types.ObjectId;
-
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
@@ -44,7 +41,7 @@ public class Article {
 	private int state; //1: draft, 2:publish
 	
 	@Embedded
-	private Set<Platform> platforms = new HashSet<>();
+	private ArrayList<Platform> platforms = new ArrayList<>();
 	
 	@Embedded
 	private User author;
@@ -227,14 +224,14 @@ public class Article {
 	/**
 	 * @return the platforms
 	 */
-	public Set<Platform> getPlatforms() {
+	public ArrayList<Platform> getPlatforms() {
 		return platforms;
 	}
 
 	/**
 	 * @param platforms the platforms to set
 	 */
-	public void setPlatforms(Set<Platform> platforms) {
+	public void setPlatforms(ArrayList<Platform> platforms) {
 		this.platforms = platforms;
 	}
 

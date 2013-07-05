@@ -14,4 +14,8 @@ public class AppConstants {
 	public static final String COOL ="cool";
 	public static final String UNCOOL ="uncool";
 	public final static String SEEDURL ="http://localhost:8080";	//this is temp
+	public final static int EMAIL_NOT_CONFIRMED =0;
+	public final static int EMAIL_CONFIRMED =1;
+	public final static int USER_PROFILE=1;
+	public final static int USER_PAGE=2;
 }

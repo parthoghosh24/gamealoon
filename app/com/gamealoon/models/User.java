@@ -1,12 +1,9 @@
 package com.gamealoon.models;
 
 
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.ArrayList;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.annotate.JsonIgnore;
-
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
@@ -33,9 +30,9 @@ public class User {
 	private String username;
 	private String email; //should be a way to find out whether email is valid or not
 	private String password; //need to find out a way to encrypt the password
-	private String firstName;
-	private String middleName;
+	private String firstName;	
 	private String lastName;
+	private int emailConfirmed;
 	private int day;
 	private int month;
 	private int year;
@@ -51,13 +48,16 @@ public class User {
     private double totalScore;
     
     @Embedded
-    private Set<Achievement> achievements = new HashSet<>(); //Achievements earned    
+    private ArrayList<Achievement> achievements = new ArrayList<>(); //Achievements earned    
 	
     @JsonIgnore
 	@Reference
 	//User followed by many users- eyed by
-	private Set<User> followedBy = new HashSet<>();
+	private ArrayList<User> followedBy = new ArrayList<>();
 	
+	@JsonIgnore
+	@Reference
+	private ArrayList<User> following = new ArrayList<>();
 
 	/**
 	 * @return the username
@@ -116,20 +116,6 @@ public class User {
 	}
 
 	/**
-	 * @return the middleName
-	 */
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	/**
-	 * @param middleName the middleName to set
-	 */
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	/**
 	 * @return the lastName
 	 */
 	public String getLastName() {
@@ -160,14 +146,14 @@ public class User {
 	/**
 	 * @return the followedBy
 	 */
-	public Set<User> getFollowedBy() {
+	public ArrayList<User> getFollowedBy() {
 		return followedBy;
 	}
 
 	/**
 	 * @param followedBy the followedBy to set
 	 */
-	public void setFollowedBy(Set<User> followedBy) {
+	public void setFollowedBy(ArrayList<User> followedBy) {
 		this.followedBy = followedBy;
 	}
 	
@@ -267,14 +253,14 @@ public class User {
 	/**
 	 * @return the achievements
 	 */
-	public Set<Achievement> getAchievements() {
+	public ArrayList<Achievement> getAchievements() {
 		return achievements;
 	}
 
 	/**
 	 * @param achievements the achievements to set
 	 */
-	public void setAchievements(Set<Achievement> achievements) {
+	public void setAchievements(ArrayList<Achievement> achievements) {
 		this.achievements = achievements;
 	}
 
@@ -353,6 +339,34 @@ public class User {
 	 */
 	public ObjectId getId() {
 		return id;
+	}
+
+	/**
+	 * @return the emailConfirmed
+	 */
+	public int getEmailConfirmed() {
+		return emailConfirmed;
+	}
+
+	/**
+	 * @param emailConfirmed the emailConfirmed to set
+	 */
+	public void setEmailConfirmed(int emailConfirmed) {
+		this.emailConfirmed = emailConfirmed;
+	}
+
+	/**
+	 * @return the following
+	 */
+	public ArrayList<User> getFollowing() {
+		return following;
+	}
+
+	/**
+	 * @param following the following to set
+	 */
+	public void setFollowing(ArrayList<User> following) {
+		this.following = following;
 	}	
 
 }

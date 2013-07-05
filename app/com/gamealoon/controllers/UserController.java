@@ -2,55 +2,59 @@ package com.gamealoon.controllers;
 
 import java.util.HashMap;
 import java.util.List;
-
-import com.gamealoon.database.GloonDAO;
-import com.google.code.morphia.Datastore;
+import com.gamealoon.database.daos.UserDAO;
+import static play.data.Form.*;
+import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
 
 public class UserController extends Controller{
 
-	static final GloonDAO gloonDaoInstance = GloonDAO.instantiateDAO();
-	static final Datastore gloonDatastore = gloonDaoInstance.initDatastore();
+	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();	
 	
-	public static Result getUser(String username)
+	public static Result getUser(String usernameOrId, Integer mode)
 	{
-		HashMap<String, Object> userMap= getUser(gloonDatastore, username);
+		HashMap<String, Object> userMap= getUserMap(usernameOrId, mode);		
 		//TODO add href element to json
 		return ok(toJson(userMap));
 	}
 	
 	public static Result getUsers()
 	{
-		List<HashMap<String, Object>> userMaps = getUsers(gloonDatastore);
+		List<HashMap<String, Object>> userMaps = getUsersMap();
 		//TODO add href element to json
 		return ok(toJson(userMaps));
 	}
 	
 	public static Result getLoggedInUser(String userName, String password)
 	{
-		HashMap<String, Object> userObject=getLoggedInUser(gloonDatastore,userName, password) ;
+		HashMap<String, Object> userObject=getLoggedInUserMap(userName, password) ;
 		return ok(toJson(userObject));
 	}
 	
-	public static Result registerUser(String username, String password, String email)
+	public static Result registerUser()
 	{
-		HashMap<String, Object> registeredUser=registerUser(gloonDatastore, username, password, email) ;
+		DynamicForm requestData = form().bindFromRequest();
+		String username=requestData.get("username");		
+		String password = requestData.get("password");
+		String email = requestData.get("email");
+		HashMap<String, Object> registeredUser=registerUserMap(username, password, email) ;
 		return ok(toJson(registeredUser));
-	}
+		
+	} 
 	
 
 	/**
-	 * Get user based on userName
+	 * Get user based on userName or userid
 	 * 
 	 * @param gloonDatastore
 	 * @param username
 	 * @return
 	 */
-	private static HashMap<String, Object> getUser(Datastore gloonDatastore, String username)
+	private static HashMap<String, Object> getUserMap(String usernameOrId, Integer mode)
 	{
-		return gloonDaoInstance.getUser(gloonDatastore, username);
+		return userDaoInstance.getUser(usernameOrId, mode);
 	}
 	
 	/**
@@ -59,10 +63,10 @@ public class UserController extends Controller{
 	 * @param gloonDatastore
 	 * @return
 	 */
-	private static List<HashMap<String, Object>> getUsers(Datastore gloonDatastore)
+	private static List<HashMap<String, Object>> getUsersMap()
 	{
 		//-1 signifies all
-		return gloonDaoInstance.getTopNUsers(gloonDatastore, -1);
+		return userDaoInstance.getTopNUsers(-1);
 	}
 	
 	/**
@@ -72,9 +76,9 @@ public class UserController extends Controller{
 	 * @param password
 	 * @return
 	 */
-	private static HashMap<String, Object> getLoggedInUser(Datastore gloonDatastore, String username, String password)
+	private static HashMap<String, Object> getLoggedInUserMap(String username, String password)
 	{
-		return gloonDaoInstance.getLoggedInUser(gloonDatastore, username, password);
+		return userDaoInstance.getLoggedInUser(username, password);
 	}
 	
 	/**
@@ -86,9 +90,8 @@ public class UserController extends Controller{
 	 * @param email
 	 * @return
 	 */
-	private static HashMap<String, Object> registerUser(Datastore gloondatastore2, String username, String password, String email) {
-		// TODO Auto-generated method stub
-		return gloonDaoInstance.registerUser(gloondatastore2, username, password, email);
+	private static HashMap<String, Object> registerUserMap(String username, String password, String email) {		
+		return userDaoInstance.registerUser(username, password, email);
 	}
 
 }
