@@ -1,6 +1,7 @@
 package com.gamealoon.database.daos;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import com.gamealoon.database.interfaces.ArticleInterface;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
+import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
 import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
@@ -185,8 +187,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		{
 			response.put("articleTitle", article.getTitle());
 			response.put("articleSubTitle", article.getSubtitle());
-			response.put("articleBody", article.getBody());
-			response.put("articleCategory", article.getCategory());
+			response.put("articleBody", article.getBody());			
+			response.put("articleCategory", Utility.capitalizeString(article.getCategory().toString()));
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
 			response.put("articlePublishDate", article.getPublishDate());
 			response.put("articleAuthor", article.getAuthor().getUsername());
@@ -194,6 +196,11 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			{
 				response.put("articleGame",article.getGame().getTitle());
 			}
+			else
+			{
+				response.put("articleGame","");
+			}
+			
 			response.put("articlePlatforms", Utility.titleList(article.getPlatforms()));
 			response.put("articleScore", article.getTotalScore());
 		}
@@ -217,13 +224,17 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					response.put("articleTitle", article.getTitle());
 					response.put("articleSubTitle", article.getSubtitle());
 					response.put("articleBody", article.getBody());
-					response.put("articleCategory", article.getCategory());
+					response.put("articleCategory", Utility.capitalizeString(article.getCategory().toString()));
 					response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
 					response.put("articlePublishDate", article.getPublishDate());
 					response.put("articleAuthor", article.getAuthor().getUsername());
 					if(article.getGame()!=null)
 					{
 						response.put("articleGame",article.getGame().getTitle());
+					}
+					else
+					{
+						response.put("articleGame","");
 					}
 					response.put("articlePlatforms", Utility.titleList(article.getPlatforms()));
 					response.put("articleScore", article.getTotalScore());
@@ -274,6 +285,83 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		
 	}
 	
+	@Override
+	public HashMap<String, Object> saveArticle(String articleTitle,
+			String articleSubTitle, String articleBody, String category,
+			String username, String platforms, String featuredImagePath,
+			String game, String state) {
+		
+		     HashMap<String, Object> response = new HashMap<>();
+		     response.put("status", "fail");
+		     String[] platformList = Utility.stringToList(platforms);
+		     Article article = createArticle(articleTitle,articleSubTitle,articleBody,category,username,platformList,featuredImagePath,game, Integer.parseInt(state));
+		     try
+		     {
+		    	 save(article);
+		    	 response.put("status", "success");
+		     }catch(Exception e)
+		     {
+		    	 e.printStackTrace();
+		    	 response.put("status", "fail");
+		     }
+		     System.out.println("Status: "+response.get("status"));
+		return response;
+	}
+	private Article createArticle(String articleTitle, String articleSubTitle, String articleBody, String category, String username, String[] platformList, String featuredImagePath, String game, int state) 
+	{
+		Article article = new Article();
+		article.setTitle(articleTitle);
+		article.setSubtitle(articleSubTitle);
+		article.setBody(articleBody);
+        switch(category)
+        {
+        	case "review":
+        		 article.setCategory(Category.review);
+        		 break;
+        	case "feature":
+		        article.setCategory(Category.feature);
+		        break;
+        	case "news":
+		        article.setCategory(Category.news);
+		        break;
+        	case "gloonicle":
+		        article.setCategory(Category.gloonicle);
+		        break;
+        	case "video":
+		        article.setCategory(Category.video);
+		        break;     
+        }
+        User author = gloonDatastore.createQuery(User.class).filter("username", username).get();
+        article.setAuthor(author);
+        ArrayList<Platform> platforms = new ArrayList<>();
+        for(String platformName:platformList)
+        {
+        	System.out.println("Platform Name: "+platformName);
+        	Platform platform = gloonDatastore.createQuery(Platform.class).filter("shortTitle", platformName).get();
+        	if(platform!=null)
+        	{
+        		platforms.add(platform);
+        	}
+        	
+        }
+        article.setPlatforms(platforms);        
+        article.setFeaturedImagePath(featuredImagePath);
+        if(!game.isEmpty())
+        {
+        	Game fetchedGame =gloonDatastore.createQuery(Game.class).filter("title", game).get();
+        	if(fetchedGame!=null)
+        	{
+        		article.setGame(fetchedGame);
+        	}
+        	
+        }
+        article.setState(state);
+        String time=Utility.convertDateToString(new Date());
+        article.setInsertTime(time);
+        article.setUpdateTime(time);
+		return article;
+	}
+
 	/**
 	 * Get sorted users based on their ranks
 	 * 
@@ -440,7 +528,10 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 						{
 							articleMap.put("articleGame", article.getGame().getTitle());
 						}
-						
+						else
+						{
+							articleMap.put("articleGame","");
+						}
 						articleMap.put("articleCreationDate", article.getPublishDate());
 						articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
 						articleMap.put("articlePlatforms",  Utility.titleList(article.getPlatforms()));
@@ -528,6 +619,11 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				{
 					articleMap.put("articleGame", article.getGame().getTitle());
 				}
+				else
+				{
+					articleMap.put("articleGame", "");
+				}
+				
 				
 				articleMap.put("articleCreationDate", article.getPublishDate());
 				articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
@@ -744,6 +840,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		
 		return recent10Articles;
 	}
+
+	
 
 	
 	

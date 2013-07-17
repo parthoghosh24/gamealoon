@@ -1,7 +1,7 @@
 package com.gamealoon.utility;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+//import java.io.UnsupportedEncodingException;
+//import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -155,11 +155,36 @@ public class Utility {
 		return tokens;
 	}
 	
-	public static void main(String[] args) throws UnsupportedEncodingException
+	/**
+	 * This method returns captialized String. That is if lets say one passes a string called "review", this method should return "Review"
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String capitalizeString(String input)
+	{
+		Character firstChar = input.charAt(0);		
+		firstChar=Character.toUpperCase(firstChar);		
+		String output=input.replace(input.charAt(0), firstChar);		
+		return output;
+	}
+	
+	/**
+	 * Covert String with a pattern like ["abc","def"] in String[]
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String[] stringToList(String input)
+	{		
+		String modifiedInput = input.substring(1, input.indexOf("]"));
+		return modifiedInput.split(",");		
+	}
+	/*public static void main(String[] args) throws UnsupportedEncodingException
 	{
 		String link ="http://www.mysite.com/search/q=Superman";
 		System.out.println(URLEncoder.encode(link, "utf-8"));
-	}
+	}*/
 
 
 }

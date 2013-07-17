@@ -289,7 +289,7 @@ public class GloonGlobal extends GlobalSettings {
          buni.setYear(1984);
          buni.setAvatarPath("myAvatarPath");
          buni.setInsertTime(Utility.convertDateToString(new Date()));
-         buni.setGameBio("I love mobile gaming. I go crazy and forget everything when i get an android or ios device in hand... Love infinite running games");					                
+         buni.setGameBio("I love mobile gaming. I go crazy and forget everything when i get an android or ios device in hand..");					                
          
          ArrayList<Achievement> buniAchievements = new ArrayList<>();
          buniAchievements.add(newGloonie);
@@ -1008,49 +1008,72 @@ public class GloonGlobal extends GlobalSettings {
 			
 			Platform playstation3 = new Platform();
 			playstation3.setTitle("Playstation 3");
+			playstation3.setShortTitle("ps3");
 			playstation3.setDescription("The cell powered third generation beast by Sony");
 			playstation3.setManufacturer("Sony Inc.");
 
 			platformDAOInstance.save(playstation3);
 			
+			Platform playstation4 = new Platform();
+			playstation4.setTitle("Playstation 4");
+			playstation4.setShortTitle("ps4");
+			playstation4.setDescription("The 4th generation powerhouse developed by Sony");
+			playstation4.setManufacturer("Sony Inc.");
+
+			platformDAOInstance.save(playstation4);
+			
 			Platform xbox360 = new Platform();
 			xbox360.setTitle("Xbox 360");
+			xbox360.setShortTitle("x360");
 			xbox360.setDescription("Microsoft's 2nd generation beast");
 			xbox360.setManufacturer("Microsoft Inc.");
 			platformDAOInstance.save(xbox360);
 			
+			Platform xboxOne = new Platform();
+			xboxOne.setTitle("Xbox One");
+			xboxOne.setShortTitle("xone");
+			xboxOne.setDescription("Microsoft's 3rd generation beast");
+			xboxOne.setManufacturer("Microsoft Inc.");
+			platformDAOInstance.save(xboxOne);
+			
 			Platform pc = new Platform();
 			pc.setTitle("PC");
+			pc.setShortTitle("pc");
 			pc.setDescription("The world is owned by Microsoft, Apple and Linux");
 			pc.setManufacturer("Many");
 			platformDAOInstance.save(pc);
 			
 			Platform ios = new Platform();
 			ios.setTitle("IOS");
+			ios.setShortTitle("ios");
 			ios.setDescription("The platform which runs on Iphone, IPAD and IPOD");
 			ios.setManufacturer("Apple");
 			platformDAOInstance.save(ios);
 			
 			Platform android = new Platform();
 			android.setTitle("Android");
+			android.setShortTitle("android");
 			android.setDescription("Started by OHA but later on picked up and maintained by Google, it is the largest mobile OS today.");
 			android.setManufacturer("Google");
 			platformDAOInstance.save(android);
 			
 			Platform wiiu = new Platform();
 			wiiu.setTitle("WII-U");
+			wiiu.setShortTitle("wiiu");
 			wiiu.setDescription("Follow-up to Wii, this console matches the graphics power of current generation consoles along with providing touch based controller.");
 			wiiu.setManufacturer("Nintendo");
 			platformDAOInstance.save(wiiu);
 			
 			Platform n3ds = new Platform();
 			n3ds.setTitle("3DS");
+			n3ds.setShortTitle("3ds");
 			n3ds.setDescription("Follow-up to DS handhalded device with 3d support and updated graphics");
 			n3ds.setManufacturer("Nintendo");
 			platformDAOInstance.save(n3ds);
 			
 			Platform vita = new Platform();
 			vita.setTitle("PS-VITA");
+			vita.setShortTitle("vita");
 			vita.setDescription("Sony's follow-up to successful PSP");
 			vita.setManufacturer("Sony");
 			platformDAOInstance.save(vita);
@@ -1325,7 +1348,8 @@ public class GloonGlobal extends GlobalSettings {
 			totalPageHits = daoInstance.getTotalPageHits();
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			maxPayne3Review.setPageHitWilsonScore(pageHitWilsonScore);
-			maxPayne3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
+			maxPayne3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score	
+			maxPayne3Review.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(maxPayne3Review);
 			
 			Article farCry3Review = new Article();
@@ -1352,7 +1376,8 @@ public class GloonGlobal extends GlobalSettings {
 			totalPageHits = daoInstance.getTotalPageHits();
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			farCry3Review.setPageHitWilsonScore(pageHitWilsonScore);
-			farCry3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score												
+			farCry3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
+			farCry3Review.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(farCry3Review);
 			
 			
@@ -1385,7 +1410,8 @@ public class GloonGlobal extends GlobalSettings {
 			totalPageHits = daoInstance.getTotalPageHits();
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			guacameleeReview1.setPageHitWilsonScore(pageHitWilsonScore);
-			guacameleeReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score																							
+			guacameleeReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
+			guacameleeReview1.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(guacameleeReview1);
 			
 			Article guacameleeReview2 = new Article();
@@ -1411,7 +1437,8 @@ public class GloonGlobal extends GlobalSettings {
 			totalPageHits = daoInstance.getTotalPageHits();
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			guacameleeReview2.setPageHitWilsonScore(pageHitWilsonScore);
-			guacameleeReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score																										
+			guacameleeReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score	
+			guacameleeReview2.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(guacameleeReview2);
 			
 			Article guacameleeReview3 = new Article();
@@ -1437,7 +1464,8 @@ public class GloonGlobal extends GlobalSettings {
 			totalPageHits = daoInstance.getTotalPageHits();
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			guacameleeReview3.setPageHitWilsonScore(pageHitWilsonScore);
-			guacameleeReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score				
+			guacameleeReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score		
+			guacameleeReview3.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(guacameleeReview3);
 			
 			Article ageOfWushuReview1 = new Article();
@@ -1464,6 +1492,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ageOfWushuReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			ageOfWushuReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score		
+			ageOfWushuReview1.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(ageOfWushuReview1);
 			
 			Article ageOfWushuReview2 = new Article();
@@ -1490,6 +1519,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ageOfWushuReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			ageOfWushuReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			ageOfWushuReview2.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(ageOfWushuReview2);
 			
 			
@@ -1521,6 +1551,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			motocrossMadnessReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			motocrossMadnessReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			motocrossMadnessReview1.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(motocrossMadnessReview1);
 			
 			Article motocrossMadnessReview2 = new Article();
@@ -1547,6 +1578,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			motocrossMadnessReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			motocrossMadnessReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			motocrossMadnessReview2.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(motocrossMadnessReview2);
 			
 			Article terrariaReview1 = new Article();
@@ -1573,6 +1605,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			terrariaReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			terrariaReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			terrariaReview1.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(terrariaReview1);
 			
 			Article terrariaReview2= new Article();
@@ -1599,6 +1632,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			terrariaReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			terrariaReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			terrariaReview2.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(terrariaReview2);
 			
 			Article terrariaReview3= new Article();
@@ -1625,6 +1659,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			terrariaReview3.setPageHitWilsonScore(pageHitWilsonScore);
 			terrariaReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			terrariaReview3.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(terrariaReview3);
 			
 			Article defianceReview1 = new Article();
@@ -1651,6 +1686,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceReview1.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			defianceReview1.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(defianceReview1);
 			
 			Article defianceReview2 = new Article();
@@ -1677,6 +1713,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceReview2.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			defianceReview2.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(defianceReview2);
 			
 			Article defianceReview3 = new Article();			
@@ -1703,6 +1740,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceReview3.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			defianceReview3.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(defianceReview3);
 			
 			Article maxPayne3Feature = new Article();
@@ -1729,6 +1767,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			maxPayne3Feature.setPageHitWilsonScore(pageHitWilsonScore);
 			maxPayne3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			maxPayne3Feature.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(maxPayne3Feature);
 			
 			Article farCry3Feature = new Article();
@@ -1755,6 +1794,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			farCry3Feature.setPageHitWilsonScore(pageHitWilsonScore);
 			farCry3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			farCry3Feature.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(farCry3Feature);
 			
 			Article mgsRisingFeature = new Article();
@@ -1781,6 +1821,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			mgsRisingFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			mgsRisingFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			mgsRisingFeature.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(mgsRisingFeature);
 			
 			Article defianceFeature = new Article();
@@ -1807,6 +1848,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			defianceFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			defianceFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			defianceFeature.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(defianceFeature);
 			
 			Article motocrossFeature = new Article();
@@ -1833,6 +1875,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			motocrossFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			motocrossFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			motocrossFeature.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(motocrossFeature);
 			
 			Article ageOfWushuFeature = new Article();
@@ -1859,6 +1902,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ageOfWushuFeature.setPageHitWilsonScore(pageHitWilsonScore);
 			ageOfWushuFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			ageOfWushuFeature.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(ageOfWushuFeature);
 			
 			Article cricketGloonicle = new Article();
@@ -1884,6 +1928,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			cricketGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			cricketGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			cricketGloonicle.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(cricketGloonicle);
 			
 			Article freemiumGloonicle = new Article();
@@ -1909,6 +1954,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			freemiumGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			freemiumGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			freemiumGloonicle.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(freemiumGloonicle);
 			
 			Article top10horrorGloonicle = new Article();
@@ -1934,6 +1980,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			top10horrorGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			top10horrorGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			top10horrorGloonicle.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(top10horrorGloonicle);
 			
 			Article top10ActionGloonicle = new Article();
@@ -1959,6 +2006,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			top10ActionGloonicle.setPageHitWilsonScore(pageHitWilsonScore);
 			top10ActionGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			top10ActionGloonicle.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(top10ActionGloonicle);
 			
 			Article myWeeklyShow = new Article();
@@ -1984,6 +2032,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			myWeeklyShow.setPageHitWilsonScore(pageHitWilsonScore);
 			myWeeklyShow.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			myWeeklyShow.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(myWeeklyShow);
 			
 			Article eaDisasterNews = new Article();
@@ -2009,6 +2058,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			eaDisasterNews.setPageHitWilsonScore(pageHitWilsonScore);
 			eaDisasterNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			eaDisasterNews.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(eaDisasterNews);
 			
 			Article ps4News = new Article();
@@ -2034,6 +2084,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			ps4News.setPageHitWilsonScore(pageHitWilsonScore);
 			ps4News.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			ps4News.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(ps4News);
 			
 			Article warnerBrothersNews = new Article();
@@ -2059,6 +2110,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			warnerBrothersNews.setPageHitWilsonScore(pageHitWilsonScore);
 			warnerBrothersNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			warnerBrothersNews.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(warnerBrothersNews);
 			
 			Article batmanOriginsNews = new Article();
@@ -2084,6 +2136,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			batmanOriginsNews.setPageHitWilsonScore(pageHitWilsonScore);
 			batmanOriginsNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			batmanOriginsNews.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(batmanOriginsNews);
 			
 			Article supermanGameNews = new Article();
@@ -2109,6 +2162,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			supermanGameNews.setPageHitWilsonScore(pageHitWilsonScore);
 			supermanGameNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			supermanGameNews.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(supermanGameNews);
 			
 			Article newPrinceOfPersiaGame = new Article();
@@ -2134,6 +2188,7 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			newPrinceOfPersiaGame.setPageHitWilsonScore(pageHitWilsonScore);
 			newPrinceOfPersiaGame.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
+			newPrinceOfPersiaGame.setState(AppConstants.PUBLISH);
 			articleDAOInstance.save(newPrinceOfPersiaGame);
 			
 			/*Article farCry3Review = new Article();

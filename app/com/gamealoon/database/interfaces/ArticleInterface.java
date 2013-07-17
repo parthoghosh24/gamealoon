@@ -74,4 +74,11 @@ public interface ArticleInterface {
 	 */
 	
 	public void updateArticlePageHitCount(String urlTitle);
+	
+	/**
+	 * Saves New Article
+	 * 
+	 * @return
+	 */
+	public HashMap<String, Object> saveArticle(String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game,String state);
 }

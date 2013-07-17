@@ -25,6 +25,7 @@ public class Platform{
 	@Id
 	ObjectId id;
 	private String title; //playstation, pc, xbox, browser...
+	private String shortTitle;
 	private String description;	
 	private String manufacturer; // Sony, Microsoft, Nintendo, Google, Apple
 	/**
@@ -71,6 +72,18 @@ public class Platform{
 	public String toString()
 	{
 		return this.title;
+	}
+	/**
+	 * @return the shortTitle
+	 */
+	public String getShortTitle() {
+		return shortTitle;
+	}
+	/**
+	 * @param shortTitle the shortTitle to set
+	 */
+	public void setShortTitle(String shortTitle) {
+		this.shortTitle = shortTitle;
 	}
 
 }

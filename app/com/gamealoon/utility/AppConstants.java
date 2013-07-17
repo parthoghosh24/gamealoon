@@ -18,4 +18,10 @@ public class AppConstants {
 	public final static int EMAIL_CONFIRMED =1;
 	public final static int USER_PROFILE=1;
 	public final static int USER_PAGE=2;
+	
+	/**
+	 * Article states
+	 */
+	public final static int DRAFT=1; 
+	public final static int PUBLISH=2;
 }

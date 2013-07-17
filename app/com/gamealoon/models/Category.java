@@ -33,5 +33,10 @@ public enum Category {
 	 * from my top 10 games to my top 10 moments in max payne 3 to why do we have to starve
 	 * for a great cricket game
 	 */
-	gloonicle 
+	gloonicle,
+	
+	/**
+	 * Article can be posted as video also
+	 */
+	video
 }
