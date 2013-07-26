@@ -14,9 +14,9 @@ public class ArticleController extends Controller{
 	
 	private static final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();	
 	
-	public static Result getArticle(String username, String articleTitle)
+	public static Result getArticle(String username, String articleTitleOrId)
 	{		
-		HashMap<String, Object> articleMap = getArticleMap(username, articleTitle);		
+		HashMap<String, Object> articleMap = getArticleMap(username, articleTitleOrId);		
 		//TODO add href element to json
 		return ok(toJson(articleMap));
 	}
@@ -52,7 +52,24 @@ public class ArticleController extends Controller{
 		System.out.println("articleGame: "+articleGame);
 		System.out.println("articleState: "+articleState);
 		
-		HashMap<String, Object> response = saveArticle(articleTitle, articleSubTitle, articleBody, articleCategory, articleUsername, articlePlatform, articleFeaturedImage, articleGame, articleState);
+		HashMap<String, Object> response = saveArticle("",articleTitle, articleSubTitle, articleBody, articleCategory, articleUsername, articlePlatform, articleFeaturedImage, articleGame, articleState);
+		return ok(toJson(response));
+	}
+	
+	public static Result updateArticle(String id)
+	{
+		DynamicForm requestData = form().bindFromRequest();
+		String articleTitle =requestData.get("articleTitle");
+		String articleSubTitle=requestData.get("articleSubTitle");
+		String articleBody =requestData.get("articleBody");
+		String articleCategory =requestData.get("articleCategory");
+		String articleUsername =requestData.get("articleUsername");
+		String articlePlatform =requestData.get("articlePlatform");
+		String articleFeaturedImage =requestData.get("articleFeaturedImage");
+		String articleGame =requestData.get("articleGame");
+		String articleState =requestData.get("articleState");
+		
+		HashMap<String, Object> response = saveArticle(id,articleTitle, articleSubTitle, articleBody, articleCategory, articleUsername, articlePlatform, articleFeaturedImage, articleGame, articleState);
 		return ok(toJson(response));
 	}
 	
@@ -65,9 +82,9 @@ public class ArticleController extends Controller{
 	 * @param articleTitle
 	 * @return
 	 */
-	private static HashMap<String, Object> getArticleMap(String userName, String articleTitle)
+	private static HashMap<String, Object> getArticleMap(String userName, String articleTitleOrId)
 	{
-		return articleDaoInstance.getArticle(userName, articleTitle);
+		return articleDaoInstance.getArticle(userName, articleTitleOrId);
 	}
 	
 	/**
@@ -97,8 +114,8 @@ public class ArticleController extends Controller{
 	 * @param state
 	 * @return
 	 */
-	private static HashMap<String, Object> saveArticle(String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game, String state)
+	private static HashMap<String, Object> saveArticle(String id,String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game, String state)
 	{
-		return articleDaoInstance.saveArticle(articleTitle, articleSubTitle, articleBody, category, username, platforms, featuredImagePath, game, state);
+		return articleDaoInstance.saveArticle(id,articleTitle, articleSubTitle, articleBody, category, username, platforms, featuredImagePath, game, state);
 	}
 }

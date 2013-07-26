@@ -16,7 +16,7 @@ import com.google.code.morphia.annotations.Id;
 public class Achievement {
 
 	@Id
-	ObjectId id;
+	private ObjectId id;
 	private String title;
 	private String description;
 	private String imagePath;
@@ -64,4 +64,10 @@ public class Achievement {
 	{
 		return this.title;
 	}
+	/**
+	 * @return the id
+	 */
+	public ObjectId getId() {
+		return id;
+	}	
 }

@@ -9,9 +9,11 @@ import org.bson.types.ObjectId;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.UserInterface;
 import com.gamealoon.models.Achievement;
+import com.gamealoon.models.Activity;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.User;
 import com.gamealoon.utility.AppConstants;
+import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
 public class UserDAO extends GloonDAO implements UserInterface{
@@ -102,7 +104,14 @@ private Datastore gloonDatastore=null;
 			   if(mode == AppConstants.USER_PROFILE)
 			   {
 				   //10 followers				   
-				   ArrayList<User> followedBy = user.getFollowedBy();				   
+				   ArrayList<HashMap<String,Object>> followedBy = new ArrayList<>();
+				   for(User userInstance: user.getFollowedBy())
+				   {
+					   HashMap<String,Object> followedByMap = new HashMap<>();
+					   followedByMap.put("followedByUserName", userInstance.getUsername());
+					   followedByMap.put("followedByUserAvatar", userInstance.getAvatarPath());
+					   followedBy.add(followedByMap);
+				   }
 				   if(followedBy.size()>10)
 				   {
 					   userMap.put("userFollowedBy", followedBy.subList(1, 11));  
@@ -115,8 +124,15 @@ private Datastore gloonDatastore=null;
 				   
 				   
 				   
-				   //10 followings				   
-				   ArrayList<User> followings = user.getFollowing();				   
+				   //10 followings				   				   
+				   ArrayList<HashMap<String,Object>> followings = new ArrayList<>();
+				   for(User userInstance: user.getFollowing())
+				   {
+					   HashMap<String,Object> followingMap = new HashMap<>();
+					   followingMap.put("followingUserName", userInstance.getUsername());
+					   followingMap.put("followingUserAvatar", userInstance.getAvatarPath());
+					   followings.add(followingMap);
+				   }
 				   if(followings.size()>10)
 				   {
 					   userMap.put("userFollowingOthers", followings.subList(1, 11));  
@@ -142,11 +158,39 @@ private Datastore gloonDatastore=null;
 				   //10 recent posts
 				   List<Article> articles = new ArrayList<>();
 				   articles = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).order("-insertTime").limit(10).asList();
-				   userMap.put("userPosts", articles);
+				   ArrayList<HashMap<String,Object>> articleMapList = new ArrayList<>();
+				   for(Article article: articles)
+				   {
+					   HashMap<String, Object> articleMap = new HashMap<>();
+					   articleMap.put("articleId", article.getId().toString());
+					   articleMap.put("articleTitle", article.getTitle());
+					   articleMap.put("articleStrippedTitle", article.getTitle().substring(0, 15)+"...");
+					   articleMap.put("articleSubTitle", article.getSubtitle());
+					   articleMap.put("articleBody", article.getBody());
+					   articleMap.put("articleCategory", article.getCategory().toString());
+					   articleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
+					   articleMap.put("articleState", article.getState());
+					   articleMap.put("articleInsertTime", article.getInsertTime());
+					   articleMap.put("articleUpdateTime", article.getUpdateTime());
+					   articleMap.put("articlePublishDate", article.getPublishDate());
+					   articleMap.put("articlePlatforms", Utility.titleList(article.getPlatforms()));
+					   if(article.getGame()!=null)
+						{
+						   articleMap.put("articleGame",article.getGame().getTitle());
+						}
+						else
+						{
+							articleMap.put("articleGame","");
+						}
+					   articleMapList.add(articleMap);
+					   
+				   }
+				   userMap.put("userPosts", articleMapList);
 				   
 				   
-				   //10 recent activities
-				   
+				   //10 recent activities			
+				   ActivityDAO activityDAO = ActivityDAO.instantiateDAO();
+				   userMap.put("userActivities", activityDAO.getActivities(user));
 			   }
 			   if(mode == AppConstants.USER_PAGE)
 			   {

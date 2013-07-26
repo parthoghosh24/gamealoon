@@ -26,7 +26,7 @@ import com.google.code.morphia.utils.IndexDirection;
 public class Game{
 		
 	@Id
-	ObjectId id;
+	private ObjectId id;
 	
 	private String title;
 	private String description; //a little description about the game
@@ -213,4 +213,13 @@ public class Game{
 	{
 		return this.title;
 	}
+
+
+	/**
+	 * @return the id
+	 */
+	public ObjectId getId() {
+		return id;
+	}
+	
 }

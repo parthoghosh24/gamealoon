@@ -40,6 +40,12 @@ public class Article {
 	private String featuredImagePath;
 	private int state; //1: draft, 2:publish
 	
+	/**
+	 * Article states
+	 */
+	public final static int DRAFT=1; 
+	public final static int PUBLISH=2;
+	
 	@Embedded
 	private ArrayList<Platform> platforms = new ArrayList<>();
 	

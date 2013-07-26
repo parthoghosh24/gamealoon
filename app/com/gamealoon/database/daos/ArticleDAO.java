@@ -180,18 +180,26 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	}
 	
 	@Override
-	public HashMap<String, Object> getArticle(String userName, String title) {
-		Article article = getArticleData(gloonDatastore,userName,title);
+	public HashMap<String, Object> getArticle(String userName, String titleOrId) {
+		Article article = getArticleData(gloonDatastore,userName,titleOrId);
 		HashMap<String , Object> response = new HashMap<>();
 		if(article!=null)
 		{
+			response.put("articleId",article.getId().toString());
 			response.put("articleTitle", article.getTitle());
 			response.put("articleSubTitle", article.getSubtitle());
 			response.put("articleBody", article.getBody());			
 			response.put("articleCategory", Utility.capitalizeString(article.getCategory().toString()));
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
 			response.put("articlePublishDate", article.getPublishDate());
-			response.put("articleAuthor", article.getAuthor().getUsername());
+			HashMap<String, Object> userMap = new HashMap<>();
+			User author = article.getAuthor();
+			userMap.put("articleAuthorUsername", author.getUsername());
+			userMap.put("articleAuthorGameBio", author.getGameBio());
+			userMap.put("articleAuthorTotalAchievements", author.getAchievements().size());
+			userMap.put("articleAuthorTotalFollowers", author.getFollowedBy().size());
+			userMap.put("articleAuthorTotalFollowing", author.getFollowing().size());
+			response.put("articleAuthor", userMap);			
 			if(article.getGame()!=null)
 			{
 				response.put("articleGame",article.getGame().getTitle());
@@ -200,9 +208,16 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			{
 				response.put("articleGame","");
 			}
-			
-			response.put("articlePlatforms", Utility.titleList(article.getPlatforms()));
-			response.put("articleScore", article.getTotalScore());
+			ArrayList<HashMap<String, Object>> platforms = new ArrayList<>();
+			for(Platform platform: article.getPlatforms())
+			{
+				HashMap<String, Object> platformMap = new HashMap<>();
+				platformMap.put("platformTitle", platform.getTitle());
+				platformMap.put("platformShortTitle", platform.getShortTitle());
+				platforms.add(platformMap);
+			}
+			response.put("articlePlatforms", platforms);
+			response.put("articleState", article.getState());
 		}
 		return response;
 	}
@@ -226,7 +241,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					response.put("articleBody", article.getBody());
 					response.put("articleCategory", Utility.capitalizeString(article.getCategory().toString()));
 					response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
-					response.put("articlePublishDate", article.getPublishDate());
+					response.put("articlePublishDate", article.getPublishDate());				
 					response.put("articleAuthor", article.getAuthor().getUsername());
 					if(article.getGame()!=null)
 					{
@@ -286,15 +301,25 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	}
 	
 	@Override
-	public HashMap<String, Object> saveArticle(String articleTitle,
+	public HashMap<String, Object> saveArticle(String id,String articleTitle,
 			String articleSubTitle, String articleBody, String category,
 			String username, String platforms, String featuredImagePath,
 			String game, String state) {
 		
 		     HashMap<String, Object> response = new HashMap<>();
-		     response.put("status", "fail");
-		     String[] platformList = Utility.stringToList(platforms);
-		     Article article = createArticle(articleTitle,articleSubTitle,articleBody,category,username,platformList,featuredImagePath,game, Integer.parseInt(state));
+		     response.put("status", "fail");		     
+		     String[] platformList = Utility.stringToList(platforms);		     
+		     Article article = createOrUpdateArticle(id,
+		    		 articleTitle,
+		    		 articleSubTitle,
+		    		 articleBody,
+		    		 category,
+		    		 username,
+		    		 platformList,
+		    		 featuredImagePath,
+		    		 game, 
+		    		 Integer.parseInt(state)
+		    		 );
 		     try
 		     {
 		    	 save(article);
@@ -307,9 +332,57 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		     System.out.println("Status: "+response.get("status"));
 		return response;
 	}
-	private Article createArticle(String articleTitle, String articleSubTitle, String articleBody, String category, String username, String[] platformList, String featuredImagePath, String game, int state) 
+	/**
+	 * Create or update Article.
+	 * 
+	 * @param id
+	 * @param articleTitle
+	 * @param articleSubTitle
+	 * @param articleBody
+	 * @param category
+	 * @param username
+	 * @param platformList
+	 * @param featuredImagePath
+	 * @param game
+	 * @param state
+	 * @return
+	 */
+	private Article createOrUpdateArticle(String id, 
+			String articleTitle, 
+			String articleSubTitle, 
+			String articleBody, 
+			String category, 
+			String username, 
+			String[] platformList, 
+			String featuredImagePath, 
+			String game, 
+			int state
+			) 
 	{
-		Article article = new Article();
+		Article article=null;
+		String dateTime = Utility.convertDateToString(new Date());
+		if(!id.isEmpty())
+		{
+			ObjectId _id = new ObjectId(id);
+			article = gloonDatastore.createQuery(Article.class).filter("_id", _id).get();
+			if(state ==Article.PUBLISH)
+			{
+				article.setUpdateTime(dateTime);
+				article.setPublishDate(dateTime); 
+			}
+			else
+			{
+				article.setUpdateTime(dateTime);
+			}
+		}
+		else
+		{
+			article = new Article();
+			
+			article.setInsertTime(dateTime);
+	        article.setUpdateTime(dateTime);
+	        article.setPublishDate("");
+		}		
 		article.setTitle(articleTitle);
 		article.setSubtitle(articleSubTitle);
 		article.setBody(articleBody);
@@ -337,7 +410,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
         for(String platformName:platformList)
         {
         	System.out.println("Platform Name: "+platformName);
-        	Platform platform = gloonDatastore.createQuery(Platform.class).filter("shortTitle", platformName).get();
+        	Platform platform = gloonDatastore.createQuery(Platform.class).filter("shortTitle", platformName.trim()).get();
+        	System.out.println("Platform Object: "+platform);
         	if(platform!=null)
         	{
         		platforms.add(platform);
@@ -355,10 +429,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
         	}
         	
         }
-        article.setState(state);
-        String time=Utility.convertDateToString(new Date());
-        article.setInsertTime(time);
-        article.setUpdateTime(time);
+        article.setState(state);        
+        
 		return article;
 	}
 
@@ -454,9 +526,21 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		
 	}	
 	
-	private Article getArticleData(Datastore gloonDatastore, String userName, String title)
+	/**
+	 * Get Single Article Based on Article Author and Article Encoded title or id
+	 * 
+	 * @param gloonDatastore
+	 * @param userName
+	 * @param title
+	 * @return
+	 */
+	private Article getArticleData(Datastore gloonDatastore, String userName, String titleOrId)
 	{
-		ObjectId _id = Utility.fetchIdFromTitle(title);
+		if(!titleOrId.contains("-"))
+		{
+			return gloonDatastore.createQuery(Article.class).filter("author.username", userName).filter("_id", new ObjectId(titleOrId)).get();
+		}		
+		ObjectId _id = Utility.fetchIdFromTitle(titleOrId);
 		return gloonDatastore.createQuery(Article.class).filter("author.username", userName).filter("_id", _id).get();		
 	}
 	
@@ -484,34 +568,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					switch(type)
 					{
 					case "all":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "ps3":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Playstation 3").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Playstation 3").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "xbox360":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Xbox 360").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Xbox 360").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "ps4":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Playstation 4").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Playstation 4").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "wiiu":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","WII-U").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","WII-U").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "pc":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","PC").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","PC").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "ios":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","IOS").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","IOS").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "android":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Android").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","Android").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;
 					case "3ds":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","3DS").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","3DS").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;	
 					case "vita":
-						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","PS-VITA").filter("category", Category.review).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("game.title", game.getTitle()).filter("platforms.title","PS-VITA").filter("category", Category.review).filter("state", Article.PUBLISH).get();
 						break;	
 						
 					}
@@ -532,7 +616,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 						{
 							articleMap.put("articleGame","");
 						}
-						articleMap.put("articleCreationDate", article.getPublishDate());
+						articleMap.put("articlepublishDate", article.getPublishDate());
 						articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
 						articleMap.put("articlePlatforms",  Utility.titleList(article.getPlatforms()));
 						fetchedReviews.add(articleMap);
@@ -574,34 +658,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			switch(type)
 			{
 			case "all":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "ps3":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Playstation 3").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Playstation 3").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "xbox360":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Xbox 360").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Xbox 360").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "ps4":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Playstation 4").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Playstation 4").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "wiiu":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","WII-U").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","WII-U").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "pc":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","PC").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","PC").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "ios":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","IOS").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","IOS").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "android":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Android").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","Android").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;
 			case "3ds":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","3DS").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","3DS").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;	
 			case "vita":
-				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","PS-VITA").filter("category", category).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author.username", user.getUsername()).filter("platforms.title","PS-VITA").filter("category", category).filter("state", Article.PUBLISH).get();
 				break;	
 				
 			}
@@ -625,7 +709,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				}
 				
 				
-				articleMap.put("articleCreationDate", article.getPublishDate());
+				articleMap.put("articlepublishDate", article.getPublishDate());
 				articleMap.put("articleFeaturedImage",article.getFeaturedImagePath());
 				articleMap.put("articlePlatforms",Utility.titleList(article.getPlatforms()));
 				fetchedArticles.add(articleMap);			    
@@ -649,34 +733,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			switch(platform)
 			{
 			case "all":
-				recent10Articles=gloonDatastore.createQuery(Article.class).order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "pc":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","PC").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","PC").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ps3":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Playstation 3").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "xbox360":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Xbox 360").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ps4":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Playstation 4").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "wiiu":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","WII-U").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","WII-U").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ios":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","IOS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","IOS").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "android":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Android").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","Android").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "vita":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","PS-VITA").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "3ds":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","3DS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.title","3DS").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			}			
 		}
@@ -687,34 +771,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			switch(platform)
 			{
 			case "all":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "pc":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","PC").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","PC").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ps3":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Playstation 3").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "xbox360":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Xbox 360").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ps4":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Playstation 4").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "wiiu":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","WII-U").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","WII-U").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ios":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","IOS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","IOS").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "android":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Android").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","Android").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "vita":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","PS-VITA").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "3ds":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","3DS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.review).filter("platforms.title","3DS").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			}
 			
@@ -727,34 +811,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			switch(platform)
 			{
 			case "all":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "pc":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","PC").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","PC").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ps3":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Playstation 3").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "xbox360":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Xbox 360").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ps4":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Playstation 4").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "wiiu":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","WII-U").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","WII-U").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "ios":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","IOS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","IOS").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "android":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Android").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","Android").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "vita":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","PS-VITA").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			case "3ds":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","3DS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.feature).filter("platforms.title","3DS").order("-publishDate").limit(limit).filter("state", Article.PUBLISH).asList();
 				break;
 			}
 			
@@ -767,34 +851,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			switch(platform)
 			{
 			case "all":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "pc":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","PC").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","PC").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "ps3":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Playstation 3").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "xbox360":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Xbox 360").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "ps4":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Playstation 4").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "wiiu":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","WII-U").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","WII-U").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "ios":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","IOS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","IOS").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "android":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Android").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","Android").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "vita":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","PS-VITA").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "3ds":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","3DS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.news).filter("platforms.title","3DS").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			}
 			
@@ -806,34 +890,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			switch(platform)
 			{
 			case "all":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "pc":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","PC").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","PC").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "ps3":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Playstation 3").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Playstation 3").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "xbox360":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Xbox 360").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Xbox 360").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "ps4":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Playstation 4").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Playstation 4").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "wiiu":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","WII-U").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","WII-U").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "ios":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","IOS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","IOS").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "android":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Android").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","Android").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "vita":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","PS-VITA").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","PS-VITA").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			case "3ds":
-				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","3DS").order("-creationDate").limit(limit).asList();
+				recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Category.gloonicle).filter("platforms.title","3DS").order("-publishDate").filter("state", Article.PUBLISH).limit(limit).asList();
 				break;
 			}			
 		}				

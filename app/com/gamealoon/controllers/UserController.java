@@ -27,8 +27,11 @@ public class UserController extends Controller{
 		return ok(toJson(userMaps));
 	}
 	
-	public static Result getLoggedInUser(String userName, String password)
+	public static Result getLoggedInUser()
 	{
+		DynamicForm requestData = form().bindFromRequest();
+		String userName=requestData.get("username");
+		String password=requestData.get("password");
 		HashMap<String, Object> userObject=getLoggedInUserMap(userName, password) ;
 		return ok(toJson(userObject));
 	}

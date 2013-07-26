@@ -43,7 +43,7 @@ public interface ArticleInterface {
 	 * @return
 	 */
 		
-	public HashMap<String, Object> getArticle(String userName, String title);	
+	public HashMap<String, Object> getArticle(String userName, String titleOrId);	
 	
 	/**
 	 * Fetch all Articles by key and sort by sortField
@@ -80,5 +80,5 @@ public interface ArticleInterface {
 	 * 
 	 * @return
 	 */
-	public HashMap<String, Object> saveArticle(String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game,String state);
+	public HashMap<String, Object> saveArticle(String id, String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game,String state);
 }

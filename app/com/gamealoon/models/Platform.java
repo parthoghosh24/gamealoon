@@ -23,7 +23,7 @@ public class Platform{
 
 	
 	@Id
-	ObjectId id;
+	private ObjectId id;
 	private String title; //playstation, pc, xbox, browser...
 	private String shortTitle;
 	private String description;	
@@ -85,5 +85,11 @@ public class Platform{
 	public void setShortTitle(String shortTitle) {
 		this.shortTitle = shortTitle;
 	}
+	/**
+	 * @return the id
+	 */
+	public ObjectId getId() {
+		return id;
+	}	
 
 }

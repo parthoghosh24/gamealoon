@@ -4,23 +4,28 @@
 
 
 # Platforms
-GET  /platform/:platform				com.gamealoon.controllers.PlatformController.getPlatformData(platform:String)
+
+GET  /platform/:platform					com.gamealoon.controllers.PlatformController.getPlatformData(platform:String)
+
 
 # Articles
-GET /article/:username/:title           com.gamealoon.controllers.ArticleController.getArticle(username:String, title:String)
-GET /articles/:key/:sortField           com.gamealoon.controllers.ArticleController.getAllArticlesByKey(key:String, sortField:String)
-POST /article/save                      com.gamealoon.controllers.ArticleController.saveArticle()
+
+GET /article/:username/:titleOrId           com.gamealoon.controllers.ArticleController.getArticle(username:String, titleOrId:String)
+GET /articles/:key/:sortField           	com.gamealoon.controllers.ArticleController.getAllArticlesByKey(key:String, sortField:String)
+POST /article/save                      	com.gamealoon.controllers.ArticleController.saveArticle()
+POST /article/save/:id                   	com.gamealoon.controllers.ArticleController.updateArticle(id:String)
 
 
 # Users
 
 POST /user/register 			   			com.gamealoon.controllers.UserController.registerUser()
-GET /login/:username/:password      		com.gamealoon.controllers.UserController.getLoggedInUser(username:String, password:String)  
+POST /login     							com.gamealoon.controllers.UserController.getLoggedInUser()  
 GET /user/:usernameOrId/:mode               com.gamealoon.controllers.UserController.getUser(usernameOrId:String, mode:Integer)   
 GET /users                         			com.gamealoon.controllers.UserController.getUsers()
 
 
 # Search
+
 GET /search/:keywords             com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
 
 # Map static resources from the /public folder to the /assets URL path

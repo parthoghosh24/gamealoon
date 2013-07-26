@@ -20,8 +20,11 @@ public class AppConstants {
 	public final static int USER_PAGE=2;
 	
 	/**
-	 * Article states
+	 * Visibility
 	 */
-	public final static int DRAFT=1; 
-	public final static int PUBLISH=2;
+	public final static int PUBLIC=1;
+	public final static int PRIVATE=2;
+	
+	
+	
 }
