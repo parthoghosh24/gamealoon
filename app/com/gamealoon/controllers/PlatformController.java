@@ -11,7 +11,7 @@ import play.mvc.Result;
 import static play.libs.Json.toJson;
 
 /**
- * This is the platform controller. It exposes user to all platformed filtered
+ * This is the platform controller. It exposes user to all platform filtered
  * information, i.e, all ps3, xbox360, pc, etc. information
  * 
  * @author Partho
@@ -19,7 +19,6 @@ import static play.libs.Json.toJson;
  */
 public class PlatformController extends Controller {
 
-//	private static final GloonDAO gloonDaoInstance = GloonDAO.instantiateDAO();
 	private static final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
 	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();
 	private static final GameDAO gameDaoInstance = GameDAO.instantiateDAO();	
@@ -36,9 +35,7 @@ public class PlatformController extends Controller {
 		platformDataMap.put("top10Articles", top10Articles);
 		platformDataMap.put("top10Games", top10Games);
 		platformDataMap.put("top5Users", top5Users);
-		platformDataMap.put("platform", platform);
-		response().setHeader(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-		//TODO add href element to json
+		platformDataMap.put("platform", platform);				
 		return ok(toJson(platformDataMap));
 	}
 
@@ -47,8 +44,7 @@ public class PlatformController extends Controller {
 	 * 
 	 * @return
 	 */
-	private static HashMap<String, Object> getAllArticlesForPlatformCarousel(
-			String platform) {
+	private static HashMap<String, Object> getAllArticlesForPlatformCarousel(String platform) {
 
 		return articleDaoInstance.getAllArticlesForCarousel(platform);
 	}

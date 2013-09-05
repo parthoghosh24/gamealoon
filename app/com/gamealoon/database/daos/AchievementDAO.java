@@ -9,12 +9,11 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 
 	
 	private static final AchievementDAO DATA_ACCESS_LAYER=new AchievementDAO();	
-	private Datastore gloonDatastore=null;
-	
+	private Datastore gloonDatastore=null;	
 	private AchievementDAO()
 	{
 		super();		
-		gloonDatastore=initDatastore();
+		gloonDatastore=initDatastore();		
 	}
 	
 	/**
@@ -35,6 +34,17 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 	@Override
 	public Achievement findByTitle(String title) {		
 		return gloonDatastore.find(Achievement.class, "title", title).get();
+	}
+	
+	/**
+	 * Utility method to found all User Count
+	 * 
+	 * @return
+	 */
+	public Long allAchievementCount()
+	{		
+		return gloonDatastore.createQuery(Achievement.class).countAll();
+				
 	}
 
 }

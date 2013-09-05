@@ -3,12 +3,11 @@ package com.gamealoon.models;
 
 import java.util.ArrayList;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.gamealoon.database.daos.UserDAO;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Indexed;
-import com.google.code.morphia.annotations.Reference;
 import com.google.code.morphia.utils.IndexDirection;
 
 /**
@@ -29,9 +28,12 @@ public class User {
 	private ObjectId id;
 	private String username;
 	private String email; //should be a way to find out whether email is valid or not
-	private String password; //need to find out a way to encrypt the password
+	private int birthdayVisibility;
+	private String passwordHash;
+	private String passwordSalt;
 	private String firstName;	
 	private String lastName;
+	private String country;
 	private int emailConfirmed;
 	private int day;
 	private int month;
@@ -47,18 +49,35 @@ public class User {
     @Indexed(value=IndexDirection.ASC, name="usr_scr")
     private double totalScore;
     
+    //Chat states
+    public static final int INVITE=0;
+    public static final int PENDING=1;
+    public static final int BLOCK=2;
+    
+    //For birthday visibility
+    public static final int PRIVATE=1;
+    public static final int PUBLIC=2;
+    
+    //User interests
+    public static final int PLATFORM_INTEREST=1;
+    public static final int GENRE_INTEREST=2;
+    
     @Embedded
     private ArrayList<Achievement> achievements = new ArrayList<>(); //Achievements earned    
 	
-    @JsonIgnore
-	@Reference
+    
+	@Embedded
 	//User followed by many users- eyed by
-	private ArrayList<User> followedBy = new ArrayList<>();
+	private ArrayList<Buddy> followedBy = new ArrayList<>();
 	
-	@JsonIgnore
-	@Reference
-	private ArrayList<User> following = new ArrayList<>();
-
+	@Embedded
+	private ArrayList<Buddy> following = new ArrayList<>();
+		
+	private ArrayList<InterestedGame> followingGames = new ArrayList<>();
+		
+    private ArrayList<Genre> interestedGenres = new ArrayList<>();
+    
+    private ArrayList<Platform> interestedPlatforms = new ArrayList<>();
 	/**
 	 * @return the username
 	 */
@@ -88,17 +107,17 @@ public class User {
 	}
 
 	/**
-	 * @return the password
+	 * @return the passwordHash
 	 */
-	public String getPassword() {
-		return password;
+	public String getPasswordHash() {
+		return passwordHash;
 	}
 
 	/**
-	 * @param password the password to set
+	 * @param passwordHash the passwordHash to set
 	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
 	}
 
 	/**
@@ -146,14 +165,14 @@ public class User {
 	/**
 	 * @return the followedBy
 	 */
-	public ArrayList<User> getFollowedBy() {
+	public ArrayList<Buddy> getFollowedBy() {
 		return followedBy;
 	}
 
 	/**
 	 * @param followedBy the followedBy to set
 	 */
-	public void setFollowedBy(ArrayList<User> followedBy) {
+	public void setFollowedBy(ArrayList<Buddy> followedBy) {
 		this.followedBy = followedBy;
 	}
 	
@@ -358,15 +377,109 @@ public class User {
 	/**
 	 * @return the following
 	 */
-	public ArrayList<User> getFollowing() {
+	public ArrayList<Buddy> getFollowing() {
 		return following;
 	}
 
 	/**
 	 * @param following the following to set
 	 */
-	public void setFollowing(ArrayList<User> following) {
+	public void setFollowing(ArrayList<Buddy> following) {
 		this.following = following;
-	}	
+	}
 
+	/**
+	 * @return the followingGames
+	 */
+	public ArrayList<InterestedGame> getFollowingGames() {
+		return followingGames;
+	}
+
+	/**
+	 * @param followingGames the followingGames to set
+	 */
+	public void setFollowingGames(ArrayList<InterestedGame> followingGames) {
+		this.followingGames = followingGames;
+	}	
+	
+	/**
+	 * Get total user count.
+	 * 
+	 * @return
+	 */
+    public static Long getAllUserCount()
+    {    	
+		UserDAO userDAO = UserDAO.instantiateDAO();
+    	return userDAO.allUserCount();
+    }
+
+	/**
+	 * @return the interestedGenres
+	 */
+	public ArrayList<Genre> getInterestedGenres() {
+		return interestedGenres;
+	}
+
+	/**
+	 * @param interestedGenres the interestedGenres to set
+	 */
+	public void setInterestedGenres(ArrayList<Genre> interestedGenres) {
+		this.interestedGenres = interestedGenres;
+	}
+
+	/**
+	 * @return the interestedPlatforms
+	 */
+	public ArrayList<Platform> getInterestedPlatforms() {
+		return interestedPlatforms;
+	}
+
+	/**
+	 * @param interestedPlatforms the interestedPlatforms to set
+	 */
+	public void setInterestedPlatforms(ArrayList<Platform> interestedPlatforms) {
+		this.interestedPlatforms = interestedPlatforms;
+	}
+
+	/**
+	 * @return the birthdayVisibility
+	 */
+	public int getBirthdayVisibility() {
+		return birthdayVisibility;
+	}
+
+	/**
+	 * @param birthdayVisibility the birthdayVisibility to set
+	 */
+	public void setBirthdayVisibility(int birthdayVisibility) {
+		this.birthdayVisibility = birthdayVisibility;
+	}
+
+	/**
+	 * @return the country
+	 */
+	public String getCountry() {
+		return country;
+	}
+
+	/**
+	 * @param country the country to set
+	 */
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * @return the passwordSalt
+	 */
+	public String getPasswordSalt() {
+		return passwordSalt;
+	}
+
+	/**
+	 * @param passwordSalt the passwordSalt to set
+	 */
+	public void setPasswordSalt(String passwordSalt) {
+		this.passwordSalt = passwordSalt;
+	}
 }

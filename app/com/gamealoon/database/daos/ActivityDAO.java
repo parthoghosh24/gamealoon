@@ -1,7 +1,6 @@
 package com.gamealoon.database.daos;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,6 +15,8 @@ import com.gamealoon.database.interfaces.ActivityInterface;
 import com.gamealoon.models.Achievement;
 import com.gamealoon.models.Activity;
 import com.gamealoon.models.Article;
+import com.gamealoon.models.Buddy;
+import com.gamealoon.models.Game;
 import com.gamealoon.models.User;
 import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
@@ -57,7 +58,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 	 * @param visbility
 	 * @param insertTime
 	 */
-	public void create(Integer type, String userId, String entityId, Integer visbility, String insertTime)
+	public void create(Integer type, String userId, String entityId, Integer visbility, String insertTime, Long timestamp)
 	{		
 		Activity activity = new Activity();
 		activity.setType(type);
@@ -65,16 +66,12 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 		activity.setEntityId(entityId);
 		activity.setVisibility(visbility);		
 		activity.setInsertTime(insertTime);
+		activity.setTimestamp(timestamp);
 		save(activity);
 		
 	}
 	
-	/**
-	 * Get Activities for one single User. We can fetch the recent activities also if no userId available.
-	 * 
-	 * @param userId
-	 * @return
-	 */
+	@Override
 	public ArrayList<HashMap<String, Object>> getActivities(User user)
 	{
 		ArrayList<HashMap<String,Object>> activites = new ArrayList<>();
@@ -88,13 +85,13 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 			userName=user.getUsername();
 			String userId= user.getId().toString();
 			allActivites = gloonDatastore.createQuery(Activity.class).filter("userId", userId).order("-insertTime").asList();
-			Set<User> allUsersInCurrentUserCircle = new HashSet<>();			
+			Set<Buddy> allUsersInCurrentUserCircle = new HashSet<>();			
 			allUsersInCurrentUserCircle.addAll(user.getFollowedBy());
 			allUsersInCurrentUserCircle.addAll(user.getFollowing());
 			
-			for(User setUser: allUsersInCurrentUserCircle)
+			for(Buddy setUser: allUsersInCurrentUserCircle)
 			{
-				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class).filter("userId", setUser.getId().toString()).filter("visibility", AppConstants.PUBLIC).order("-insertTime").asList();
+				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class).filter("userId", setUser.getBuddyId().toString()).filter("visibility", AppConstants.PUBLIC).order("-insertTime").asList();
 				allActivites.addAll(circleUserActivites);
 			}		
 			
@@ -173,6 +170,51 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 				activityMap.put("achievementTitle", achievement.getTitle());
 				activityMap.put("activityType", activityType);
 				break;
+			
+			case Activity.ACTIVITY_USER_UNFOLLOWS:
+				activityMap.put("message", " no more following ");
+				activityMap.put("activityOwnerUserName", userName);
+				activityMap.put("activityUserName", acitvityUser.getUsername());
+				User userNotFollowing= gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+				activityMap.put("notFollowingUserName", userNotFollowing.getUsername());				
+				activityMap.put("activityType", activityType);
+				break;
+				
+			case Activity.ACTIVITY_BLOCK:
+				activityMap.put("message", " successfully blocked ");
+				activityMap.put("activityOwnerUserName", userName);
+				activityMap.put("activityUserName", acitvityUser.getUsername());
+				User blockedUser= gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+				activityMap.put("notFollowingUserName", blockedUser.getUsername());				
+				activityMap.put("activityType", activityType);
+				break;
+				
+			case Activity.ACTIVITY_UNBLOCK:
+				activityMap.put("message", "successfully unblocked ");
+				activityMap.put("activityOwnerUserName", userName);
+				activityMap.put("activityUserName", acitvityUser.getUsername());
+				User unblockedUser= gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+				activityMap.put("notFollowingUserName", unblockedUser.getUsername());				
+				activityMap.put("activityType", activityType);
+				break;
+				
+			case Activity.ACTIVITY_FOLLOW_GAME:
+				activityMap.put("message", " interested in ");
+				activityMap.put("activityOwnerUserName", userName);
+				activityMap.put("activityUserName", acitvityUser.getUsername());
+				Game followedGame= gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+				activityMap.put("followingGame", followedGame.getTitle());				
+				activityMap.put("activityType", activityType);
+				break;
+				
+			case Activity.ACTIVITY_UNFOLLOW_GAME:
+				activityMap.put("message", "successfully unblocked");
+				activityMap.put("activityOwnerUserName", userName);
+				activityMap.put("activityUserName", acitvityUser.getUsername());
+				Game unfollowedGame= gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+				activityMap.put("notFollowingUserName", unfollowedGame.getTitle());				
+				activityMap.put("activityType", activityType);
+				break;	
 			}
 			activites.add(activityMap);
 		}

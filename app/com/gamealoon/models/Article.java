@@ -4,6 +4,8 @@ package com.gamealoon.models;
 
 import java.util.ArrayList;
 import org.bson.types.ObjectId;
+
+import com.gamealoon.database.daos.ArticleDAO;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
@@ -337,6 +339,31 @@ public class Article {
 	 */
 	public void setState(int state) {
 		this.state = state;
+	}
+	
+	/**
+	 * Get all publishedArticles
+	 * 
+	 * @return
+	 */
+	public static Long allPublishedArticleCount()
+	{		
+		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
+		return articleDAO.allPublishedArticlesCount(null);
+		
+	}
+	
+	/**
+	 * Get all publishedArticles for Single User
+	 * 
+	 * @return
+	 */
+	public static Long allPublishedArticleCount(User user)
+	{
+		
+		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
+		return articleDAO.allPublishedArticlesCount(user);
+		
 	}
 
 	

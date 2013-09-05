@@ -18,4 +18,11 @@ public interface PlatformInterface {
 	 */
 	public Platform findByTitle(String title);
 	
+	/**
+	 * Find bt short title
+	 * 
+	 * @param shortTitle
+	 * @return
+	 */
+	public Platform findByShortTitle(String shortTitle);
 }

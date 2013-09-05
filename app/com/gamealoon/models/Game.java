@@ -1,10 +1,7 @@
 package com.gamealoon.models;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.ArrayList;
 import org.bson.types.ObjectId;
-
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
@@ -38,13 +35,32 @@ public class Game{
 	private String publisher;
 	private String developer;
 	private String genere;
+	private String gameBoxShotPath;
+	private int gameReleaseStatus;
+	
+	@Indexed(value=IndexDirection.ASC, name="game_scr")
 	private double score; //This is review score.
 	
 	
 	@Embedded
 	//Game has many plaforms
-	private Set<Platform> platforms= new HashSet<>();
-
+	private ArrayList<Platform> platforms= new ArrayList<>();
+	
+	@Embedded
+	private ArrayList<InterestedUser> interestedIn = new ArrayList<>(); //followed by users or users interested in this game
+	
+	
+	
+	public static final int RELEASED=0;
+	public static final int NOT_RELEASED=1;
+	
+	public static final String RATING_PENDING="ratingPending";
+	public static final String EVERYONE="everyone";
+	public static final String EVERYONE_TEN_PLUS="everyoneTenPlus";
+	public static final String TEEN="teen";
+	public static final String MATURE="mature";
+	public static final String ADULTS_ONLY="adultsOnly";
+	public static final String EARLY_CHILDHOOD="earlyChildhood";
 
 	/**
 	 * @return the title
@@ -193,7 +209,7 @@ public class Game{
 	/**
 	 * @return the platforms
 	 */
-	public Set<Platform> getPlatforms() {
+	public ArrayList<Platform> getPlatforms() {
 		return platforms;
 	}
 
@@ -201,8 +217,8 @@ public class Game{
 	/**
 	 * @param platforms2 the platforms to set
 	 */
-	public void setPlatforms(Set<Platform> platforms2) {
-		this.platforms = platforms2;
+	public void setPlatforms(ArrayList<Platform> platforms) {
+		this.platforms = platforms;
 	}
 	
 
@@ -221,5 +237,55 @@ public class Game{
 	public ObjectId getId() {
 		return id;
 	}
+
+
+	/**
+	 * @return the interestedIn
+	 */
+	public ArrayList<InterestedUser> getInterestedIn() {
+		return interestedIn;
+	}
+
+
+	/**
+	 * @param interestedIn the interestedIn to set
+	 */
+	public void setInterestedIn(ArrayList<InterestedUser> interestedIn) {
+		this.interestedIn = interestedIn;
+	}
+
+
+	/**
+	 * @return the gameBoxShotPath
+	 */
+	public String getGameBoxShotPath() {
+		return gameBoxShotPath;
+	}
+
+
+	/**
+	 * @param gameBoxShotPath the gameBoxShotPath to set
+	 */
+	public void setGameBoxShotPath(String gameBoxShotPath) {
+		this.gameBoxShotPath = gameBoxShotPath;
+	}
+
+
+	/**
+	 * @return the gameReleaseStatus
+	 */
+	public int getGameReleaseStatus() {
+		return gameReleaseStatus;
+	}
+
+
+	/**
+	 * @param gameReleaseStatus the gameReleaseStatus to set
+	 */
+	public void setGameReleaseStatus(int gameReleaseStatus) {
+		this.gameReleaseStatus = gameReleaseStatus;
+	}
+
+	
 	
 }

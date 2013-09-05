@@ -36,4 +36,9 @@ public class PlatformDAO extends GloonDAO implements PlatformInterface{
 		return gloonDatastore.find(Platform.class, "title", title).get();
 	}
 
+	@Override
+	public Platform findByShortTitle(String shortTitle) {		
+		return gloonDatastore.find(Platform.class, "shortTitle", shortTitle).get();
+	}
+
 }

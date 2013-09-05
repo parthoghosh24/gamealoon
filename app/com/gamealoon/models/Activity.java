@@ -22,7 +22,7 @@ public class Activity {
 	private String entityId;
 	private Integer visibility;
 	private String insertTime;
-	
+	private Long timestamp;
 	/**
 	 * Activity Types
 	 * 
@@ -34,6 +34,11 @@ public class Activity {
 	public final static int ACTIVITY_NEW_DISCUSSION=5;
 	public final static int ACTIVITY_JOIN_DISCUSSION=6;
 	public final static int ACTIVITY_NEW_ACHIEVMENT=7;
+	public final static int ACTIVITY_USER_UNFOLLOWS=8;
+	public final static int ACTIVITY_BLOCK=9;
+	public final static int ACTIVITY_UNBLOCK=10;
+	public final static int ACTIVITY_FOLLOW_GAME=11;
+	public final static int ACTIVITY_UNFOLLOW_GAME=12;
 
 	/**
 	 * Returns Activity instance Id
@@ -126,6 +131,20 @@ public class Activity {
 	 */
 	public void setInsertTime(String insertTime) {
 		this.insertTime = insertTime;
+	}
+
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

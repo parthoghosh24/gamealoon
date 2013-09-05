@@ -1,9 +1,11 @@
 package com.gamealoon.database.interfaces;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.gamealoon.models.Article;
+import com.gamealoon.models.User;
 
 public interface ArticleInterface {
 	
@@ -81,4 +83,23 @@ public interface ArticleInterface {
 	 * @return
 	 */
 	public HashMap<String, Object> saveArticle(String id, String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game,String state);
+	
+	
+	/**
+	 * 10 Posts for one user. This needs to be updated
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public ArrayList<HashMap<String, Object>> getArticleListForUser(User user);
+	
+	
+	/**
+	 * Find all Published articles for a game
+	 * 
+	 * @param gameId
+	 * @return
+	 */
+	public List<Article> findAllPublishedArticlesByGame(String gameId);
+	
 }

@@ -3,6 +3,7 @@ package com.gamealoon.models;
 import org.bson.types.ObjectId;
 
 
+import com.gamealoon.database.daos.AchievementDAO;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 
@@ -70,4 +71,10 @@ public class Achievement {
 	public ObjectId getId() {
 		return id;
 	}	
+	
+	public static Long getAllAchievementCount()
+	{		
+		AchievementDAO achievementDAO = AchievementDAO.instantiateDAO();
+		return achievementDAO.allAchievementCount();
+	}
 }
