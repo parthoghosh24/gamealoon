@@ -1,14 +1,17 @@
 package com.gamealoon.tests;
 
-
-
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
+import com.gamealoon.algorithm.SecurePassword;
 import com.gamealoon.database.daos.ArticleDAO;
 import com.gamealoon.database.daos.GameDAO;
 import com.gamealoon.database.daos.UserDAO;
+import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
+import com.gamealoon.models.Genre;
 import com.gamealoon.utility.Utility;
 
 
@@ -26,7 +29,8 @@ import static play.test.Helpers.running;
 public class ModelsTest {
 
 	final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
-	final GameDAO gameDaoInstance = GameDAO.instantiateDAO();	
+	final GameDAO gameDaoInstance = GameDAO.instantiateDAO();
+	final UserDAO userDaoInstance = UserDAO.instantiateDAO();	
 	/**
 	 * We are testing the db and various entites over here....
 	 * 
@@ -46,14 +50,68 @@ public class ModelsTest {
 				    testStringEncoder();
 				    testFetchIdFromTitle();
 				    testMapReduceTotalPageHitsCalc();
+				    countUsers();
+				    testEnums();
+				    testPasswordHash();
+				    testUsernameDetection();
+				    
 				
 			}
 			
-			
-			
-			
-			//Query test
-			
+
+			private void testUsernameDetection() {
+				System.out.println("User is: "+userDaoInstance.findByUsername("guest"));
+				
+			}
+
+
+			private void testPasswordHash() {
+				try {
+					HashMap<String, String> passwordHash = SecurePassword.createHash("secret");
+					String saltHex=passwordHash.get("saltHex");
+					String hashHex=passwordHash.get("hashHex");	
+					System.out.println("Salt hex: "+passwordHash.get("saltHex"));
+					System.out.println("Hash hex: "+passwordHash.get("hashHex"));
+					
+					if(SecurePassword.validatePassword("", hashHex, saltHex))
+					{
+						System.out.println("Password matched!!!");
+					}
+					else
+					{
+						System.out.println("Password didnt match!!!");
+					}
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+				
+			}
+
+
+
+
+			private void testEnums() {
+				System.out.println("Genre Enum: "+ Genre.Action);
+				System.out.println("Category Review: "+Category.valueOf("Review"));				
+			}
+
+
+
+
+			private void countUsers() {
+				UserDAO userDAOInstance =UserDAO.instantiateDAO();
+				
+				System.out.println("Total Users: "+userDAOInstance.allUserCount());
+				
+			}
+
+
+
+
 			private void findAllGames()
 			{
 			 /* List<Game> games = gloonDatastore.find(Game.class).asList();

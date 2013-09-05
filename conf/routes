@@ -20,13 +20,28 @@ POST /article/save/:id                   	com.gamealoon.controllers.ArticleContr
 
 POST /user/register 			   			com.gamealoon.controllers.UserController.registerUser()
 POST /login     							com.gamealoon.controllers.UserController.getLoggedInUser()  
-GET /user/:usernameOrId/:mode               com.gamealoon.controllers.UserController.getUser(usernameOrId:String, mode:Integer)   
+GET /user/:usernameOrId/:mode/:username     com.gamealoon.controllers.UserController.getUser(usernameOrId:String, mode:Integer, username:String)   
 GET /users                         			com.gamealoon.controllers.UserController.getUsers()
-
+POST /user/interest/:userName               com.gamealoon.controllers.UserController.saveOrUpdateUserInterest(userName:String)
+POST /user/save/:userName                   com.gamealoon.controllers.UserController.saveOrUpdateUser(userName:String)
+POST /user/password/change/:userName		com.gamealoon.controllers.UserController.resetPassword(userName:String)
+POST /user/addOrRemoveBuddy                 com.gamealoon.controllers.UserController.addOrRemoveBuddy(originalUsername:String,buddyUsername:String,type:String)
+POST /user/blocOrUnblockBuddy               com.gamealoon.controllers.UserController.blockOrUnblockBuddy(originalUsername:String,buddyUsername:String,type:String)
 
 # Search
 
-GET /search/:keywords             com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
+GET /search/:keywords             			com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
+
+# Game		
+
+GET /game/:urlOrid/:username				com.gamealoon.controllers.GameController.getGame(urlOrid:String, username:String)
+
+# Conversation
+
+GET /converse/								 		com.gamealoon.controllers.ConversationController.index()
+POST /converse/comment/save                  		com.gamealoon.controllers.ConversationController.addComment()
+GET /converse/comment/get/:articleId/:timeStamp     com.gamealoon.controllers.ConversationController.getComment(articleId:String, timeStamp:String)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

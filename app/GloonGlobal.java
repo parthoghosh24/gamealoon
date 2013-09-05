@@ -1,8 +1,12 @@
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
 import com.gamealoon.algorithm.RankAlgorithm;
+import com.gamealoon.algorithm.SecurePassword;
 import com.gamealoon.database.daos.AchievementDAO;
 import com.gamealoon.database.daos.ActivityDAO;
 import com.gamealoon.database.daos.ArticleDAO;
@@ -30,16 +34,30 @@ public class GloonGlobal extends GlobalSettings {
 	final PlatformDAO platformDAOInstance = PlatformDAO.instantiateDAO();
 	final ActivityDAO activityDAOInstance = ActivityDAO.instantiateDAO();
 	
+	
 	 @Override
 	public void onStart(Application app) {
 		 if (userDAOInstance.count() < 1) {
 				System.out.println("Data getting created.............");
 				
 				createAchievements();
-				createUsers();
+				try {
+					createUsers();
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				createPlatforms();					
 				createGames();							
-				createArticles();
+				try {
+					createArticles();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 
 			}
@@ -81,7 +99,7 @@ public class GloonGlobal extends GlobalSettings {
 		}
 		
 		
-		private void createUsers()
+		private void createUsers() throws NoSuchAlgorithmException, InvalidKeySpecException, ParseException
 		{
 			Achievement newGloonie = achievementDAOInstance.findByTitle("New Gloonie!");
 			Achievement glooniacWriter = achievementDAOInstance.findByTitle("Glooniac Writer!!!");
@@ -93,10 +111,14 @@ public class GloonGlobal extends GlobalSettings {
 			User partho = new User();
 			partho.setEmail("defjam24@gmail.com");
 			partho.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-			partho.setPassword("secret");
+			HashMap<String, String> parthoSecretMap = SecurePassword.createHash("secret");
+			partho.setPasswordHash(parthoSecretMap.get("hashHex"));
+			partho.setPasswordSalt(parthoSecretMap.get("saltHex"));			
 			partho.setFirstName("partho");			
 			partho.setLastName("ghosh");
 			partho.setUsername("loonatic86");
+			partho.setCountry("India");
+			partho.setBirthdayVisibility(User.PUBLIC);
 			partho.setDay(24);
 			partho.setMonth(3);
 			partho.setYear(1986);
@@ -107,19 +129,28 @@ public class GloonGlobal extends GlobalSettings {
 			
 			ArrayList<Achievement> parthoAchievements = new ArrayList<>();
 			parthoAchievements.add(newGloonie);
-			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2012-05-16 22:05:00");
+			String dateText="";
+			Date date=null;
+			dateText="2012-05-16 22:05:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
 			parthoAchievements.add(glooniacWriter);
-			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2012-07-16 02:15:00");
+			dateText="2012-07-16 02:15:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
 			parthoAchievements.add(gloonyAboutgames);
-			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2012-08-20 16:15:00");
+			dateText="2012-08-20 16:15:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
 			parthoAchievements.add(gloonyAboutVideos);
-			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2012-09-20 20:15:00");
+			dateText="2012-09-20 20:15:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, partho.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
 			partho.setAchievements(parthoAchievements);									
 			partho.setAchievementsBasedScore(parthoAchievements.size()*10);
-			partho.setVideoUploadBasedScore(50);
-			partho.setUserFollowScore(10);
+			partho.setVideoUploadBasedScore(50);			
 			partho.setArticleBasedScore(600);
-			partho.setTotalScore(partho.getAchievementsBasedScore()+partho.getVideoUploadBasedScore()+partho.getUserFollowScore()+partho.getArticleBasedScore());
+			partho.setTotalScore(partho.getAchievementsBasedScore()+partho.getVideoUploadBasedScore()+0+partho.getArticleBasedScore());
 			userDAOInstance.save(partho);
 			
 			
@@ -131,11 +162,15 @@ public class GloonGlobal extends GlobalSettings {
          User swati = new User();
          swati.setEmail("swati.hindu@gmail.com");
          swati.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         swati.setPassword("secret");
+         HashMap<String, String> swatiSecretMap = SecurePassword.createHash("secret");
+         swati.setPasswordHash(swatiSecretMap.get("hashHex"));
+         swati.setPasswordSalt(swatiSecretMap.get("saltHex"));	         
          swati.setFirstName("swati");         
          swati.setLastName("mittal");
          swati.setUsername("loonatic87");
+         swati.setBirthdayVisibility(User.PUBLIC);
          swati.setDay(7);
+         swati.setCountry("India");
          swati.setMonth(3);
          swati.setYear(1987);
          swati.setAvatarPath("myAvatarPath");
@@ -144,52 +179,36 @@ public class GloonGlobal extends GlobalSettings {
          userDAOInstance.save(swati);
          
          ArrayList<Achievement> swatiAchievements = new ArrayList<>();
+         
          swatiAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, swati.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2012-09-20 20:15:00");
+         dateText="2012-09-20 20:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, swati.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          swatiAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, swati.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2012-10-21 17:15:00");
+         dateText="2012-10-21 17:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, swati.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE,dateText, date.getTime());
          swati.setAchievements(swatiAchievements);
 			
          swati.setAchievementsBasedScore(swatiAchievements.size()*10);
-         swati.setVideoUploadBasedScore(70);
-         swati.setUserFollowScore(0);
-         swati.setArticleBasedScore(200);                
-         
-         	ArrayList<User> parthoFollowers = new ArrayList<>();
-         	ArrayList<User> parthoFollows = new ArrayList<>();
-			parthoFollowers.add(swati);						
-			parthoFollows.add(swati);
-			activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), swati.getId().toString(), AppConstants.PUBLIC, "2012-10-21 20:10:00");			
-			userDAOInstance.save(swati);
-			
-			
-			partho.setFollowedBy(parthoFollowers);
-			partho.setFollowing(parthoFollows);
-			userDAOInstance.save(partho);
-		
-			
-			ArrayList<User> swatiFollowers = new ArrayList<>();
-			ArrayList<User> swatiFollows = new ArrayList<>();
-			swatiFollows.add(partho);
-			activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), partho.getId().toString(), AppConstants.PUBLIC, "2012-10-21 19:15:00");
-			swatiFollowers.add(partho);
-			swati.setUserFollowScore(10);
-			swati.setTotalScore(swati.getAchievementsBasedScore()+swati.getVideoUploadBasedScore()+swati.getUserFollowScore()+swati.getArticleBasedScore());
-			
-			
-			
-			swati.setFollowedBy(swatiFollowers);
-			swati.setFollowing(swatiFollows);
+         swati.setVideoUploadBasedScore(70);         
+         swati.setArticleBasedScore(200);                                     							
+			userDAOInstance.save(partho);					
+			swati.setTotalScore(swati.getAchievementsBasedScore()+swati.getVideoUploadBasedScore()+0+swati.getArticleBasedScore());												
 			userDAOInstance.save(swati);
 			
 			//user bhumika
 			User bhumika = new User();
 			bhumika.setEmail("bhumika.bhu@gmail.com");
+			bhumika.setCountry("India");
 			bhumika.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-			bhumika.setPassword("secret");
+			 HashMap<String, String> bhumikaSecretMap = SecurePassword.createHash("secret");
+			 bhumika.setPasswordHash(bhumikaSecretMap.get("hashHex"));
+			 bhumika.setPasswordSalt(bhumikaSecretMap.get("saltHex"));
 			bhumika.setFirstName("bhumika");			
 			bhumika.setLastName("tiwari");
 			bhumika.setUsername("chocobo87");
+			bhumika.setBirthdayVisibility(User.PUBLIC);
 			bhumika.setDay(11);
 			bhumika.setMonth(7);
 			bhumika.setYear(1987);
@@ -200,46 +219,35 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> bhumikaAchievements = new ArrayList<>();
          bhumikaAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, bhumika.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-01 20:10:00");
+         dateText="2013-01-01 20:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, bhumika.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          bhumikaAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, bhumika.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-04-10 17:25:00");
+         dateText="2013-04-10 17:25:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, bhumika.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          bhumikaAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, bhumika.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-04-21 21:15:00");
+         dateText="2013-04-21 21:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, bhumika.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          bhumika.setAchievements(bhumikaAchievements);
 			
          bhumika.setAchievementsBasedScore(bhumikaAchievements.size()*10);
          bhumika.setVideoUploadBasedScore(50);   
-         bhumika.setArticleBasedScore(250);                
-         ArrayList<User> bhumikaFollowers=new ArrayList<>();       
-         
-         bhumikaFollowers.add(partho);
-         
-        
-         
-         bhumikaFollowers.add(swati);
-         bhumika.setFollowedBy(bhumikaFollowers);
-         bhumika.setUserFollowScore(bhumikaFollowers.size()*10);
-         bhumika.setTotalScore(bhumika.getAchievementsBasedScore()+bhumika.getVideoUploadBasedScore()+bhumika.getUserFollowScore()+bhumika.getArticleBasedScore());
-         userDAOInstance.save(bhumika);
-         
-         parthoFollows.add(bhumika);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), bhumika.getId().toString(), AppConstants.PUBLIC, "2013-01-02 19:15:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(bhumika);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), bhumika.getId().toString(), AppConstants.PUBLIC, "2013-01-02 19:16:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
+         bhumika.setArticleBasedScore(250);                                                 
         
        //user dada
          User dada = new User();
          dada.setEmail("prodipto.ghosh@gmail.com");
          dada.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         dada.setPassword("secret");
+         HashMap<String, String> dadaSecretMap = SecurePassword.createHash("secret");
+         dada.setPasswordHash(dadaSecretMap.get("hashHex"));
+         dada.setPasswordSalt(dadaSecretMap.get("saltHex"));
          dada.setFirstName("prodipto");         
          dada.setLastName("ghosh");
+         dada.setCountry("India");
          dada.setUsername("jaguarpaw80");
+         dada.setBirthdayVisibility(User.PUBLIC);
          dada.setDay(19);
          dada.setMonth(7);
          dada.setYear(1980);
@@ -250,58 +258,34 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> dadaAchievements = new ArrayList<>();
          dadaAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-03 11:10:00");
+         dateText="2013-01-03 11:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          dadaAchievements.add(videoGlooniac);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-05-05 21:10:00");
+         dateText="2013-05-05 21:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          dadaAchievements.add(glooniacWriter);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2013-03-04 14:15:00");
+         dateText="2013-03-04 14:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          dadaAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-05-04 19:10:00");
+         dateText="2013-05-04 19:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          dadaAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-06-06 21:15:00");
+         dateText="2013-06-06 21:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, dada.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          dada.setAchievements(dadaAchievements);
          
 			
          dada.setAchievementsBasedScore(dadaAchievements.size()*10);
          dada.setVideoUploadBasedScore(50);   
-         dada.setArticleBasedScore(400);                
-         ArrayList<User> dadaFollowers=new ArrayList<>();
-         dadaFollowers.add(partho);         
-         dadaFollowers.add(swati);
-         dadaFollowers.add(bhumika);
-         dada.setFollowedBy(dadaFollowers);
-         dada.setUserFollowScore(dadaFollowers.size()*10);
-         dada.setTotalScore(dada.getAchievementsBasedScore()+dada.getVideoUploadBasedScore()+dada.getUserFollowScore()+dada.getArticleBasedScore());
-         userDAOInstance.save(dada);
-         
-         ArrayList<User> bhumikaFollows = new ArrayList<>();
-         ArrayList<User> dadaFollows = new ArrayList<>();
-         
-         parthoFollows.add(dada);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), dada.getId().toString(), AppConstants.PUBLIC, "2013-01-03 16:19:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(dada);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), dada.getId().toString(), AppConstants.PUBLIC, "2013-02-05 18:16:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(dada);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), dada.getId().toString(), AppConstants.PUBLIC, "2013-03-02 19:19:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         dadaFollows.add(bhumika);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), bhumika.getId().toString(), AppConstants.PUBLIC, "2013-01-06 20:16:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);
-         
-         bhumikaFollowers.add(dada);
-         
-         bhumika.setFollowedBy(bhumikaFollowers);
-         bhumika.setUserFollowScore(bhumika.getFollowedBy().size()*10);
-         bhumika.setTotalScore(bhumika.getAchievementsBasedScore()+bhumika.getVideoUploadBasedScore()+bhumika.getUserFollowScore()+bhumika.getArticleBasedScore());
+         dada.setArticleBasedScore(400);                         
+         dada.setTotalScore(dada.getAchievementsBasedScore()+dada.getVideoUploadBasedScore()+0+dada.getArticleBasedScore());
+         userDAOInstance.save(dada);         
+         bhumika.setTotalScore(bhumika.getAchievementsBasedScore()+bhumika.getVideoUploadBasedScore()+0+bhumika.getArticleBasedScore());
          userDAOInstance.save(bhumika);
          
          
@@ -309,10 +293,14 @@ public class GloonGlobal extends GlobalSettings {
          User buni = new User();
          buni.setEmail("karleo84@gmail.com");
          buni.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         buni.setPassword("secret");
+         HashMap<String, String> buniSecretMap = SecurePassword.createHash("secret");
+         buni.setPasswordHash(buniSecretMap.get("hashHex"));
+         buni.setPasswordSalt(buniSecretMap.get("saltHex"));
          buni.setFirstName("debashree");         
          buni.setLastName("ghosh");
          buni.setUsername("buno84");
+         buni.setCountry("India");
+         buni.setBirthdayVisibility(User.PUBLIC);
          buni.setDay(13);
          buni.setMonth(8);
          buni.setYear(1984);
@@ -323,67 +311,33 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> buniAchievements = new ArrayList<>();
          buniAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, buni.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-03 13:10:00");
-         buniAchievements.add(gloonyAboutgames);                                               
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, buni.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-06-03 19:10:00");
+         dateText="2013-01-03 13:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, buni.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
+         buniAchievements.add(gloonyAboutgames);              
+         dateText="2013-06-03 19:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, buni.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText,date.getTime());
          buni.setAchievements(buniAchievements);
 			
          buni.setAchievementsBasedScore(buniAchievements.size()*10);
          buni.setVideoUploadBasedScore(20);   
-         buni.setArticleBasedScore(100);                
-         ArrayList<User> buniFollowers=new ArrayList<>();
-         buniFollowers.add(partho);
-         buniFollowers.add(swati);
-         buniFollowers.add(bhumika);
-         buniFollowers.add(dada);
-         buni.setFollowedBy(buniFollowers);
-         buni.setUserFollowScore(buniFollowers.size()*10);
-         buni.setTotalScore(buni.getAchievementsBasedScore()+buni.getVideoUploadBasedScore()+buni.getUserFollowScore()+buni.getArticleBasedScore());
-         userDAOInstance.save(buni);
-         
-       
-         
-         parthoFollows.add(buni);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), buni.getId().toString(), AppConstants.PUBLIC, "2013-01-04 16:19:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(buni);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), buni.getId().toString(), AppConstants.PUBLIC, "2013-01-04 17:25:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(buni);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), buni.getId().toString(), AppConstants.PUBLIC, "2013-01-11 12:19:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         dadaFollows.add(buni);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), buni.getId().toString(), AppConstants.PUBLIC, "2013-02-03 15:19:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);
-         
-         ArrayList<User> buniFollows = new ArrayList<>();
-         buniFollows.add(dada);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, buni.getId().toString(), dada.getId().toString(), AppConstants.PUBLIC, "2013-02-03 15:29:00");
-         buni.setFollowing(buniFollows);
-         userDAOInstance.save(buni);
-         
-         
-         dadaFollowers.add(buni);
-         dada.setFollowedBy(dadaFollowers);
-         dada.setUserFollowScore(dada.getFollowedBy().size()*10);
-         dada.setTotalScore(dada.getAchievementsBasedScore()+dada.getVideoUploadBasedScore()+dada.getUserFollowScore()+dada.getArticleBasedScore());
-         userDAOInstance.save(dada);
+         buni.setArticleBasedScore(100);                         
+         buni.setTotalScore(buni.getAchievementsBasedScore()+buni.getVideoUploadBasedScore()+0+buni.getArticleBasedScore());
+         userDAOInstance.save(buni);      
          
          //User neo
          User neo = new User();
          neo.setEmail("neo.anderson@gmail.com");
          neo.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         neo.setPassword("secret");
+         HashMap<String, String> neoSecretMap = SecurePassword.createHash("secret");
+         neo.setPasswordHash(neoSecretMap.get("hashHex"));
+         neo.setPasswordSalt(neoSecretMap.get("saltHex"));
+         neo.setCountry("United States");
          neo.setFirstName("neo");         
          neo.setLastName("anderson");
          neo.setUsername("theone90");
+         neo.setBirthdayVisibility(User.PUBLIC);
          neo.setDay(21);
          neo.setMonth(8);
          neo.setYear(1990);
@@ -394,59 +348,46 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> neoAchievements = new ArrayList<>();
          neoAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-10 13:10:00");
+         dateText="2013-01-10 13:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          neoAchievements.add(videoGlooniac);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-03-03 23:15:00");
+         dateText="2013-03-03 23:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          neoAchievements.add(glooniacWriter);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2013-04-05 03:10:00");
+         dateText="2013-04-05 03:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          neoAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-04-11 16:10:00");
+         dateText="2013-04-11 16:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          neoAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-10-03 04:10:00");
+         dateText="2013-10-03 04:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, neo.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          neo.setAchievements(neoAchievements);
 			
          neo.setAchievementsBasedScore(neoAchievements.size()*10);
          neo.setVideoUploadBasedScore(100);   
-         neo.setArticleBasedScore(450);                
-         ArrayList<User> neoFollowers=new ArrayList<>();
-         neoFollowers.add(partho);
-         neoFollowers.add(swati);
-         neoFollowers.add(bhumika);
-         neoFollowers.add(dada);
-         neo.setFollowedBy(neoFollowers);
-         neo.setUserFollowScore(neoFollowers.size()*10);
-         neo.setTotalScore(neo.getAchievementsBasedScore()+neo.getVideoUploadBasedScore()+neo.getUserFollowScore()+neo.getArticleBasedScore());
-         userDAOInstance.save(neo);
-         
-         parthoFollows.add(neo);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), neo.getId().toString(), AppConstants.PUBLIC, "2013-01-10 16:00:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(neo);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), neo.getId().toString(), AppConstants.PUBLIC, "2013-01-11 16:00:01");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(neo);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), neo.getId().toString(), AppConstants.PUBLIC, "2013-02-03 17:59:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         dadaFollows.add(neo);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), neo.getId().toString(), AppConstants.PUBLIC, "2013-02-09 14:20:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);
+         neo.setArticleBasedScore(450);                         
+         neo.setTotalScore(neo.getAchievementsBasedScore()+neo.getVideoUploadBasedScore()+0+neo.getArticleBasedScore());
+         userDAOInstance.save(neo);        
          
          
          //User brian
          User brian = new User();
          brian.setEmail("brian.mcfury@gmail.com");
          brian.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         brian.setPassword("secret");
+         HashMap<String, String> brianSecretMap = SecurePassword.createHash("secret");
+         brian.setPasswordHash(brianSecretMap.get("hashHex"));
+         brian.setPasswordSalt(brianSecretMap.get("saltHex"));
+         brian.setCountry("United Kingdom");
          brian.setFirstName("brian");         
          brian.setLastName("mcfury");
          brian.setUsername("brianzilla84");
+         brian.setBirthdayVisibility(User.PUBLIC);
          brian.setDay(5);
          brian.setMonth(1);
          brian.setYear(1984);
@@ -457,59 +398,42 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> brianAchievements = new ArrayList<>();
          brianAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-11 16:10:00");
+         dateText="2013-01-11 16:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          brianAchievements.add(videoGlooniac);                
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-02-12 13:11:00");
+         dateText="2013-02-12 13:11:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          brianAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-03-14 10:09:00");
+         dateText="2013-03-14 10:09:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          brianAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-05-10 02:10:00");
+         dateText="2013-05-10 02:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, brian.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          brian.setAchievements(brianAchievements);
 			
          brian.setAchievementsBasedScore(brianAchievements.size()*10);
          brian.setVideoUploadBasedScore(150);   
-         brian.setArticleBasedScore(250);                
-         ArrayList<User> brianFollowers=new ArrayList<>();
-         brianFollowers.add(partho);
-         brianFollowers.add(swati);
-         brianFollowers.add(bhumika);
-         brianFollowers.add(neo);
-         brian.setFollowedBy(brianFollowers);
-         brian.setUserFollowScore(brianFollowers.size()*10);
-         brian.setTotalScore(brian.getAchievementsBasedScore()+brian.getVideoUploadBasedScore()+brian.getUserFollowScore()+brian.getArticleBasedScore());
-         userDAOInstance.save(brian);
-         
-         ArrayList<User> neoFollows = new ArrayList<>();
-         
-         parthoFollows.add(brian);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), brian.getId().toString(), AppConstants.PUBLIC, "2013-02-12 14:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(brian);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), brian.getId().toString(), AppConstants.PUBLIC, "2013-03-15 18:21:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(brian);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), brian.getId().toString(), AppConstants.PUBLIC, "2013-04-16 14:21:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         neoFollows.add(brian);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), brian.getId().toString(), AppConstants.PUBLIC, "2013-02-09 14:20:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);
+         brian.setArticleBasedScore(250);                         
+         brian.setTotalScore(brian.getAchievementsBasedScore()+brian.getVideoUploadBasedScore()+0+brian.getArticleBasedScore());
+         userDAOInstance.save(brian);        
          
          
          //User ken
          User ken = new User();
          ken.setEmail("ken.smith@gmail.com");
          ken.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         ken.setPassword("secret");
+         HashMap<String, String> kenSecretMap = SecurePassword.createHash("secret");
+         ken.setPasswordHash(kenSecretMap.get("hashHex"));
+         ken.setCountry("United States");
+         ken.setPasswordSalt(kenSecretMap.get("saltHex"));
          ken.setFirstName("ken");         
          ken.setLastName("smith");
          ken.setUsername("kenhaduken82");
+         ken.setBirthdayVisibility(User.PUBLIC);
          ken.setDay(5);
          ken.setMonth(6);
          ken.setYear(1982);
@@ -520,77 +444,45 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> kenAchievements = new ArrayList<>();
          kenAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-12 14:10:00");
+         dateText="2013-01-12 14:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          kenAchievements.add(videoGlooniac);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-05-10 13:10:00");
+         dateText="2013-05-10 13:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          kenAchievements.add(glooniacWriter);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2013-07-19 17:10:00");
+         dateText="2013-07-19 17:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          kenAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-09-18 16:19:00");
+         dateText="2013-09-18 16:19:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          kenAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-09-20 23:10:00");
+         dateText="2013-09-20 23:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ken.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          ken.setAchievements(kenAchievements);
 			
          ken.setAchievementsBasedScore(kenAchievements.size()*10);
          ken.setVideoUploadBasedScore(250);   
-         ken.setArticleBasedScore(800);                
-         Set<User> kenFollowers=new HashSet<User>();
-         kenFollowers.add(partho);
-         kenFollowers.add(swati);
-         kenFollowers.add(bhumika);
-         kenFollowers.add(dada);
-         kenFollowers.add(neo);
-         kenFollowers.add(buni);
-         kenFollowers.add(brian);
-         ken.setFollowedBy(dadaFollowers);
-         ken.setUserFollowScore(dadaFollowers.size()*10);
-         ken.setTotalScore(ken.getAchievementsBasedScore()+ken.getVideoUploadBasedScore()+ken.getUserFollowScore()+ken.getArticleBasedScore());
-         userDAOInstance.save(ken);
-         
-         parthoFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-02-09 14:25:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-03-19 15:20:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-02-10 14:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         neoFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-02-05 11:20:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);
-         
-         dadaFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-04-19 16:20:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);
-         
-         buniFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, buni.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-04-20 04:20:00");
-         buni.setFollowing(buniFollows);
-         userDAOInstance.save(buni);
-         
-         ArrayList<User> brianFollows = new ArrayList<>(); 
-         brianFollows.add(ken);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, brian.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-04-27 15:20:00");
-         brian.setFollowing(brianFollows);
-         userDAOInstance.save(brian);
+         ken.setArticleBasedScore(800);                         
+         ken.setTotalScore(ken.getAchievementsBasedScore()+ken.getVideoUploadBasedScore()+0+ken.getArticleBasedScore());
+         userDAOInstance.save(ken);        
          
          //User anand
          User anand = new User();
          anand.setEmail("anand.srinivas@gmail.com");
          anand.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         anand.setPassword("secret");
+         HashMap<String, String> anandSecretMap = SecurePassword.createHash("secret");
+         anand.setPasswordHash(anandSecretMap.get("hashHex"));
+         anand.setPasswordSalt(anandSecretMap.get("saltHex"));
+         anand.setCountry("United States");
          anand.setFirstName("anand");         
          anand.setLastName("srinivas");
          anand.setUsername("anandcrazygamer89");
+         anand.setBirthdayVisibility(User.PUBLIC);
          anand.setDay(9);
          anand.setMonth(8);
          anand.setYear(1989);
@@ -601,67 +493,37 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> anandAchievements = new ArrayList<>();
          anandAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, anand.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-13 15:10:00");
+         dateText="2013-01-13 15:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, anand.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          anandAchievements.add(videoGlooniac);                
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, anand.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-04-20 00:10:00");
+         dateText="2013-04-20 00:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, anand.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          anandAchievements.add(gloonyAboutgames);                
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, anand.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-06-10 03:10:00");
+         dateText="2013-06-10 03:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, anand.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          anand.setAchievements(anandAchievements);
 			
          anand.setAchievementsBasedScore(anandAchievements.size()*10);
          anand.setVideoUploadBasedScore(100);   
-         anand.setArticleBasedScore(200);                
-         ArrayList<User> anandFollowers=new ArrayList<>();
-         anandFollowers.add(partho);
-         anandFollowers.add(swati);
-         anandFollowers.add(bhumika);
-         anandFollowers.add(dada);
-         anandFollowers.add(ken);
-         anandFollowers.add(neo);
-         anand.setFollowedBy(anandFollowers);
-         anand.setUserFollowScore(dadaFollowers.size()*10);
-         anand.setTotalScore(anand.getAchievementsBasedScore()+anand.getVideoUploadBasedScore()+anand.getUserFollowScore()+anand.getArticleBasedScore());
-         userDAOInstance.save(anand);
-         
-         parthoFollows.add(anand);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), anand.getId().toString(), AppConstants.PUBLIC, "2013-01-27 15:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(anand);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), anand.getId().toString(), AppConstants.PUBLIC, "2013-02-19 15:29:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(anand);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), anand.getId().toString(), AppConstants.PUBLIC, "2013-02-01 00:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         neoFollows.add(anand);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), anand.getId().toString(), AppConstants.PUBLIC, "2013-01-28 19:28:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);
-         
-         dadaFollows.add(anand);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), anand.getId().toString(), AppConstants.PUBLIC, "2013-01-29 17:20:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);                  
-         
-         ArrayList<User> kenFollows = new ArrayList<>(); 
-         kenFollows.add(anand);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, brian.getId().toString(), ken.getId().toString(), AppConstants.PUBLIC, "2013-04-27 15:20:00");
-         brian.setFollowing(kenFollows);
-         userDAOInstance.save(ken);
+         anand.setArticleBasedScore(200);                         
+         anand.setTotalScore(anand.getAchievementsBasedScore()+anand.getVideoUploadBasedScore()+0+anand.getArticleBasedScore());
+         userDAOInstance.save(anand);        
          
          //User radha
          User radha = new User();
          radha.setEmail("radha.gupta@gmail.com");
          radha.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         radha.setPassword("secret");
+         HashMap<String, String> radhaSecretMap = SecurePassword.createHash("secret");
+         radha.setPasswordHash(radhaSecretMap.get("hashHex"));
+         radha.setPasswordSalt(radhaSecretMap.get("saltHex"));
          radha.setFirstName("radha");         
          radha.setLastName("gupta");
+         radha.setCountry("India");
          radha.setUsername("radhashooter95");
+         radha.setBirthdayVisibility(User.PUBLIC);
          radha.setDay(12);
          radha.setMonth(3);
          radha.setYear(1995);
@@ -672,79 +534,37 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> radhaAchievements = new ArrayList<>();
          radhaAchievements.add(newGloonie);                
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, radha.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-15 15:10:00");
+         dateText="2013-01-15 15:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, radha.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          radhaAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, radha.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-03-13 16:20:00");
+         dateText="2013-03-13 16:20:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, radha.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          radhaAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, radha.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-07-23 11:19:00");
+         dateText="2013-07-23 11:19:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, radha.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          radha.setAchievements(radhaAchievements);
 			
          radha.setAchievementsBasedScore(radhaAchievements.size()*10);
          radha.setVideoUploadBasedScore(40);   
-         radha.setArticleBasedScore(190);                
-         ArrayList<User> radhaFollowers=new ArrayList<>();
-         radhaFollowers.add(partho);
-         radhaFollowers.add(swati);
-         radhaFollowers.add(bhumika);
-         radhaFollowers.add(buni);
-         radhaFollowers.add(neo);
-         radhaFollowers.add(anand);
-         radhaFollowers.add(brian);
-         radhaFollowers.add(ken);
-         radha.setFollowedBy(radhaFollowers);
-         radha.setUserFollowScore(radhaFollowers.size()*10);
-         radha.setTotalScore(radha.getAchievementsBasedScore()+radha.getVideoUploadBasedScore()+radha.getUserFollowScore()+radha.getArticleBasedScore());
-         userDAOInstance.save(radha);
-         
-         parthoFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-01-15 14:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-02-27 15:25:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-03-03 19:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);
-         
-         neoFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-03-05 11:40:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);
-         
-         buniFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, buni.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-03-05 15:20:00");
-         buni.setFollowing(buniFollows);
-         userDAOInstance.save(buni);      
-         
-         kenFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, ken.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-04-11 19:20:00");
-         brian.setFollowing(kenFollows);
-         userDAOInstance.save(ken);
-         
-         brianFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, brian.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-04-18 17:25:00");
-         brian.setFollowing(brianFollows);
-         userDAOInstance.save(brian);
-         
-         ArrayList<User> anandFollows = new ArrayList<>(); 
-         anandFollows.add(radha);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, anand.getId().toString(), radha.getId().toString(), AppConstants.PUBLIC, "2013-05-01 05:20:00");
-         anand.setFollowing(anandFollows);
-         userDAOInstance.save(anand);
+         radha.setArticleBasedScore(190);                        
+         radha.setTotalScore(radha.getAchievementsBasedScore()+radha.getVideoUploadBasedScore()+0+radha.getArticleBasedScore());
+         userDAOInstance.save(radha);        
          
          //User tiffany
          User tiffany = new User();
          tiffany.setEmail("tiffany.parker@gmail.com");
          tiffany.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         tiffany.setPassword("secret");
+         HashMap<String, String> tiffanySecretMap = SecurePassword.createHash("secret");
+         tiffany.setPasswordHash(tiffanySecretMap.get("hashHex"));
+         tiffany.setPasswordSalt(tiffanySecretMap.get("saltHex"));
          tiffany.setFirstName("tiffany");         
          tiffany.setLastName("parker");
+         tiffany.setCountry("United States");
          tiffany.setUsername("tparkerponny98");
+         tiffany.setBirthdayVisibility(User.PUBLIC);
          tiffany.setDay(5);
          tiffany.setMonth(6);
          tiffany.setYear(1998);
@@ -755,67 +575,37 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> tiffanyAchievements = new ArrayList<>();
          tiffanyAchievements.add(newGloonie);                
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, tiffany.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-16 15:10:00");
+         dateText="2013-01-16 15:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, tiffany.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tiffanyAchievements.add(glooniacWriter);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, tiffany.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2013-04-15 14:15:00");
+         dateText="2013-04-15 14:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, tiffany.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tiffanyAchievements.add(gloonyAboutgames);                
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, tiffany.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-09-25 04:00:00");
+         dateText="2013-09-25 04:00:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, tiffany.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tiffany.setAchievements(tiffanyAchievements);
 			
          tiffany.setAchievementsBasedScore(tiffanyAchievements.size()*10);
          tiffany.setVideoUploadBasedScore(40);   
-         tiffany.setArticleBasedScore(500);                
-         ArrayList<User> tiffanyFollowers=new ArrayList<>();
-         tiffanyFollowers.add(partho);
-         tiffanyFollowers.add(swati);
-         tiffanyFollowers.add(bhumika);
-         tiffanyFollowers.add(radha);
-         tiffanyFollowers.add(buni);
-         tiffanyFollowers.add(ken);
-         tiffany.setFollowedBy(tiffanyFollowers);
-         tiffany.setUserFollowScore(tiffanyFollowers.size()*10);
-         tiffany.setTotalScore(tiffany.getAchievementsBasedScore()+tiffany.getVideoUploadBasedScore()+tiffany.getUserFollowScore()+tiffany.getArticleBasedScore());
-         userDAOInstance.save(tiffany);
-         
-         parthoFollows.add(tiffany);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), tiffany.getId().toString(), AppConstants.PUBLIC, "2013-01-17 15:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(tiffany);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), tiffany.getId().toString(), AppConstants.PUBLIC, "2013-03-01 20:20:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(tiffany);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), tiffany.getId().toString(), AppConstants.PUBLIC, "2013-04-05 21:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);                  
-         
-         buniFollows.add(tiffany);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, buni.getId().toString(), tiffany.getId().toString(), AppConstants.PUBLIC, "2013-05-01 06:20:00");
-         buni.setFollowing(buniFollows);
-         userDAOInstance.save(buni);      
-         
-         kenFollows.add(tiffany);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, ken.getId().toString(), tiffany.getId().toString(), AppConstants.PUBLIC, "2013-05-06 15:21:00");
-         brian.setFollowing(kenFollows);
-         userDAOInstance.save(ken);                  
-         
-         ArrayList<User> radhaFollows = new ArrayList<>(); 
-         radhaFollows.add(tiffany);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, radha.getId().toString(), tiffany.getId().toString(), AppConstants.PUBLIC, "2013-05-11 15:20:00");
-         radha.setFollowing(radhaFollows);
-         userDAOInstance.save(radha);
+         tiffany.setArticleBasedScore(500);                                 
+         tiffany.setTotalScore(tiffany.getAchievementsBasedScore()+tiffany.getVideoUploadBasedScore()+0+tiffany.getArticleBasedScore());
+         userDAOInstance.save(tiffany);        
          
          //User xiang
          User xiang = new User();
          xiang.setEmail("xiang.hu@gmail.com");
          xiang.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         xiang.setPassword("secret");
-         xiang.setFirstName("xiang");         
+         HashMap<String, String> xiangSecretMap = SecurePassword.createHash("secret");
+         xiang.setPasswordHash(xiangSecretMap.get("hashHex"));
+         xiang.setPasswordSalt(xiangSecretMap.get("saltHex"));
+         xiang.setFirstName("xiang");   
+         xiang.setCountry("China");
          xiang.setLastName("hu");
          xiang.setUsername("xwarior81");
+         xiang.setBirthdayVisibility(User.PUBLIC);
          xiang.setDay(2);
          xiang.setMonth(5);
          xiang.setYear(1981);
@@ -826,85 +616,46 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> xiangAchievements = new ArrayList<>();
          xiangAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-16 19:10:00");
+         dateText="2013-01-16 19:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          xiangAchievements.add(videoGlooniac);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-02-16 00:10:00");
+         dateText="2013-02-16 00:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          xiangAchievements.add(glooniacWriter);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2013-05-26 04:10:00");
+         dateText="2013-05-26 04:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          xiangAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-05-28 01:10:00");
+         dateText="2013-05-28 01:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          xiangAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-06-01 19:10:00");
+         dateText="2013-06-01 19:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, xiang.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          xiang.setAchievements(xiangAchievements);
 			
          xiang.setAchievementsBasedScore(xiangAchievements.size()*10);
          xiang.setVideoUploadBasedScore(150);   
-         xiang.setArticleBasedScore(650);                
-         ArrayList<User> xiangFollowers=new ArrayList<>();
-         xiangFollowers.add(partho);
-         xiangFollowers.add(swati);
-         xiangFollowers.add(bhumika);
-         xiangFollowers.add(dada);
-         xiangFollowers.add(ken);
-         xiangFollowers.add(brian);
-         xiangFollowers.add(tiffany);
-         xiangFollowers.add(neo);
-         xiang.setFollowedBy(xiangFollowers);
-         xiang.setUserFollowScore(xiangFollowers.size()*10);
-         xiang.setTotalScore(xiang.getAchievementsBasedScore()+xiang.getVideoUploadBasedScore()+xiang.getUserFollowScore()+xiang.getArticleBasedScore());
-         userDAOInstance.save(xiang);
-         
-         
-         parthoFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-01-17 15:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-01-18 19:20:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         bhumikaFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-02-01 00:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);                  
-         
-         dadaFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-01-19 19:35:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);                  
-         
-         ArrayList<User> tiffanyFollows = new ArrayList<>(); 
-         tiffanyFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, tiffany.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-03-11 19:20:00");
-         tiffany.setFollowing(tiffanyFollows);
-         userDAOInstance.save(tiffany);
-         
-         neoFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-03-21 16:20:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);         
-         
-         kenFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, ken.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-04-01 14:20:00");
-         brian.setFollowing(kenFollows);
-         userDAOInstance.save(ken);
-         
-         brianFollows.add(xiang);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, brian.getId().toString(), xiang.getId().toString(), AppConstants.PUBLIC, "2013-04-13 16:20:00");
-         brian.setFollowing(brianFollows);
-         userDAOInstance.save(brian);
+         xiang.setArticleBasedScore(650);                         
+         xiang.setTotalScore(xiang.getAchievementsBasedScore()+xiang.getVideoUploadBasedScore()+0+xiang.getArticleBasedScore());
+         userDAOInstance.save(xiang);        
          
          
          //User ted
          User ted = new User();
          ted.setEmail("ted.muchoo@gmail.com");
          ted.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         ted.setPassword("secret");
+         HashMap<String, String> tedSecretMap = SecurePassword.createHash("secret");
+         ted.setPasswordHash(tedSecretMap.get("hashHex"));
+         ted.setPasswordSalt(tedSecretMap.get("saltHex"));
+         xiang.setCountry("Australia");
          ted.setFirstName("ted");         
          ted.setLastName("muchoo");
          ted.setUsername("muchooomg90");
+         ted.setBirthdayVisibility(User.PUBLIC);
          ted.setDay(10);
          ted.setMonth(1);
 			ted.setYear(1990);
@@ -915,90 +666,47 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> tedAchievements = new ArrayList<>();
          tedAchievements.add(newGloonie);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-17 18:05:00");
+         dateText="2013-01-17 18:05:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tedAchievements.add(videoGlooniac);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, "2013-03-19 20:10:00");
+         dateText="2013-03-19 20:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), videoGlooniac.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tedAchievements.add(glooniacWriter);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, "2013-03-26 16:10:00");
+         dateText="2013-03-26 16:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), glooniacWriter.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tedAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-04-16 09:10:00");
+         dateText="2013-04-16 09:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          tedAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-05-16 00:10:00");
+         dateText="2013-05-16 00:10:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, ted.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          ted.setAchievements(tedAchievements);
 			
          ted.setAchievementsBasedScore(tedAchievements.size()*10);
          ted.setVideoUploadBasedScore(100);   
-         ted.setArticleBasedScore(500);                
-         ArrayList<User> tedFollowers=new ArrayList<>();
-         tedFollowers.add(partho);
-         tedFollowers.add(swati);
-         tedFollowers.add(bhumika);
-         tedFollowers.add(dada);
-         tedFollowers.add(neo);
-         tedFollowers.add(tiffany);
-         tedFollowers.add(brian);
-         tedFollowers.add(anand);
-         tedFollowers.add(xiang);
-         ted.setFollowedBy(tedFollowers);
-         ted.setUserFollowScore(tedFollowers.size()*10);
-         ted.setTotalScore(ted.getAchievementsBasedScore()+ted.getVideoUploadBasedScore()+ted.getUserFollowScore()+ted.getArticleBasedScore());
+         ted.setArticleBasedScore(500);                                  
+         ted.setTotalScore(ted.getAchievementsBasedScore()+ted.getVideoUploadBasedScore()+0+ted.getArticleBasedScore());
          userDAOInstance.save(ted);
-         
-         parthoFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-01-18 15:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-02-18 16:20:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
         
-         bhumikaFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-01-17 05:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);                  
-         
-         dadaFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-01-20 19:20:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);                  
-         
-         ArrayList<User> xiangFollows = new ArrayList<>(); 
-         xiangFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, xiang.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-03-21 00:20:00");
-         xiang.setFollowing(xiangFollows);
-         userDAOInstance.save(xiang);
-         
-         neoFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-04-16 02:20:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);         
-         
-         tiffanyFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, tiffany.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-04-17 16:20:00");
-         tiffany.setFollowing(tiffanyFollows);
-         userDAOInstance.save(tiffany);
-         
-         brianFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, brian.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-04-18 19:20:00");
-         brian.setFollowing(brianFollows);
-         userDAOInstance.save(brian);
-         
-         anandFollows.add(ted);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, anand.getId().toString(), ted.getId().toString(), AppConstants.PUBLIC, "2013-05-19 20:20:00");
-         anand.setFollowing(anandFollows);
-         userDAOInstance.save(anand);
          
          
          //User john
          User john = new User();
          john.setEmail("john.doe@gmail.com");
          john.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         john.setPassword("secret");
+         HashMap<String, String> johnSecretMap = SecurePassword.createHash("secret");
+         john.setPasswordHash(johnSecretMap.get("hashHex"));
+         john.setPasswordSalt(johnSecretMap.get("saltHex"));
          john.setFirstName("john");         
          john.setLastName("doe");
          john.setUsername("rayray86");
+         john.setCountry("Argentina");
+         john.setBirthdayVisibility(User.PUBLIC);
          john.setDay(24);
          john.setMonth(3);
 			john.setYear(1986);
@@ -1009,80 +717,41 @@ public class GloonGlobal extends GlobalSettings {
          
          ArrayList<Achievement> johnAchievements =new ArrayList<>();
          johnAchievements.add(newGloonie);                      
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, john.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-18 18:05:00");
+         dateText="2013-01-18 18:05:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, john.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          johnAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, john.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-05-17 00:05:00");
+         dateText="2013-05-17 00:05:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, john.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          johnAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, john.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-07-27 08:05:00");
+         dateText="2013-07-27 08:05:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, john.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          john.setAchievements(johnAchievements);
 			
          john.setAchievementsBasedScore(johnAchievements.size()*10);
          john.setVideoUploadBasedScore(200);   
-         john.setArticleBasedScore(300);                
-         ArrayList<User> johnFollowers=new ArrayList<>();
-         johnFollowers.add(partho);
-         johnFollowers.add(swati);
-         johnFollowers.add(ted);
-         johnFollowers.add(dada);
-         johnFollowers.add(xiang);
-         johnFollowers.add(tiffany);
-         johnFollowers.add(radha);
-         johnFollowers.add(anand);
-         john.setFollowedBy(johnFollowers);
-         john.setUserFollowScore(johnFollowers.size()*10);
-         john.setTotalScore(john.getAchievementsBasedScore()+john.getVideoUploadBasedScore()+john.getUserFollowScore()+john.getArticleBasedScore());
+         john.setArticleBasedScore(300);                                          
+         john.setTotalScore(john.getAchievementsBasedScore()+john.getVideoUploadBasedScore()+0+john.getArticleBasedScore());
          userDAOInstance.save(john);
-         
-         parthoFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-01-19 15:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-01-28 17:20:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         ArrayList<User> tedFollows = new ArrayList<>(); 
-         tedFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, ted.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-02-18 00:20:00");
-         ted.setFollowing(tedFollows);
-         userDAOInstance.save(ted);                 
-         
-         dadaFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-02-20 16:20:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada);                  
                   
-         xiangFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, xiang.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-03-18 06:20:00");
-         xiang.setFollowing(xiangFollows);
-         userDAOInstance.save(xiang);
-         
-         radhaFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, radha.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-03-28 03:20:00");
-         radha.setFollowing(radhaFollows);
-         userDAOInstance.save(radha);         
-         
-         tiffanyFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, tiffany.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-04-04 19:20:00");
-         tiffany.setFollowing(tiffanyFollows);
-         userDAOInstance.save(tiffany);         
-         
-         anandFollows.add(john);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, anand.getId().toString(), john.getId().toString(), AppConstants.PUBLIC, "2013-05-17 22:20:00");
-         anand.setFollowing(anandFollows);
-         userDAOInstance.save(anand);
+        
+        
          
          
          //User jane
          User jane = new User();
          jane.setEmail("jane.doe@gmail.com");
          jane.setEmailConfirmed(AppConstants.EMAIL_CONFIRMED);
-         jane.setPassword("secret");
+         HashMap<String, String> janeSecretMap = SecurePassword.createHash("secret");
+         jane.setPasswordHash(janeSecretMap.get("hashHex"));
+         jane.setPasswordSalt(janeSecretMap.get("saltHex"));
          jane.setFirstName("jane");         
          jane.setLastName("doe");
          jane.setUsername("pookie87");
+         jane.setCountry("Canada");
+         jane.setBirthdayVisibility(User.PUBLIC);
          jane.setDay(7);
          jane.setMonth(3);
 			jane.setYear(1987);
@@ -1092,66 +761,27 @@ public class GloonGlobal extends GlobalSettings {
 			 userDAOInstance.save(jane);
          
          ArrayList<Achievement> janeAchievements = new ArrayList<>();
-         janeAchievements.add(newGloonie);               
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, jane.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, "2013-01-20 18:05:00");
+         janeAchievements.add(newGloonie);            
+         dateText="2013-01-20 18:05:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, jane.getId().toString(), newGloonie.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          janeAchievements.add(gloonyAboutgames);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, jane.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, "2013-05-18 00:05:00");
+         dateText="2013-05-18 00:05:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, jane.getId().toString(), gloonyAboutgames.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          janeAchievements.add(gloonyAboutVideos);
-         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, jane.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, "2013-10-18 16:15:00");
+         dateText="2013-10-18 16:15:00";
+         date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+         activityDAOInstance.create(Activity.ACTIVITY_NEW_ACHIEVMENT, jane.getId().toString(), gloonyAboutVideos.getId().toString(), AppConstants.PRIVATE, dateText, date.getTime());
          jane.setAchievements(janeAchievements);
 			
          jane.setAchievementsBasedScore(janeAchievements.size()*10);
          jane.setVideoUploadBasedScore(30);   
-         jane.setArticleBasedScore(120);                
-         ArrayList<User> janeFollowers=new ArrayList<>();
-         janeFollowers.add(partho);
-         janeFollowers.add(swati);
-         janeFollowers.add(bhumika);
-         janeFollowers.add(dada);
-         janeFollowers.add(buni);
-         janeFollowers.add(neo);
-         janeFollowers.add(john);
-         jane.setFollowedBy(janeFollowers);
-         jane.setUserFollowScore(janeFollowers.size()*10);
-         jane.setTotalScore(jane.getAchievementsBasedScore()+jane.getVideoUploadBasedScore()+jane.getUserFollowScore()+jane.getArticleBasedScore());
+         jane.setArticleBasedScore(120);                                 
+         jane.setTotalScore(jane.getAchievementsBasedScore()+jane.getVideoUploadBasedScore()+0+jane.getArticleBasedScore());
          userDAOInstance.save(jane);
          
-         
-         parthoFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, partho.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-01-20 00:20:00");
-         partho.setFollowing(parthoFollows);
-         userDAOInstance.save(partho);
-         
-         swatiFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, swati.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-02-19 15:20:00");
-         swati.setFollowing(swatiFollows);
-         userDAOInstance.save(swati);
-        
-         ArrayList<User> johnFollows = new ArrayList<>(); 
-         johnFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, john.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-02-15 23:20:00");
-         ted.setFollowing(johnFollows);
-         userDAOInstance.save(john);                 
-         
-         dadaFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, dada.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-03-19 11:20:00");
-         dada.setFollowing(dadaFollows);
-         userDAOInstance.save(dada); 
-         
-         bhumikaFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, bhumika.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-05-21 12:20:00");
-         bhumika.setFollowing(bhumikaFollows);
-         userDAOInstance.save(bhumika);    
-         
-         neoFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, neo.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-04-19 17:20:00");
-         neo.setFollowing(neoFollows);
-         userDAOInstance.save(neo);   
-         
-         buniFollows.add(jane);
-         activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, buni.getId().toString(), jane.getId().toString(), AppConstants.PUBLIC, "2013-06-19 16:20:00");
-         buni.setFollowing(buniFollows);
-         userDAOInstance.save(buni);  
+                 
          
 		}
 		
@@ -1219,7 +849,7 @@ public class GloonGlobal extends GlobalSettings {
 			
 			Platform n3ds = new Platform();
 			n3ds.setTitle("3DS");
-			n3ds.setShortTitle("3ds");
+			n3ds.setShortTitle("n3ds");
 			n3ds.setDescription("Follow-up to DS handhalded device with 3d support and updated graphics");
 			n3ds.setManufacturer("Nintendo");
 			platformDAOInstance.save(n3ds);
@@ -1243,7 +873,7 @@ public class GloonGlobal extends GlobalSettings {
 			Platform vita = platformDAOInstance.findByTitle("PS-VITA");
 			
 			
-			Set<Platform> platforms = new HashSet<>();
+			ArrayList<Platform> platforms = new ArrayList<>();
 			platforms.add(ps3);
 			platforms.add(x360);
 			platforms.add(pc);
@@ -1256,9 +886,11 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3.setGenere("Third Person Action");
 			maxPayne3.setPrice("60$");
 			maxPayne3.setPlatforms(platforms);
-			maxPayne3.setRating("Mature");
+			maxPayne3.setRating(Game.MATURE);
 			maxPayne3.setReleaseDate("2012-05-15");
+			maxPayne3.setGameReleaseStatus(Game.RELEASED);
 			maxPayne3.setScore(8.5);
+			maxPayne3.setGameBoxShotPath("boxShotPath");
 
 			gameDAOInstance.save(maxPayne3);
 			
@@ -1270,9 +902,11 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3.setGenere("First Person Shooter");
 			farCry3.setPrice("60$");
 			farCry3.setPlatforms(platforms);
-			farCry3.setRating("Mature");
+			farCry3.setRating(Game.MATURE);
 			farCry3.setReleaseDate("2012-12-04");
+			farCry3.setGameReleaseStatus(Game.RELEASED);
 			farCry3.setScore(9.0);
+			farCry3.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(farCry3);
 			
@@ -1283,14 +917,16 @@ public class GloonGlobal extends GlobalSettings {
 			guacamelee.setPublisher("Drinkbox Studios");
 			guacamelee.setGenere("Action");
 			guacamelee.setPrice("12$");
-			Set<Platform> guacameleePlatforms = new HashSet<>();
+			ArrayList<Platform> guacameleePlatforms = new ArrayList<>();
 			guacameleePlatforms.add(ps3);
 			guacameleePlatforms.add(x360);
 			guacameleePlatforms.add(vita);
 			guacamelee.setPlatforms(guacameleePlatforms);
-			guacamelee.setRating("Everyone");
+			guacamelee.setRating(Game.EVERYONE);
 			guacamelee.setReleaseDate("2013-04-09");
+			guacamelee.setGameReleaseStatus(Game.RELEASED);
 			guacamelee.setScore(9.1);
+			guacamelee.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(guacamelee);
 			
@@ -1302,9 +938,11 @@ public class GloonGlobal extends GlobalSettings {
 			bioshockInfinite.setGenere("First Person Shooter");
 			bioshockInfinite.setPrice("60$");			
 			bioshockInfinite.setPlatforms(platforms);
-			bioshockInfinite.setRating("Mature");
+			bioshockInfinite.setRating(Game.MATURE);
 			bioshockInfinite.setReleaseDate("2013-03-26");
+			bioshockInfinite.setGameReleaseStatus(Game.RELEASED);
 			bioshockInfinite.setScore(9.2);
+			bioshockInfinite.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(bioshockInfinite);
 			
@@ -1316,12 +954,14 @@ public class GloonGlobal extends GlobalSettings {
 			halo4.setPublisher("Microsoft Game Studios");
 			halo4.setGenere("First Person Shooter");
 			halo4.setPrice("60$");
-			Set<Platform> halo4Platforms = new HashSet<>();
+			ArrayList<Platform> halo4Platforms = new ArrayList<>();
 			halo4Platforms.add(x360);
 			halo4.setPlatforms(halo4Platforms);
-			halo4.setRating("Mature");
+			halo4.setRating(Game.MATURE);
 			halo4.setReleaseDate("2012-11-06");
+			halo4.setGameReleaseStatus(Game.RELEASED);
 			halo4.setScore(8.8);
+			halo4.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(halo4);
 			
@@ -1333,9 +973,11 @@ public class GloonGlobal extends GlobalSettings {
 			defiance.setGenere("MMO");
 			defiance.setPrice("60$");
 			defiance.setPlatforms(platforms);
-			defiance.setRating("Mature");
+			defiance.setRating(Game.MATURE);
 			defiance.setReleaseDate("2013-04-02");
+			defiance.setGameReleaseStatus(Game.RELEASED);
 			defiance.setScore(6.1);
+			defiance.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(defiance);
 			
@@ -1347,9 +989,11 @@ public class GloonGlobal extends GlobalSettings {
 			terraria.setGenere("Action");
 			terraria.setPrice("10$");
 			terraria.setPlatforms(platforms);
-			terraria.setRating("Teen");
+			terraria.setRating(Game.TEEN);
 			terraria.setReleaseDate("2013-03-27");
+			terraria.setGameReleaseStatus(Game.RELEASED);
 			terraria.setScore(9.0);
+			terraria.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(terraria);
 			
@@ -1361,9 +1005,11 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamCity.setGenere("Action");
 			batmanArkhamCity.setPrice("60$");
 			batmanArkhamCity.setPlatforms(platforms);
-			batmanArkhamCity.setRating("Teen");
+			batmanArkhamCity.setRating(Game.TEEN);
 			batmanArkhamCity.setReleaseDate("2012-09-07");
+			batmanArkhamCity.setGameReleaseStatus(Game.RELEASED);
 			batmanArkhamCity.setScore(9.6);
+			batmanArkhamCity.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(batmanArkhamCity);
 			
@@ -1374,12 +1020,14 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadness.setPublisher("Microsoft Game Studios");
 			motocrossMadness.setGenere("Racing");
 			motocrossMadness.setPrice("11$");
-			Set<Platform> motocrossMadnessPlatforms = new HashSet<>();
+			ArrayList<Platform> motocrossMadnessPlatforms = new ArrayList<>();
 			motocrossMadnessPlatforms.add(x360);
 			motocrossMadness.setPlatforms(motocrossMadnessPlatforms);
-			motocrossMadness.setRating("Everyone");
+			motocrossMadness.setRating(Game.EVERYONE);
 			motocrossMadness.setReleaseDate("2013-04-10");
-			motocrossMadness.setScore(7.2);
+			motocrossMadness.setGameReleaseStatus(Game.RELEASED);
+			motocrossMadness.setScore(6.2);
+			motocrossMadness.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(motocrossMadness);
 			
@@ -1391,9 +1039,11 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushu.setGenere("MMO");
 			ageOfWushu.setPrice("60$");
 			ageOfWushu.setPlatforms(platforms);
-			ageOfWushu.setRating("Mature");
+			ageOfWushu.setRating(Game.MATURE);
 			ageOfWushu.setReleaseDate("2013-04-10");
+			ageOfWushu.setGameReleaseStatus(Game.RELEASED);
 			ageOfWushu.setScore(7.3);
+			ageOfWushu.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(ageOfWushu);
 			
@@ -1405,8 +1055,10 @@ public class GloonGlobal extends GlobalSettings {
 			splinterCellBlacklist.setGenere("Action");
 			splinterCellBlacklist.setPrice("60$");
 			splinterCellBlacklist.setPlatforms(platforms);
-			splinterCellBlacklist.setRating("Rating Pending");
-			splinterCellBlacklist.setReleaseDate("2013-08-20");			
+			splinterCellBlacklist.setRating(Game.RATING_PENDING);
+			splinterCellBlacklist.setGameReleaseStatus(Game.RELEASED);
+			splinterCellBlacklist.setReleaseDate("2013-08-20");	
+			splinterCellBlacklist.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(splinterCellBlacklist);
 			
@@ -1418,8 +1070,10 @@ public class GloonGlobal extends GlobalSettings {
 			gta5.setGenere("Action");
 			gta5.setPrice("60$");
 			gta5.setPlatforms(platforms);
-			gta5.setRating("Mature");
-			gta5.setReleaseDate("2013-09-17");			
+			gta5.setRating(Game.RATING_PENDING);
+			gta5.setGameReleaseStatus(Game.NOT_RELEASED);
+			gta5.setReleaseDate("2013-09-17");	
+			gta5.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(gta5);
 			
@@ -1431,16 +1085,22 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRising.setGenere("Action");
 			mgsRising.setPrice("60$");
 			mgsRising.setPlatforms(platforms);
-			mgsRising.setRating("Mature");
-			mgsRising.setScore(8.1);
-			mgsRising.setReleaseDate("2013-02-19");			
+			mgsRising.setRating(Game.RATING_PENDING);
+			mgsRising.setGameReleaseStatus(Game.RELEASED);
+			mgsRising.setScore(8.4);
+			mgsRising.setReleaseDate("2013-02-19");		
+			mgsRising.setGameBoxShotPath("boxShotPath");
 			
 			gameDAOInstance.save(mgsRising);
 			
 		}
 		
-		private void createArticles()
+		private void createArticles() throws ParseException
 		{	
+			
+			ArrayList<Article> gameArticles= new ArrayList<>();
+			ArrayList<User> userWhoPlayedGame = new ArrayList<>();
+			ArrayList<User> userWhoScoredGame = new ArrayList<>();
 			
 			Platform ps3 = platformDAOInstance.findByTitle("Playstation 3");
 			Platform x360 = platformDAOInstance.findByTitle("Xbox 360");
@@ -1483,7 +1143,7 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Review.setSubtitle("How does Max fared third time?");						
 			maxPayne3Review.setAuthor(loonatic86);
 			maxPayne3Review.setBody("Max Payne 3 was an awesome followup and finish to an awesome series.\n Gun blazin max rocked.");
-			maxPayne3Review.setCategory(Category.review);
+			maxPayne3Review.setCategory(Category.Review);
 			maxPayne3Review.setPublishDate("2012-05-16 22:05:59");			
 			maxPayne3Review.setGame(maxPayne3);
 			maxPayne3Review.setFeaturedImagePath("articleFeaturedImage");
@@ -1505,14 +1165,28 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score	
 			maxPayne3Review.setState(Article.PUBLISH);
 			articleDAOInstance.save(maxPayne3Review);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), maxPayne3Review.getId().toString(), AppConstants.PUBLIC, "2012-05-16 22:05:59");
+						
+			
+			
+			gameArticles.add(maxPayne3Review);
+			userWhoPlayedGame.add(loonatic86);
+			userWhoScoredGame.add(loonatic86);
+						
+			
+			gameDAOInstance.save(maxPayne3);
+			String dateText="";
+			Date date = null;
+			
+			dateText="2012-05-16 22:05:59";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), maxPayne3Review.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			Article farCry3Review = new Article();
-			farCry3Review.setTitle("far cry 3 review");
+  			farCry3Review.setTitle("far cry 3 review");
 			farCry3Review.setSubtitle("Return to the jungle, tropical style...");								
 			farCry3Review.setAuthor(jaguarpaw80);
 			farCry3Review.setBody("The third game in the excellent series excels in every manner. Solid entry in Far Cry series.");
-			farCry3Review.setCategory(Category.review);
+			farCry3Review.setCategory(Category.Review);
 			farCry3Review.setPublishDate("2012-12-15 09:30:00");
 			
 			farCry3Review.setGame(farCry3);
@@ -1533,9 +1207,19 @@ public class GloonGlobal extends GlobalSettings {
 			pageHitWilsonScore=rankAlgorithm.wilsonScoreCalculator(pageCount, (totalPageHits-pageCount));
 			farCry3Review.setPageHitWilsonScore(pageHitWilsonScore);
 			farCry3Review.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
-			farCry3Review.setState(Article.PUBLISH);
+			farCry3Review.setState(Article.PUBLISH);			
 			articleDAOInstance.save(farCry3Review);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, jaguarpaw80.getId().toString(), farCry3Review.getId().toString(), AppConstants.PUBLIC, "2012-12-15 09:30:00");
+						
+			
+			gameArticles.add(farCry3Review);
+			userWhoPlayedGame.add(jaguarpaw80);
+			userWhoScoredGame.add(jaguarpaw80);
+						
+			
+			gameDAOInstance.save(farCry3);							
+			dateText="2012-12-15 09:30:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, jaguarpaw80.getId().toString(), farCry3Review.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			
 			ArrayList<Platform> guacameleePlatforms = new ArrayList<>();
@@ -1549,7 +1233,7 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview1.setSubtitle("Get ready for good old meelee fun.");
 			guacameleeReview1.setAuthor(jaguarpaw80);
 			guacameleeReview1.setBody("Guacamelee is an awseome metroid fueled mexican wave ride.");
-			guacameleeReview1.setCategory(Category.review);
+			guacameleeReview1.setCategory(Category.Review);
 			guacameleeReview1.setPublishDate("2013-04-10 09:00:00");			
 			guacameleeReview1.setGame(guacamelee);
 			guacameleeReview1.setFeaturedImagePath("articleFeaturedImage");
@@ -1571,7 +1255,20 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score			
 			guacameleeReview1.setState(Article.PUBLISH);
 			articleDAOInstance.save(guacameleeReview1);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, jaguarpaw80.getId().toString(), guacameleeReview1.getId().toString(), AppConstants.PUBLIC, "2013-04-10 09:00:00");
+			
+			
+			
+			gameArticles.add(guacameleeReview1);
+			userWhoPlayedGame.add(jaguarpaw80);
+			userWhoScoredGame.add(jaguarpaw80);
+			
+			
+			
+			gameDAOInstance.save(guacamelee);
+												
+			dateText="2013-04-10 09:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, jaguarpaw80.getId().toString(), guacameleeReview1.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			
 			Article guacameleeReview2 = new Article();
@@ -1579,7 +1276,7 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview2.setSubtitle("Get ready for some nice mexicano side scrolling brawler");
 			guacameleeReview2.setAuthor(kenhaduken82);
 			guacameleeReview2.setBody("Guacamelee is mexican luchador beauty.");
-			guacameleeReview2.setCategory(Category.review);
+			guacameleeReview2.setCategory(Category.Review);
 			guacameleeReview2.setPublishDate("2013-04-10 10:00:00");			
 			guacameleeReview2.setGame(guacamelee);
 			guacameleeReview2.setFeaturedImagePath("articleFeaturedImage");
@@ -1601,14 +1298,27 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score	
 			guacameleeReview2.setState(Article.PUBLISH);
 			articleDAOInstance.save(guacameleeReview2);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), guacameleeReview2.getId().toString(), AppConstants.PUBLIC, "2013-04-10 10:00:00");
+			
+			
+			
+			gameArticles.add(guacameleeReview2);
+			userWhoPlayedGame.add(kenhaduken82);
+			userWhoScoredGame.add(kenhaduken82);
+			
+			
+			
+			gameDAOInstance.save(guacamelee);
+				
+			dateText="2013-04-10 10:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), guacameleeReview2.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			Article guacameleeReview3 = new Article();
 			guacameleeReview3.setTitle("Guacamelee! review");	
 			guacameleeReview3.setSubtitle("Guacamelee is fun pendejo...");
 			guacameleeReview3.setAuthor(loonatic86);
 			guacameleeReview3.setBody("Being a mexican chicken is so fun.");
-			guacameleeReview3.setCategory(Category.review);
+			guacameleeReview3.setCategory(Category.Review);
 			guacameleeReview3.setPublishDate("2013-04-10 11:00:00");			
 			guacameleeReview3.setGame(guacamelee);
 			guacameleeReview3.setFeaturedImagePath("articleFeaturedImage");
@@ -1630,14 +1340,27 @@ public class GloonGlobal extends GlobalSettings {
 			guacameleeReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score		
 			guacameleeReview3.setState(Article.PUBLISH);
 			articleDAOInstance.save(guacameleeReview3);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), guacameleeReview3.getId().toString(), AppConstants.PUBLIC, "2013-04-10 11:00:00");
+			
+			
+			
+			
+			gameArticles.add(guacameleeReview3);
+			userWhoPlayedGame.add(loonatic86);
+			userWhoScoredGame.add(loonatic86);
+			
+			
+			
+			gameDAOInstance.save(guacamelee);					
+			dateText="2013-04-10 11:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), guacameleeReview3.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			Article ageOfWushuReview1 = new Article();
 			ageOfWushuReview1.setTitle("Age of Wushu review");		
 			guacameleeReview3.setSubtitle("How does this kung fu MMORPG romp fares?");
 			ageOfWushuReview1.setAuthor(loonatic86);
 			ageOfWushuReview1.setBody("Age of Wushu lets you enjoy the world of Martial Arts in its purest form.");
-			ageOfWushuReview1.setCategory(Category.review);
+			ageOfWushuReview1.setCategory(Category.Review);
 			ageOfWushuReview1.setPublishDate("2013-04-11 09:00:00");			
 			ageOfWushuReview1.setGame(ageOfWushu);
 			ageOfWushuReview1.setFeaturedImagePath("articleFeaturedImage");
@@ -1659,14 +1382,27 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score		
 			ageOfWushuReview1.setState(Article.PUBLISH);
 			articleDAOInstance.save(ageOfWushuReview1);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), ageOfWushuReview1.getId().toString(), AppConstants.PUBLIC, "2013-04-11 09:00:00");
+			
+			
+			
+			gameArticles.add(ageOfWushuReview1);
+			userWhoPlayedGame.add(loonatic86);
+			userWhoScoredGame.add(loonatic86);
+			
+			
+			
+			gameDAOInstance.save(ageOfWushu);
+					
+			dateText="2013-04-11 09:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), ageOfWushuReview1.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			Article ageOfWushuReview2 = new Article();
 			ageOfWushuReview2.setTitle("Age of Wushu review");				
 			ageOfWushuReview2.setSubtitle("Get ready for some wall-running, flying dagger style action...");
 			ageOfWushuReview2.setAuthor(xwarior81);
 			ageOfWushuReview2.setBody("If you are fan of sugar hardcore martial arts movie, you will find your salvation in Age of Wushu.");
-			ageOfWushuReview2.setCategory(Category.review);
+			ageOfWushuReview2.setCategory(Category.Review);
 			ageOfWushuReview2.setPublishDate("2013-04-11 12:20:00");			
 			ageOfWushuReview2.setGame(ageOfWushu);
 			ageOfWushuReview2.setFeaturedImagePath("articleFeaturedImage");
@@ -1688,7 +1424,21 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			ageOfWushuReview2.setState(Article.PUBLISH);
 			articleDAOInstance.save(ageOfWushuReview2);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), ageOfWushuReview2.getId().toString(), AppConstants.PUBLIC, "2013-04-11 12:20:00");
+			
+			
+			
+			gameArticles.add(ageOfWushuReview2);
+			userWhoPlayedGame.add(xwarior81);
+			userWhoScoredGame.add(xwarior81);
+			
+			
+			
+			gameDAOInstance.save(ageOfWushu);
+							
+			
+			dateText="2013-04-11 12:20:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), ageOfWushuReview2.getId().toString(), AppConstants.PUBLIC, dateText, date.getTime());
 			
 			
 			ArrayList<Platform> motocrossPlatforms = new ArrayList<>();
@@ -1700,7 +1450,7 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuReview2.setSubtitle("Motocross Madness is back. But is it any good?");
 			motocrossMadnessReview1.setAuthor(muchooomg90);
 			motocrossMadnessReview1.setBody("This Motocross Madness is medicore at its best.");
-			motocrossMadnessReview1.setCategory(Category.review);
+			motocrossMadnessReview1.setCategory(Category.Review);
 			motocrossMadnessReview1.setPublishDate("2013-04-11 00:30:00");			
 			motocrossMadnessReview1.setGame(motocrossMadness);
 			motocrossMadnessReview1.setFeaturedImagePath("articleFeaturedImage");
@@ -1722,14 +1472,27 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadnessReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			motocrossMadnessReview1.setState(Article.PUBLISH);
 			articleDAOInstance.save(motocrossMadnessReview1);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), motocrossMadnessReview1.getId().toString(), AppConstants.PUBLIC,"2013-04-11 00:30:00");
+			
+			
+			
+			gameArticles.add(motocrossMadnessReview1);
+			userWhoPlayedGame.add(muchooomg90);
+			userWhoScoredGame.add(muchooomg90);
+			
+			
+			
+			gameDAOInstance.save(motocrossMadness);
+					
+			dateText="2013-04-11 12:20:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), motocrossMadnessReview1.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article motocrossMadnessReview2 = new Article();
 			motocrossMadnessReview2.setTitle("Motocross Madness review");
 			motocrossMadnessReview2.setSubtitle("Motocross Madness is bad. Period!");
 			motocrossMadnessReview2.setAuthor(kenhaduken82);
 			motocrossMadnessReview2.setBody("Common Microsoft, stop serving us enough garbage now!");
-			motocrossMadnessReview2.setCategory(Category.review);
+			motocrossMadnessReview2.setCategory(Category.Review);
 			motocrossMadnessReview2.setPublishDate("2013-04-11 09:30:00");			
 			motocrossMadnessReview2.setGame(motocrossMadness);
 			motocrossMadnessReview2.setFeaturedImagePath("articleFeaturedImage");
@@ -1751,14 +1514,27 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossMadnessReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			motocrossMadnessReview2.setState(Article.PUBLISH);
 			articleDAOInstance.save(motocrossMadnessReview2);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), motocrossMadnessReview2.getId().toString(), AppConstants.PUBLIC,"2013-04-11 09:30:00");
+			
+			
+			
+			gameArticles.add(motocrossMadnessReview2);
+			userWhoPlayedGame.add(kenhaduken82);
+			userWhoScoredGame.add(kenhaduken82);
+			
+			
+			
+			gameDAOInstance.save(motocrossMadness);						
+			
+			dateText="2013-04-11 09:30:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), motocrossMadnessReview2.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article terrariaReview1 = new Article();
 			terrariaReview1.setTitle("Terraria review");				
 			terrariaReview1.setSubtitle("Load runner gets EVERYTHING is toppings.");
 			terrariaReview1.setAuthor(loonatic86);
 			terrariaReview1.setBody("A game which lets you do EVERYTHING!!!");
-			terrariaReview1.setCategory(Category.review);
+			terrariaReview1.setCategory(Category.Review);
 			terrariaReview1.setPublishDate("2013-03-28 09:00:00");			
 			terrariaReview1.setGame(terraria);
 			terrariaReview1.setFeaturedImagePath("articleFeaturedImage");
@@ -1780,14 +1556,26 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			terrariaReview1.setState(Article.PUBLISH);
 			articleDAOInstance.save(terrariaReview1);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), terrariaReview1.getId().toString(), AppConstants.PUBLIC,"2013-03-28 09:00:00");
+			
+			
+			
+			gameArticles.add(terrariaReview1);
+			userWhoPlayedGame.add(loonatic86);
+			userWhoScoredGame.add(loonatic86);
+			
+			
+			
+			gameDAOInstance.save(terraria);			
+			dateText="2013-03-28 09:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), terrariaReview1.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article terrariaReview2= new Article();
 			terrariaReview2.setTitle("Terraria review");						
 			terrariaReview2.setSubtitle("Get many flavors at a price of one. And it is fun...");
 			terrariaReview2.setAuthor(theone90);
 			terrariaReview2.setBody("Its an action game, a rpg, an exploration game. In short, play it as any way possible. Its awesome in short. ");
-			terrariaReview2.setCategory(Category.review);
+			terrariaReview2.setCategory(Category.Review);
 			terrariaReview2.setPublishDate("2013-03-28 10:00:00");			
 			terrariaReview2.setGame(terraria);
 			terrariaReview2.setFeaturedImagePath("articleFeaturedImage");
@@ -1809,14 +1597,27 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			terrariaReview2.setState(Article.PUBLISH);
 			articleDAOInstance.save(terrariaReview2);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), terrariaReview2.getId().toString(), AppConstants.PUBLIC,"2013-03-28 10:00:00");
+			
+			
+			
+			gameArticles.add(terrariaReview2);
+			userWhoPlayedGame.add(theone90);
+			userWhoScoredGame.add(theone90);
+			
+			
+			
+			gameDAOInstance.save(terraria);	
+
+			dateText="2013-03-28 10:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), terrariaReview2.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article terrariaReview3= new Article();
 			terrariaReview3.setTitle("Terraria review");							
 			terrariaReview3.setSubtitle("A true homage to sugar retro gaming.");
 			terrariaReview3.setAuthor(kenhaduken82);
 			terrariaReview3.setBody("This game is fun and take you back into 90s bomberman and load runner era... ");
-			terrariaReview3.setCategory(Category.review);
+			terrariaReview3.setCategory(Category.Review);
 			terrariaReview3.setPublishDate("2013-03-28 08:00:00");			
 			terrariaReview3.setGame(terraria);
 			terrariaReview3.setFeaturedImagePath("articleFeaturedImage");
@@ -1838,14 +1639,27 @@ public class GloonGlobal extends GlobalSettings {
 			terrariaReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			terrariaReview3.setState(Article.PUBLISH);
 			articleDAOInstance.save(terrariaReview3);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), terrariaReview3.getId().toString(), AppConstants.PUBLIC,"2013-03-28 08:00:00");
+			
+			
+			
+			gameArticles.add(terrariaReview3);
+			userWhoPlayedGame.add(kenhaduken82);
+			userWhoScoredGame.add(kenhaduken82);
+			
+			
+			
+			gameDAOInstance.save(terraria);	
+
+			dateText="2013-03-28 08:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), terrariaReview3.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article defianceReview1 = new Article();
 			defianceReview1.setTitle("Defiance review");		
 			defianceReview1.setSubtitle("TV to game tie-not that good");
 			defianceReview1.setAuthor(xwarior81);
 			defianceReview1.setBody("Seriously!!! What the heck was that?");
-			defianceReview1.setCategory(Category.review);
+			defianceReview1.setCategory(Category.Review);
 			defianceReview1.setPublishDate("2013-04-03 00:30:00");			
 			defianceReview1.setGame(defiance);
 			defianceReview1.setFeaturedImagePath("articleFeaturedImage");
@@ -1867,14 +1681,26 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview1.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			defianceReview1.setState(Article.PUBLISH);
 			articleDAOInstance.save(defianceReview1);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), defianceReview1.getId().toString(), AppConstants.PUBLIC,"2013-04-03 00:30:00");
+			
+			
+			
+			gameArticles.add(defianceReview1);
+			userWhoPlayedGame.add(xwarior81);
+			userWhoScoredGame.add(xwarior81);
+			
+			
+			
+			gameDAOInstance.save(defiance);				
+			dateText="2013-04-03 00:30:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), defianceReview1.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article defianceReview2 = new Article();
 			defianceReview2.setTitle("Defiance review");		
 			defianceReview2.setSubtitle("A great concept but a failed implentation");
 			defianceReview2.setAuthor(loonatic86);
 			defianceReview2.setBody("Concept was great on paper but the execution was not just right.");
-			defianceReview2.setCategory(Category.review);
+			defianceReview2.setCategory(Category.Review);
 			defianceReview2.setPublishDate("2013-04-03 01:30:00");			
 			defianceReview2.setGame(defiance);
 			defianceReview2.setFeaturedImagePath("articleFeaturedImage");
@@ -1896,14 +1722,26 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview2.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			defianceReview2.setState(Article.PUBLISH);
 			articleDAOInstance.save(defianceReview2);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), defianceReview2.getId().toString(), AppConstants.PUBLIC,"2013-04-03 01:30:00");
+			
+			
+			
+			gameArticles.add(defianceReview2);
+			userWhoPlayedGame.add(loonatic86);
+			userWhoScoredGame.add(loonatic86);
+			
+			
+			
+			gameDAOInstance.save(defiance);					
+			dateText="2013-04-03 01:30:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), defianceReview2.getId().toString(), AppConstants.PUBLIC,dateText,date.getTime());
 			
 			Article defianceReview3 = new Article();			
 			defianceReview3.setTitle("Defiance review");
 			defianceReview3.setSubtitle("Defiance tries hard to be cool.");
 			defianceReview3.setAuthor(muchooomg90);
 			defianceReview3.setBody("Defiance just doesnt work. Period.");
-			defianceReview3.setCategory(Category.review);
+			defianceReview3.setCategory(Category.Review);
 			defianceReview3.setPublishDate("2013-04-03 01:30:00");			
 			defianceReview3.setGame(defiance);
 			defianceReview3.setFeaturedImagePath("articleFeaturedImage");
@@ -1925,14 +1763,27 @@ public class GloonGlobal extends GlobalSettings {
 			defianceReview3.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			defianceReview3.setState(Article.PUBLISH);
 			articleDAOInstance.save(defianceReview3);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), defianceReview3.getId().toString(), AppConstants.PUBLIC,"2013-04-03 01:30:00");
+			
+		
+			
+			gameArticles.add(defianceReview3);
+			userWhoPlayedGame.add(muchooomg90);
+			userWhoScoredGame.add(muchooomg90);
+			
+		
+			
+			gameDAOInstance.save(defiance);	
+			
+			dateText="2013-04-03 01:30:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), defianceReview3.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article maxPayne3Feature = new Article();
 			maxPayne3Feature.setTitle("Max Payne 3 Feature: The pain of bullet time 3.0");	
 			maxPayne3Feature.setSubtitle("We look into the bullet time feature of Max Payne 3.0");
 			maxPayne3Feature.setAuthor(loonatic86);
 			maxPayne3Feature.setBody("Bullet time 3.0 felt kind of fresh even though bullet time used in games like anything. The new bullet time in Max Payne 3 enhance the poetic nature of Max thanks to rage engine and Euphoria.");
-			maxPayne3Feature.setCategory(Category.feature);
+			maxPayne3Feature.setCategory(Category.Feature);
 			maxPayne3Feature.setPublishDate("2013-04-13 11:05:00");			
 			maxPayne3Feature.setGame(maxPayne3);
 			maxPayne3Feature.setFeaturedImagePath("articleFeaturedImage");
@@ -1953,15 +1804,22 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3Feature.setPageHitWilsonScore(pageHitWilsonScore);
 			maxPayne3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			maxPayne3Feature.setState(Article.PUBLISH);
-			articleDAOInstance.save(maxPayne3Feature);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), maxPayne3Feature.getId().toString(), AppConstants.PUBLIC,"2013-04-13 11:05:00");
+			articleDAOInstance.save(maxPayne3Feature);			
+			
+
+			gameArticles.add(maxPayne3Feature);
+
+			gameDAOInstance.save(maxPayne3);
+			dateText="2013-04-13 11:05:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), maxPayne3Feature.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article farCry3Feature = new Article();
 			farCry3Feature.setTitle("Far Cry 3 Feature: The sense of wild");	
 			farCry3Feature.setSubtitle("Lets have a look into the open world of Far cry 3");
 			farCry3Feature.setAuthor(loonatic86);
 			farCry3Feature.setBody("Wild was really alive in the game. IMHO, this is the second game after Metal Gear Solid: Snake Eater in which I stay alerted while playing the game. Just that this game is more open and random in nature. Danger is lurking everywhere.");
-			farCry3Feature.setCategory(Category.feature);
+			farCry3Feature.setCategory(Category.Feature);
 			farCry3Feature.setPublishDate("2013-04-11 15:00:00");			
 			farCry3Feature.setGame(farCry3);
 			farCry3Feature.setFeaturedImagePath("articleFeaturedImage");
@@ -1983,14 +1841,21 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3Feature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			farCry3Feature.setState(Article.PUBLISH);
 			articleDAOInstance.save(farCry3Feature);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), farCry3Feature.getId().toString(), AppConstants.PUBLIC,"2013-04-11 15:00:00");
+			
+
+			gameArticles.add(farCry3Feature);
+
+			gameDAOInstance.save(farCry3);
+			dateText="2013-04-11 15:00:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), farCry3Feature.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article mgsRisingFeature = new Article();
 			mgsRisingFeature.setTitle("MGS Rising Feature: The cut mechanics");		
 			mgsRisingFeature.setSubtitle("A look into MGS Rising cut feature");
 			mgsRisingFeature.setAuthor(kenhaduken82);
 			mgsRisingFeature.setBody("Atleast, Konami made sure that we get that same cut experience which they demoed in E3 2011. I was overwhelmed by it.");
-			mgsRisingFeature.setCategory(Category.feature);
+			mgsRisingFeature.setCategory(Category.Feature);
 			mgsRisingFeature.setPublishDate("2013-03-29 15:45:00");			
 			mgsRisingFeature.setGame(mgsr);
 			mgsRisingFeature.setFeaturedImagePath("articleFeaturedImage");
@@ -2012,14 +1877,21 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRisingFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			mgsRisingFeature.setState(Article.PUBLISH);
 			articleDAOInstance.save(mgsRisingFeature);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), mgsRisingFeature.getId().toString(), AppConstants.PUBLIC,"2013-03-29 15:45:00");
+			
+
+			gameArticles.add(mgsRisingFeature);
+
+			gameDAOInstance.save(mgsr);
+			dateText="2013-03-29 15:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), mgsRisingFeature.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article defianceFeature = new Article();
 			defianceFeature.setTitle("Defiance Feature: Marrying TV with games");	
 			defianceFeature.setSubtitle("A look into Defiance's unique integration with TV");
 			defianceFeature.setAuthor(theone90);
 			defianceFeature.setBody("Defiance tries to pull a brave move by clubbing tv with video gaming.");
-			defianceFeature.setCategory(Category.feature);
+			defianceFeature.setCategory(Category.Feature);
 			defianceFeature.setPublishDate("2013-03-30 16:45:00");			
 			defianceFeature.setGame(defiance);
 			defianceFeature.setFeaturedImagePath("articleFeaturedImage");
@@ -2041,14 +1913,21 @@ public class GloonGlobal extends GlobalSettings {
 			defianceFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			defianceFeature.setState(Article.PUBLISH);
 			articleDAOInstance.save(defianceFeature);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), defianceFeature.getId().toString(), AppConstants.PUBLIC,"2013-03-30 16:45:00");
+			
+
+			gameArticles.add(defianceFeature);
+
+			gameDAOInstance.save(defiance);
+			dateText="2013-03-30 16:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), defianceFeature.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article motocrossFeature = new Article();
 			motocrossFeature.setTitle("Motocross Madness: Xbox live motocross");						
 			motocrossFeature.setSubtitle("Hands-on Motocross Madness demo.");
 			motocrossFeature.setAuthor(muchooomg90);
 			motocrossFeature.setBody("This motocross madness looks the same");
-			motocrossFeature.setCategory(Category.feature);
+			motocrossFeature.setCategory(Category.Feature);
 			motocrossFeature.setPublishDate("2013-04-10 15:45:00");			
 			motocrossFeature.setGame(motocrossMadness);
 			motocrossFeature.setFeaturedImagePath("articleFeaturedImage");
@@ -2070,14 +1949,21 @@ public class GloonGlobal extends GlobalSettings {
 			motocrossFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			motocrossFeature.setState(Article.PUBLISH);
 			articleDAOInstance.save(motocrossFeature);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), motocrossFeature.getId().toString(), AppConstants.PUBLIC,"2013-04-10 15:45:00");
+			
+
+			gameArticles.add(motocrossFeature);
+
+			gameDAOInstance.save(motocrossMadness);
+			dateText="2013-04-10 15:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), motocrossFeature.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article ageOfWushuFeature = new Article();
 			ageOfWushuFeature.setTitle("Age of Wushu Feature: The rise of asian gaming out of Japan");	
 			ageOfWushuFeature.setSubtitle("A look into Age of Wushu as well as gaming outside Japan");
 			ageOfWushuFeature.setAuthor(xwarior81);
 			ageOfWushuFeature.setBody("Age of wushu brings asian gaming out of japan and puts on face of the planet. There is hope for other asian countries.");
-			ageOfWushuFeature.setCategory(Category.feature);
+			ageOfWushuFeature.setCategory(Category.Feature);
 			ageOfWushuFeature.setPublishDate("2013-04-14 15:45:00");			
 			ageOfWushuFeature.setGame(ageOfWushu);
 			ageOfWushuFeature.setFeaturedImagePath("articleFeaturedImage");
@@ -2099,14 +1985,21 @@ public class GloonGlobal extends GlobalSettings {
 			ageOfWushuFeature.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			ageOfWushuFeature.setState(Article.PUBLISH);
 			articleDAOInstance.save(ageOfWushuFeature);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), ageOfWushuFeature.getId().toString(), AppConstants.PUBLIC,"2013-04-14 15:45:00");
+			
+
+			gameArticles.add(ageOfWushuFeature);
+
+			gameDAOInstance.save(ageOfWushu);
+			dateText="2013-04-14 15:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), ageOfWushuFeature.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article cricketGloonicle = new Article();
 			cricketGloonicle.setTitle("Why do we have to starve for a good cricket game?");		
 			cricketGloonicle.setSubtitle("A look into history and future of cricket video games.");
 			cricketGloonicle.setAuthor(loonatic86);
 			cricketGloonicle.setBody("When on earth we are going to get next decent cricket game? Come on big great gaming companies, give us our next great cricket game");
-			cricketGloonicle.setCategory(Category.gloonicle);
+			cricketGloonicle.setCategory(Category.Gloonicle);
 			cricketGloonicle.setPublishDate("2013-04-15 09:45:00");						
 			cricketGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2127,14 +2020,16 @@ public class GloonGlobal extends GlobalSettings {
 			cricketGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			cricketGloonicle.setState(Article.PUBLISH);
 			articleDAOInstance.save(cricketGloonicle);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), cricketGloonicle.getId().toString(), AppConstants.PUBLIC,"2013-04-15 09:45:00");
+			dateText="2013-04-15 09:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), cricketGloonicle.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article freemiumGloonicle = new Article();
 			freemiumGloonicle.setTitle("The birth of \"Free\" gaming");				
 			freemiumGloonicle.setSubtitle("A look into Freemium model fo gaming.");
 			freemiumGloonicle.setAuthor(kenhaduken82);
 			freemiumGloonicle.setBody("Freemium gaming is the new way to go");
-			freemiumGloonicle.setCategory(Category.gloonicle);
+			freemiumGloonicle.setCategory(Category.Gloonicle);
 			freemiumGloonicle.setPublishDate("2013-01-15 10:45:00");						
 			freemiumGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2155,14 +2050,16 @@ public class GloonGlobal extends GlobalSettings {
 			freemiumGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			freemiumGloonicle.setState(Article.PUBLISH);
 			articleDAOInstance.save(freemiumGloonicle);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), freemiumGloonicle.getId().toString(), AppConstants.PUBLIC,"2013-01-15 10:45:00");
+			dateText="2013-01-15 10:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), freemiumGloonicle.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article top10horrorGloonicle = new Article();
 			top10horrorGloonicle.setTitle("Top 10 horror games");			
 			top10horrorGloonicle.setSubtitle("My Top 10 horror games");
 			top10horrorGloonicle.setAuthor(xwarior81);
 			top10horrorGloonicle.setBody("My top 10 horrors are: 1) Silent hill 2) Resident Evil...");
-			top10horrorGloonicle.setCategory(Category.gloonicle);
+			top10horrorGloonicle.setCategory(Category.Gloonicle);
 			top10horrorGloonicle.setPublishDate("2013-04-15 21:45:00");						
 			top10horrorGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2183,14 +2080,16 @@ public class GloonGlobal extends GlobalSettings {
 			top10horrorGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			top10horrorGloonicle.setState(Article.PUBLISH);
 			articleDAOInstance.save(top10horrorGloonicle);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), top10horrorGloonicle.getId().toString(), AppConstants.PUBLIC,"2013-04-15 21:45:00");
+			dateText="2013-04-15 21:45:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), top10horrorGloonicle.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article top10ActionGloonicle = new Article();
 			top10ActionGloonicle.setTitle("Top 10 action games");	
 			top10ActionGloonicle.setSubtitle("My Top 10 action games");
 			top10ActionGloonicle.setAuthor(muchooomg90);
 			top10ActionGloonicle.setBody("My top 10 action games: 1)Max Payne 3 2) Halo 4 3)Splinter cell series");
-			top10ActionGloonicle.setCategory(Category.gloonicle);
+			top10ActionGloonicle.setCategory(Category.Gloonicle);
 			top10ActionGloonicle.setPublishDate("2013-01-13 20:02:00");						
 			top10ActionGloonicle.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2211,7 +2110,9 @@ public class GloonGlobal extends GlobalSettings {
 			top10ActionGloonicle.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			top10ActionGloonicle.setState(Article.PUBLISH);
 			articleDAOInstance.save(top10ActionGloonicle);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), top10ActionGloonicle.getId().toString(), AppConstants.PUBLIC,"2013-01-13 20:02:00");
+			dateText="2013-01-13 20:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), top10ActionGloonicle.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article myWeeklyShow = new Article();
 			myWeeklyShow.setTitle("My weekly gaming adventure");
@@ -2219,7 +2120,7 @@ public class GloonGlobal extends GlobalSettings {
 			top10ActionGloonicle.setSubtitle("Episode 10");
 			myWeeklyShow.setAuthor(theone90);
 			myWeeklyShow.setBody("I will share my daily gaming adventure in this series.");
-			myWeeklyShow.setCategory(Category.gloonicle);
+			myWeeklyShow.setCategory(Category.Gloonicle);
 			myWeeklyShow.setPublishDate("2013-01-14 00:02:00");						
 			myWeeklyShow.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2240,14 +2141,16 @@ public class GloonGlobal extends GlobalSettings {
 			myWeeklyShow.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			myWeeklyShow.setState(Article.PUBLISH);
 			articleDAOInstance.save(myWeeklyShow);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), myWeeklyShow.getId().toString(), AppConstants.PUBLIC,"2013-01-14 00:02:00");
+			dateText="2013-01-14 00:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), myWeeklyShow.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article eaDisasterNews = new Article();
 			eaDisasterNews.setTitle("EA has been again ranked as worst company in America");				
 			eaDisasterNews.setSubtitle("EA does it again");
 			eaDisasterNews.setAuthor(theone90);
 			eaDisasterNews.setBody("EA has been again ranked as worst company in America. This is the second time they have been rated like this.");
-			eaDisasterNews.setCategory(Category.news);
+			eaDisasterNews.setCategory(Category.News);
 			eaDisasterNews.setPublishDate("2013-01-12 10:02:00");						
 			eaDisasterNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2268,14 +2171,16 @@ public class GloonGlobal extends GlobalSettings {
 			eaDisasterNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			eaDisasterNews.setState(Article.PUBLISH);
 			articleDAOInstance.save(eaDisasterNews);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), eaDisasterNews.getId().toString(), AppConstants.PUBLIC,"2013-01-12 10:02:00");
+			dateText="2013-01-12 10:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, theone90.getId().toString(), eaDisasterNews.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article ps4News = new Article();
 			ps4News.setTitle("PS4 launch price revealed");		
 			ps4News.setSubtitle("About the launch way below $500");
 			ps4News.setAuthor(muchooomg90);
 			ps4News.setBody("PS4 is said to launch at a starting price of $430");
-			ps4News.setCategory(Category.news);
+			ps4News.setCategory(Category.News);
 			ps4News.setPublishDate("2013-04-02 10:02:00");						
 			ps4News.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2296,14 +2201,16 @@ public class GloonGlobal extends GlobalSettings {
 			ps4News.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			ps4News.setState(Article.PUBLISH);
 			articleDAOInstance.save(ps4News);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), ps4News.getId().toString(), AppConstants.PUBLIC,"2013-04-02 10:02:00");
+			dateText="2013-04-02 10:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, muchooomg90.getId().toString(), ps4News.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article warnerBrothersNews = new Article();
 			warnerBrothersNews.setTitle("Warner Brothers registers Mad Max domains");		
 			warnerBrothersNews.setSubtitle("Can this be a new game?");
 			warnerBrothersNews.setAuthor(xwarior81);
 			warnerBrothersNews.setBody("Warner Brothers registers multiple domains based on Mad Max");
-			warnerBrothersNews.setCategory(Category.news);
+			warnerBrothersNews.setCategory(Category.News);
 			warnerBrothersNews.setPublishDate("2013-04-14 10:02:00");						
 			warnerBrothersNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2324,14 +2231,16 @@ public class GloonGlobal extends GlobalSettings {
 			warnerBrothersNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			warnerBrothersNews.setState(Article.PUBLISH);
 			articleDAOInstance.save(warnerBrothersNews);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), warnerBrothersNews.getId().toString(), AppConstants.PUBLIC,"2013-04-14 10:02:00");
+			dateText="2013-04-14 10:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, xwarior81.getId().toString(), warnerBrothersNews.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article batmanOriginsNews = new Article();
 			batmanOriginsNews.setTitle("Batman Origins game revealed");		
 			batmanOriginsNews.setSubtitle("A new Batman game is about to arrive");
 			batmanOriginsNews.setAuthor(kenhaduken82);
 			batmanOriginsNews.setBody("A new batman arkham orignins game revealed. The important thing is rocksteady is not working on it.");
-			batmanOriginsNews.setCategory(Category.news);
+			batmanOriginsNews.setCategory(Category.News);
 			batmanOriginsNews.setPublishDate("2013-04-10 10:02:00");						
 			batmanOriginsNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2352,14 +2261,16 @@ public class GloonGlobal extends GlobalSettings {
 			batmanOriginsNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			batmanOriginsNews.setState(Article.PUBLISH);
 			articleDAOInstance.save(batmanOriginsNews);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), batmanOriginsNews.getId().toString(), AppConstants.PUBLIC,"2013-04-10 10:02:00");
+			dateText="2013-04-10 10:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, kenhaduken82.getId().toString(), batmanOriginsNews.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article supermanGameNews = new Article();
 			supermanGameNews.setTitle("Rocksteady is working on supposedly a Superman game.");						
 			supermanGameNews.setSubtitle("We can recently get a new superman game.");
 			supermanGameNews.setAuthor(loonatic86);
 			supermanGameNews.setBody("Rocksteady studios is most probably working on a Superman game. No details are available till now");
-			supermanGameNews.setCategory(Category.news);
+			supermanGameNews.setCategory(Category.News);
 			supermanGameNews.setPublishDate("2013-04-20 10:02:00");						
 			supermanGameNews.setFeaturedImagePath("articleFeaturedImage");
 			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
@@ -2380,17 +2291,18 @@ public class GloonGlobal extends GlobalSettings {
 			supermanGameNews.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			supermanGameNews.setState(Article.PUBLISH);
 			articleDAOInstance.save(supermanGameNews);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), supermanGameNews.getId().toString(), AppConstants.PUBLIC,"2013-04-20 10:02:00");
+			dateText="2013-04-20 10:02:00";
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic86.getId().toString(), supermanGameNews.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			Article newPrinceOfPersiaGame = new Article();
 			newPrinceOfPersiaGame.setTitle("New Prince of Persia Game surfaced");			
 			newPrinceOfPersiaGame.setSubtitle("Another Prince of Persia Game surfaced.");
 			newPrinceOfPersiaGame.setAuthor(loonatic87);
 			newPrinceOfPersiaGame.setBody("Climax Studio is supposedly working on a new prince of persia game.");
-			newPrinceOfPersiaGame.setCategory(Category.news);
+			newPrinceOfPersiaGame.setCategory(Category.News);
 			newPrinceOfPersiaGame.setPublishDate(Utility.convertDateToString(new Date()));			
-			newPrinceOfPersiaGame.setFeaturedImagePath("articleFeaturedImage");
-			//farCry3Review.setInsertTime(Utility.convertDateToString(new Date())); //"2013-04-08 00:05:59"
+			newPrinceOfPersiaGame.setFeaturedImagePath("articleFeaturedImage");			
 			newPrinceOfPersiaGame.setInsertTime(Utility.convertDateToString(new Date()));
 			newPrinceOfPersiaGame.setUpdateTime(Utility.convertDateToString(new Date()));
 			newPrinceOfPersiaGame.setPlatforms(platforms);
@@ -2408,7 +2320,9 @@ public class GloonGlobal extends GlobalSettings {
 			newPrinceOfPersiaGame.setTotalScore(coolNotCoolWilsonScore+pageHitWilsonScore); //not game score, its article score
 			newPrinceOfPersiaGame.setState(Article.PUBLISH);
 			articleDAOInstance.save(newPrinceOfPersiaGame);
-			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic87.getId().toString(), newPrinceOfPersiaGame.getId().toString(), AppConstants.PUBLIC,Utility.convertDateToString(new Date()));
+			dateText=Utility.convertDateToString(new Date());
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateText);
+			activityDAOInstance.create(Activity.ACTIVITY_POST_PUBLISH, loonatic87.getId().toString(), newPrinceOfPersiaGame.getId().toString(), AppConstants.PUBLIC,dateText, date.getTime());
 			
 			/*Article farCry3Review = new Article();
 			farCry3Review.setTitle("far cry 3 review");

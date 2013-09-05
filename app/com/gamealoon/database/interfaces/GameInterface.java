@@ -34,5 +34,12 @@ public interface GameInterface {
 	 */
 	public Game findByTitle(String title);
 	
+	/**
+	 * Find game by id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public HashMap<String, Object> findById(String urlOrid, String username);
 	
 }
