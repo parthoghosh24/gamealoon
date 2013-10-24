@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import com.gamealoon.database.daos.ArticleDAO;
 import static play.libs.Json.toJson;
+import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -16,63 +17,38 @@ public class ArticleController extends Controller{
 	
 	public static Result getArticle(String username, String articleTitleOrId)
 	{		
-		HashMap<String, Object> articleMap = getArticleMap(username, articleTitleOrId);		
-		//TODO add href element to json
+		HashMap<String, Object> articleMap = getArticleMap(username, articleTitleOrId);				
 		return ok(toJson(articleMap));
 	}
 	
-	public static Result getAllArticlesByKey(String key, String sortField)
-	{		
-		
-		List<HashMap<String, Object>> articleListMap  = getArticlesByKey(key, sortField);		
-		//TODO add href element to json
+	public static Result getNArticlesByCarouselSelectorAndCategory(String platform, String category, String timestamp, String mode)
+	{			
+		List<HashMap<String, Object>> articleListMap  = getNArticlesByCarouselSelectorAndCategoryMap(platform, category, timestamp, Integer.parseInt(mode));				
 		return ok(toJson(articleListMap));
 	}
 	
-	public static Result saveArticle()
+	public static Result saveOrUpdateArticle()
 	{
-		DynamicForm requestData = form().bindFromRequest();
-		String articleTitle =requestData.get("articleTitle");
-		String articleSubTitle=requestData.get("articleSubTitle");
-		String articleBody =requestData.get("articleBody");
-		String articleCategory =requestData.get("articleCategory");
-		String articleUsername =requestData.get("articleUsername");
-		String articlePlatform =requestData.get("articlePlatform");
-		String articleFeaturedImage =requestData.get("articleFeaturedImage");
-		String articleGame =requestData.get("articleGame");
-		String articleState =requestData.get("articleState");
-		
-		System.out.println("articleTitle: "+articleTitle);
-		System.out.println("articleSubTitle: "+articleSubTitle);
-		System.out.println("articleBody: "+articleBody);
-		System.out.println("articleCategory: "+articleCategory);
-		System.out.println("articleUsername: "+articleUsername);
-		System.out.println("articlePlatform: "+articlePlatform);
-		System.out.println("articleFeaturedImage: "+articleFeaturedImage);
-		System.out.println("articleGame: "+articleGame);
-		System.out.println("articleState: "+articleState);
-		
-		HashMap<String, Object> response = saveArticle("",articleTitle, articleSubTitle, articleBody, articleCategory, articleUsername, articlePlatform, articleFeaturedImage, articleGame, articleState);
+		DynamicForm requestData = form().bindFromRequest();		
+		HashMap<String, Object> response = saveArticle(requestData);
 		return ok(toJson(response));
 	}
 	
-	public static Result updateArticle(String id)
+	
+	public static Result createOrUpdateCoolOrNotCoolState()
 	{
-		DynamicForm requestData = form().bindFromRequest();
-		String articleTitle =requestData.get("articleTitle");
-		String articleSubTitle=requestData.get("articleSubTitle");
-		String articleBody =requestData.get("articleBody");
-		String articleCategory =requestData.get("articleCategory");
-		String articleUsername =requestData.get("articleUsername");
-		String articlePlatform =requestData.get("articlePlatform");
-		String articleFeaturedImage =requestData.get("articleFeaturedImage");
-		String articleGame =requestData.get("articleGame");
-		String articleState =requestData.get("articleState");
-		
-		HashMap<String, Object> response = saveArticle(id,articleTitle, articleSubTitle, articleBody, articleCategory, articleUsername, articlePlatform, articleFeaturedImage, articleGame, articleState);
+		DynamicForm requestData = form().bindFromRequest();		
+		HashMap<String, Object> response = createOrUpdateVotingMap(requestData);
 		return ok(toJson(response));
 	}
 	
+	public static Result updateAverageTimeSpent()
+	{
+		DynamicForm requestData = form().bindFromRequest();
+		HashMap<String, Object> response = updateArticleAverageTimeSpentMap(requestData);
+		return ok(toJson(response));
+	}
+
 	/**
 	 * Fetch single article by username and article title
 	 * 
@@ -95,27 +71,48 @@ public class ArticleController extends Controller{
 	 * @param key
 	 * @return
 	 */	
-	private static List<HashMap<String, Object>> getArticlesByKey(String key, String sortField)
+	private static List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategoryMap(String platform, String category, String timestamp, Integer mode)
 	{
-		return articleDaoInstance.getAllArticlesByKey(key, sortField);
+		
+		return articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, Long.parseLong(timestamp), mode);
 	}
 	
 	/**
-	 * Save a new article in system and return a status
+	 *  Save or updated a article in system and return a status
 	 * 
-	 * @param articleTitle
-	 * @param articleSubTitle
-	 * @param articleBody
-	 * @param category
-	 * @param username
-	 * @param platforms
-	 * @param featuredImagePath
-	 * @param game
-	 * @param state
+	 * @param requestData
 	 * @return
 	 */
-	private static HashMap<String, Object> saveArticle(String id,String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game, String state)
+	private static HashMap<String, Object> saveArticle(DynamicForm requestData)
 	{
-		return articleDaoInstance.saveArticle(id,articleTitle, articleSubTitle, articleBody, category, username, platforms, featuredImagePath, game, state);
+		return articleDaoInstance.saveOrUpdateArticle(requestData);
+	}
+	
+	/**
+	 * Create Or update cool or not cool state for an article
+	 * 
+	 * @param requestData
+	 * @return
+	 */
+	private static HashMap<String, Object> createOrUpdateVotingMap(DynamicForm requestData) {
+		
+		String userName = requestData.get("username");
+		String articleId = requestData.get("articleId");
+		Integer type = Integer.parseInt(requestData.get("type")); 
+		return articleDaoInstance.createOrUpdateCoolUncoolValue(userName, articleId, type);
+	}
+	
+	/**
+	 * Update Average Time spent value of article
+	 * 
+	 * @param requestData
+	 * @return
+	 */
+	private static HashMap<String, Object> updateArticleAverageTimeSpentMap(DynamicForm requestData)
+	{
+		String articleId= requestData.get("articleId");
+		Double timeSpent= Double.parseDouble(requestData.get("timeSpent"));
+		Logger.debug("timespent "+timeSpent);
+		return articleDaoInstance.updateArticleAverageTimeSpent(articleId, timeSpent);
 	}
 }

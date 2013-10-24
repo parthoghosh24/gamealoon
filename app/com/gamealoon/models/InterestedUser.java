@@ -5,23 +5,9 @@ import com.google.code.morphia.annotations.Embedded;
 @Embedded
 public class InterestedUser {
 
-	private String userId;
-	private String userName;
-	private String avatarPath;
+	private String userName;	
 	private String insertTime;
 	private Long timestamp;
-	/**
-	 * @return the userId
-	 */
-	public String getUserId() {
-		return userId;
-	}
-	/**
-	 * @param userId the userId to set
-	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
 	/**
 	 * @return the userName
 	 */
@@ -58,16 +44,5 @@ public class InterestedUser {
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
-	/**
-	 * @return the avatarPath
-	 */
-	public String getAvatarPath() {
-		return avatarPath;
-	}
-	/**
-	 * @param avatarPath the avatarPath to set
-	 */
-	public void setAvatarPath(String avatarPath) {
-		this.avatarPath = avatarPath;
-	}
+
 }

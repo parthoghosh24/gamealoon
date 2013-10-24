@@ -1,17 +1,22 @@
 package com.gamealoon.database.daos;
 
+import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import org.bson.types.ObjectId;
-
+import play.Logger;
 import play.data.DynamicForm;
+import play.mvc.Http.MultipartFormData.FilePart;
 
+import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.algorithm.SecurePassword;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.UserInterface;
@@ -25,14 +30,21 @@ import com.gamealoon.models.InterestedGame;
 import com.gamealoon.models.InterestedUser;
 import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
+import com.gamealoon.models.UserGameScoreMap;
 import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
+import com.google.code.morphia.query.Query;
+import com.google.code.morphia.query.UpdateOperations;
+import com.mongodb.Mongo;
 
 public class UserDAO extends GloonDAO implements UserInterface{
 	
 private static final UserDAO DATA_ACCESS_LAYER=new UserDAO();	
+private static final MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
 private static final ActivityDAO activityDAOInstance=ActivityDAO.instantiateDAO();
+private static final AchievementDAO achievementDAOInstance=AchievementDAO.instantiateDAO();
+private static final GameDAO gameDAOInstance=GameDAO.instantiateDAO();
 private Datastore gloonDatastore=null;
 	private UserDAO()
 	{
@@ -60,7 +72,15 @@ private Datastore gloonDatastore=null;
 			   {
 				   HashMap<String, Object> userMap = new HashMap<>();
 				   userMap.put("userUserName", user.getUsername());
-				   userMap.put("userAvatar", user.getAvatarPath());
+				   if(!user.getAvatarPath().isEmpty())
+				   {
+					   userMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
+				   }
+				   else
+				   {					   
+					   userMap.put("userAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+				   }	
+				   
 				   userMap.put("userAchievementCount", user.getAchievements().size());
 				   userMap.put("totalFollowers", user.getFollowedBy().size());
 				   userMaps.add(userMap);
@@ -74,30 +94,43 @@ private Datastore gloonDatastore=null;
 	@Override
 	public HashMap<String, Object> getLoggedInUser(String username, String password) {
 		HashMap<String, Object> loggedInUserMap= new HashMap<>();		
-		loggedInUserMap.put("available", false);
+		loggedInUserMap.put("status", "fail");
 		User user = checkUser(username, password);
         if(user!=null)
         {
-        	loggedInUserMap.put("available", true);
+        	loggedInUserMap.put("status", "success");
         	loggedInUserMap.put("username", user.getUsername());
         	loggedInUserMap.put("firstName", user.getFirstName());
         	loggedInUserMap.put("lastName", user.getLastName());
         	loggedInUserMap.put("userid",user.getId().toString());
+        	 if(!user.getAvatarPath().isEmpty())
+			   {
+        		 loggedInUserMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
+			   }
+			   else
+			   {
+				   loggedInUserMap.put("userAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+			   }
         	
         }
 		return loggedInUserMap;
 	}
 	
 	@Override
-	public HashMap<String, Object> registerUser(String username, String password, String email) {
+	public HashMap<String, Object> registerUser(String username, String password, String email,String firstName, String lastName) {
 		HashMap<String, Object> registerUser = new HashMap<>();
-		registerUser.put("Success", registerTheUser(username, password, email));		
+		registerUser.put("status", "fail");
+		if(registerTheUser(username, password, email, firstName, lastName))
+		{
+			registerUser.put("status", "success");
+		}			
 		return registerUser;
 	}
 	
 	@Override
 	public HashMap<String, Object> getUser(String usernameOrId, Integer mode, String username) {
-		   User user = getUserData(usernameOrId, mode);
+		   Mongo instance = getDatabaseInstance().getMongoInstance();	
+		   User user = getUserData(usernameOrId);
 		   ArticleDAO articleDao = ArticleDAO.instantiateDAO();	
 		   ActivityDAO activityDAO = ActivityDAO.instantiateDAO();		   
 		   HashMap<String, Object> userMap = new HashMap<>();
@@ -111,16 +144,33 @@ private Datastore gloonDatastore=null;
 			   userMap.put("userEmail",user.getEmail());
 			   userMap.put("userBirthdayVisibility", user.getBirthdayVisibility());
 			   userMap.put("userUserName", user.getUsername());
-			   userMap.put("userAvatar", user.getAvatarPath());
+			   if(!user.getAvatarPath().isEmpty())
+			   {
+				   Logger.debug("Image available.......");
+				   userMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
+			   }
+			   else
+			   {
+				   userMap.put("userAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+			   }			   
 			   userMap.put("userAchievementCount", user.getAchievements().size());
 			   userMap.put("userFollowersCount", user.getFollowedBy().size());
 			   userMap.put("userFollowingCount", user.getFollowing().size());
 			   userMap.put("userGameBio", user.getGameBio());
-			   userMap.put("userTotalCount", User.getAllUserCount()-1); //N-1 users. You don't wanna count yourself duh!!!			   
+			   userMap.put("userTotalCount", count()-1); //N-1 users. You don't wanna count yourself duh!!!			   
 			   userMap.put("userTotalAchievements", Achievement.getAllAchievementCount());
 			   articleDao = ArticleDAO.instantiateDAO();					   
 			   userMap.put("userTotalPublishedArticles",Article.allPublishedArticleCount());
 			   userMap.put("userTotalArticlesPublishedByUser",Article.allPublishedArticleCount(user));
+			   userMap.put("userTotalCoolScore", user.getUserTotalCoolScore());
+			   if(articleDao.allPublishedArticlesCount(null)>0)
+			   {
+				   userMap.put("userNetworkTotalCoolScore", RankAlgorithm.calculateNetworkTotalCoolScore(instance));  
+			   }
+			   else
+			   {
+				   userMap.put("userNetworkTotalCoolScore", 0);
+			   }
 			   userMap.put("userInterestedPlatforms", user.getInterestedPlatforms());
 			   userMap.put("userCountry", user.getCountry());
 			   ArrayList<HashMap<String, Object>> genreMapList = new ArrayList<>();
@@ -130,38 +180,182 @@ private Datastore gloonDatastore=null;
 				   genreMap.put("genreValue", genre.toString());
 				   genreMap.put("genreShortValue", genre);
 				   genreMapList.add(genreMap);
-			   }
-			   userMap.put("userInterestedGenres", genreMapList);
-			   if(mode == AppConstants.USER_PROFILE)
+			   }			   
+			   userMap.put("userInterestedGenres", genreMapList);	
+			   
+			   ArrayList<InterestedGame> interestedGames = user.getFollowingGames();			   
+			   if(interestedGames!=null)
 			   {
-				   //10 followers				   
-				   ArrayList<Buddy> followedBy = user.getFollowedBy();				   				   
-				   if(followedBy.size()>10)
+				   Collections.sort(interestedGames,new Comparator<InterestedGame>() {
+
+					@Override  
+					public int compare(InterestedGame instance1, InterestedGame instance2) {						
+						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
+					}
+					   
+				   });
+				   
+				   ArrayList<InterestedGame> selectedInterestedGameList = new ArrayList<>();
+				   selectedInterestedGameList=interestedGames;
+				   if(interestedGames.size()>5)
 				   {
-					   userMap.put("userFollowedBy", followedBy.subList(1, 11));  
+					   selectedInterestedGameList=(ArrayList<InterestedGame>) interestedGames.subList(0, 5);					   
 				   }
-				   else
-				   {
-					   userMap.put("userFollowedBy", followedBy);
+				   else if(interestedGames.size()>10)
+				   {					   					   
+					   selectedInterestedGameList=(ArrayList<InterestedGame>) interestedGames.subList(0, 10);					   
 				   }
 				   
-				   
-				   
-				   
-				   //10 followings				   				   
-				   ArrayList<Buddy> followings = user.getFollowing();				   
-				   if(followings.size()>10)
+				   ArrayList<HashMap<String, Object>> interestedGameListMaps = new ArrayList<>();
+				   for(InterestedGame selectedGame: selectedInterestedGameList)
 				   {
-					   userMap.put("userFollowingOthers", followings.subList(1, 11));  
+					   HashMap<String, Object> interestedGameMap = new HashMap<>();
+					   Game game = gameDAOInstance.getGameById(selectedGame.getGameId());
+					   interestedGameMap.put("interestedGameId", game.getId().toString());
+					   interestedGameMap.put("interestedGameTitle", game.getTitle());
+					   String gameBoxShotPath = game.getGameBoxShotPath();
+					   if(gameBoxShotPath.isEmpty())
+					   {
+						   interestedGameMap.put("interestedGameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/boxShot.png");
+					   }
+					   else
+					   {
+						   interestedGameMap.put("interestedGameBoxShot", AppConstants.APP_IMAGE_GAME_URL_PATH+"/"+Utility.shortenString(game.getTitle())+"/uploads/boxshot/"+gameBoxShotPath);   
+					   }	   
+					   interestedGameMap.put("interestedGameURL",  Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
+					   interestedGameMap.put("interestedGameTimestamp",  selectedGame.getTimestamp());
+					   interestedGameListMaps.add(interestedGameMap);
 				   }
-				   else
+				   
+					   userMap.put("userInterestedGames", interestedGameListMaps);
+					   userMap.put("userDashboardInterestedGames",interestedGameListMaps);  
+				   
+				   
+			   }
+			   else
+			   {
+				   userMap.put("userInterestedGames", new ArrayList<>());
+				   userMap.put("userDashboardInterestedGames",new ArrayList<>());
+			   }
+			   
+			   
+			   //10 followers				   
+			   ArrayList<Buddy> followedBy = user.getFollowedBy();		
+			   
+			   if(followedBy!=null)
+			   {
+				   Collections.sort(followedBy,new Comparator<Buddy>() {
+
+					@Override
+					public int compare(Buddy instance1, Buddy instance2) {						
+						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
+					}
+					   
+				   });
+				   
+				   ArrayList<Buddy> selectedBuddyList = new ArrayList<>();
+				   selectedBuddyList=followedBy;
+				   if(followedBy.size()>5)
 				   {
-					   userMap.put("userFollowingOthers", followings);
-				   }				   
+					   selectedBuddyList=(ArrayList<Buddy>) followedBy.subList(0, 5);					   
+				   }
+				   else if(followedBy.size()>10)
+				   {					   					   
+					   selectedBuddyList=(ArrayList<Buddy>) followedBy.subList(0, 10);					   
+				   }
 				   
+				   ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
+				   for(Buddy buddy: selectedBuddyList)
+				   {
+					   HashMap<String, Object> buddyMap = new HashMap<>();
+					   User buddyUser = findByUsername(buddy.getUserName());
+					   buddyMap.put("buddyUserId", buddyUser.getId().toString());
+					   buddyMap.put("buddyUsername", buddyUser.getUsername());
+					   String buddyAvatarImage = buddyUser.getAvatarPath();
+					   if(buddyAvatarImage.isEmpty())
+					   {
+						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+					   }
+					   else
+					   {
+						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+buddyUser.getAvatarPath());  						     
+					   }	 
+					   buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
+					   buddyListMaps.add(buddyMap);
+				   }
 				   
-				   //10 achievements				   
-				   ArrayList<Achievement> userAchievements = user.getAchievements();				   
+					   userMap.put("userFollowedBy", buddyListMaps);
+					   userMap.put("userDashboardFollowedBy",buddyListMaps); 
+				   
+			   }
+			   else
+			   {
+				   userMap.put("userFollowedBy", new ArrayList<>());
+				   userMap.put("userDashboardFollowedBy",new ArrayList<>());
+			   }
+			   			   			   	
+			   
+			   
+			   
+			   
+			   
+			   //10 followings				   		
+			   ArrayList<Buddy> followings = user.getFollowing();		
+			   
+			   if(followings!=null)
+			   {
+				   Collections.sort(followings,new Comparator<Buddy>() {
+
+					@Override
+					public int compare(Buddy instance1, Buddy instance2) {						
+						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
+					}
+					   
+				   });
+				   
+				   ArrayList<Buddy> selectedBuddyList = new ArrayList<>();
+				   selectedBuddyList=followings;
+				   if(followings.size()>5)
+				   {
+					   selectedBuddyList=(ArrayList<Buddy>) followings.subList(0, 5);					   
+				   }
+				   else if(followings.size()>10)
+				   {					   					   
+					   selectedBuddyList=(ArrayList<Buddy>) followings.subList(0, 10);					   
+				   }
+				   
+				   ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
+				   for(Buddy buddy: selectedBuddyList)
+				   {
+					   HashMap<String, Object> buddyMap = new HashMap<>();
+					   User buddyUser = findByUsername(buddy.getUserName());
+					   buddyMap.put("buddyUserId", buddyUser.getId().toString());
+					   buddyMap.put("buddyUsername", buddyUser.getUsername());
+					   String buddyAvatarImage = buddyUser.getAvatarPath();
+					   if(buddyAvatarImage.isEmpty())
+					   {
+						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+					   }
+					   else
+					   {
+						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+buddyUser.getAvatarPath());  						     
+					   }	 
+					   buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
+					   buddyListMaps.add(buddyMap);
+				   }
+				   
+					   userMap.put("userFollowingOthers", buddyListMaps);					   
+				   
+			   }
+			   else
+			   {
+				   userMap.put("userFollowingOthers", new ArrayList<>());				   
+			   }
+
+			   //10 achievements				   
+			   ArrayList<Achievement> userAchievements = user.getAchievements();		
+			   if(userAchievements!=null)
+			   {
 				   if(userAchievements.size()>10)
 				   {
 					   userMap.put("userAchievements", userAchievements.subList(1, 11));  
@@ -169,20 +363,29 @@ private Datastore gloonDatastore=null;
 				   else
 				   {
 					   userMap.put("userAchievements", userAchievements);
-				   }	
+				   }  
+			   }
+			   else
+			   {
+				   userMap.put("userAchievements", new ArrayList<>());
+			   }
+			   
+			   if(mode == AppConstants.USER_PROFILE)
+			   {
 				   
-				   
-				   //10 recent posts
-				  articleDao = ArticleDAO.instantiateDAO();
+				   //10 recent posts				  
 				  userMap.put("userPosts", articleDao.getArticleListForUser(user));
 				   
 				   
-				   //10 recent activities			
-				   activityDAO = ActivityDAO.instantiateDAO();
+				   //10 recent activities							   
 				   userMap.put("userActivities", activityDAO.getActivities(user));
 			   }
 			   if(mode == AppConstants.USER_PAGE)
 			   {
+				   				   
+				   userMap.put("userCarouselArticles", articleDao.getAllArticlesForUserCarousel(user.getUsername()));
+				   userMap.put("userPublicActivities", activityDAOInstance.getPublicActivitiesForUser(user));
+				   userMap.put("userRecentArticles", articleDao.getNArticlesByCarouselSelectorAndCategory(user.getUsername(), "all", new Date().getTime(), Article.USER));
 				  if(checkUserBlockedOrNot(user, findByUsername(username)))
 				  {
 					  userMap.put("isBlocked", 1);
@@ -220,12 +423,19 @@ private Datastore gloonDatastore=null;
 	}
 	
 	@Override
+	public User findByEmail(String email) {
+		
+		return gloonDatastore.find(User.class,"email",email).get();
+	}
+
+	@Override
 	public Long count() {	
 		return gloonDatastore.getCount(User.class);
 	}
 	
 	@Override
-	public HashMap<String, Object> saveOrUpdateUserInterest(String username,int type, String[] interests) {
+	public HashMap<String, Object> saveOrUpdateUserInterest(String username,int type, String[] interests) {	
+		
 		HashMap<String, Object> response = new HashMap<>();
 		PlatformDAO platformDAO = PlatformDAO.instantiateDAO();
 		response.put("status", "fail");
@@ -237,8 +447,12 @@ private Datastore gloonDatastore=null;
 				ArrayList<Platform> userInterestPlatforms= new ArrayList<>();
 				for(String interest: interests)
 				{
-				    	Platform platform = platformDAO.findByShortTitle(interest);
-				    	userInterestPlatforms.add(platform);				    	
+				    	Platform platform = platformDAO.findByShortTitle(interest);				    	
+				    	if(platform!=null)
+				    	{
+				    		userInterestPlatforms.add(platform);
+				    	}
+				    					    	
 				}
 				user.setInterestedPlatforms(userInterestPlatforms);
 				response.put("status", "success");
@@ -248,8 +462,16 @@ private Datastore gloonDatastore=null;
 				ArrayList<Genre> userInterestGenres= new ArrayList<>();
 				for(String interest: interests)
 				{
-				   Genre genre = Genre.valueOf(interest);				   
-				   userInterestGenres.add(genre);				   
+				   Genre genre = null;
+				   if(interest.length()>0)
+				   {
+					   genre=Genre.valueOf(interest);
+				   }						  
+				   if(genre!=null)
+				   {
+					   userInterestGenres.add(genre);  
+				   }
+				   				   
 				}
 				user.setInterestedGenres(userInterestGenres);
 				response.put("status", "success");
@@ -319,8 +541,7 @@ private Datastore gloonDatastore=null;
 					save(user);
 					response.put("status", "success");
 				}
-			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
+			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {				
 				e.printStackTrace();
 				response.put("status", "fail");
 			}
@@ -330,6 +551,7 @@ private Datastore gloonDatastore=null;
 	
 	@Override
 	public HashMap<String, String> addOrRemoveBuddy(String username,String buddyUsername, Integer type) {
+		Mongo instance = getDatabaseInstance().getMongoInstance();
 		HashMap<String, String> response = new HashMap<>();		
 		response.put("status", "fail");
 		User user = findByUsername(username);
@@ -339,32 +561,28 @@ private Datastore gloonDatastore=null;
 		{
 			if(user!= null && buddy!=null)
 			{
-				Buddy originalUser=null;
-				Buddy buddyUser=null;
+				Buddy originalUser= null;
+				
+				Buddy buddyUser= null;
+				
 				if(type == Buddy.ADD)
 				{
 					
-					ArrayList<Buddy> originalUserFollowing =user.getFollowing();
-					
-					originalUser = new Buddy();
-					originalUser.setBuddyId(user.getId().toString());
-					originalUser.setUserName(username);
-					originalUser.setAvatarPath(user.getAvatarPath());
+					originalUser= new Buddy();					
+					originalUser.setUserName(username);					
 					originalUser.setChatState(User.INVITE);
 					originalUser.setBlockState(Buddy.UNBLOCK);
-					
 					originalUser.setInsertTime(Utility.convertDateToString(time));
 					originalUser.setTimestamp(time.getTime());
 					
-					buddyUser = new Buddy();
-					buddyUser.setBuddyId(buddy.getId().toString());
-					buddyUser.setUserName(buddyUsername);
-					buddyUser.setAvatarPath(buddy.getAvatarPath());
+					buddyUser= new Buddy();					
+					buddyUser.setUserName(buddyUsername);					
 					buddyUser.setChatState(User.INVITE);
 					buddyUser.setBlockState(Buddy.UNBLOCK);
 					buddyUser.setInsertTime(Utility.convertDateToString(time));
 					buddyUser.setTimestamp(time.getTime());
 					
+					ArrayList<Buddy> originalUserFollowing =user.getFollowing();					
 					originalUserFollowing =user.getFollowing();
 					if(!originalUserFollowing.contains(buddyUser))
 					{
@@ -380,51 +598,63 @@ private Datastore gloonDatastore=null;
 						buddy.setFollowedBy(buddyUserFollowedBy);
 					}					
 					save(user);
+					
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, user.getId().toString(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
+					activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, user.getUsername(), buddy.getId().toString(), AppConstants.PUBLIC, Utility.convertDateToString(time), time.getTime());
 					response.put("status", "success");
 				}
 				else
-				{
-					ArrayList<Buddy> originalUserFollowedBy =user.getFollowedBy();
-					for(Buddy buddyInstance: originalUserFollowedBy)
+				{					
+					ArrayList<Buddy> originalUserFollowing =user.getFollowing();
+					ArrayList<Buddy> buddyUserFollowedBy = buddy.getFollowedBy();	
+					
+					//Fetch buddyUser instance from original user followings
+					for(Buddy buddyInstance: originalUserFollowing)
 					{
 						if(buddyUsername.equalsIgnoreCase(buddyInstance.getUserName()))
 						{
-							buddyInstance.setBlockState(Buddy.UNBLOCK);
-							break;
+							buddyUser= buddyInstance;
 						}
-					}					
-					
-					ArrayList<Buddy> buddyUserFollowing =buddy.getFollowing();
-					
-					originalUser = new Buddy();
-					originalUser.setBuddyId(user.getId().toString());
-					originalUser.setUserName(username);
-					originalUser.setAvatarPath(user.getAvatarPath());
-					originalUser.setChatState(User.INVITE);
-					originalUser.setBlockState(Buddy.UNBLOCK);
-					time= new Date();
-					originalUser.setInsertTime(Utility.convertDateToString(time));
-					originalUser.setTimestamp(time.getTime());
-					
-					if(!buddyUserFollowing.contains(originalUser))
-					{
-						buddyUserFollowing.add(originalUser);
-						buddy.setFollowing(buddyUserFollowing);
 					}
+					
+					//Fetch originalUser instance from buddy user followed-by
+					for(Buddy buddyInstance: buddyUserFollowedBy)
+					{
+						if(username.equalsIgnoreCase(buddyInstance.getUserName()))
+						{
+							originalUser= buddyInstance;
+						}
+					}
+					
+					
+					originalUserFollowing.remove(buddyUser);					
+					user.setFollowing(originalUserFollowing);
+					buddyUserFollowedBy.remove(originalUser);
+					buddy.setFollowedBy(buddyUserFollowedBy);
 					save(user);
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_USER_UNFOLLOWS, user.getId().toString(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
+					activityDAOInstance.create(Activity.ACTIVITY_USER_UNFOLLOWS, user.getUsername(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
 					response.put("status", "success");
 					
-				}	
-				
-				
-				if(originalUser == null || buddyUser ==null)
+				}					
+				if(buddy!=null)
 				{
-					response.put("status", "fail");
-				}				
+					Double userFollowScore = buddy.getFollowedBy().size()/(count()*1.0);
+					buddy.setUserFollowScore(userFollowScore);
+					Double articlePublishRateRatio=RankAlgorithm.calculateUserArticlePublishRateRatio(buddy.getArticlePublishRate(), instance);		
+					Double articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(buddy.getUserArticleScore(), instance);					
+					Double userTotalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowScore, articleScoreRatio);
+					buddy.setTotalScore(userTotalScore);
+					if(gloonDatastore.getCount(UserGameScoreMap.class)>0)
+					{
+						Query<UserGameScoreMap> updateQuery = gloonDatastore.createQuery(UserGameScoreMap.class).field("username").equal(buddy.getUsername());
+						UpdateOperations<UserGameScoreMap>  opearations=gloonDatastore.createUpdateOperations(UserGameScoreMap.class).set("networkUserWeight", RankAlgorithm.calculateUserScoreRatio(userTotalScore, instance));
+						gloonDatastore.update(updateQuery, opearations);
+					}
+					
+					save(buddy);
+				}
+				
 				
 			}			
 			
@@ -432,6 +662,30 @@ private Datastore gloonDatastore=null;
 		catch(Exception e)
 		{
 			e.printStackTrace();
+			response.put("status", "fail");
+		}
+		return response;
+	}
+	
+	@Override
+	public HashMap<String, String> validateEmail(String email) {
+		HashMap<String, String> response= new HashMap<>();
+		response.put("status", "success");
+		User user = gloonDatastore.find(User.class, "email", email).get();
+		if(user!=null)
+		{
+			response.put("status", "fail");
+		}
+		return response;
+	}
+
+	@Override
+	public HashMap<String, String> validateUsername(String username) {
+		HashMap<String, String> response= new HashMap<>();
+		response.put("status", "success");
+		User user = gloonDatastore.find(User.class, "username", username).get();
+		if(user!=null)
+		{
 			response.put("status", "fail");
 		}
 		return response;
@@ -568,7 +822,7 @@ private Datastore gloonDatastore=null;
 					}
 					save(user);
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_BLOCK, user.getId().toString(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
+					activityDAOInstance.create(Activity.ACTIVITY_BLOCK, user.getUsername(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
 					response.put("status", "success");
 				}
 				else //unblock user
@@ -600,7 +854,7 @@ private Datastore gloonDatastore=null;
 					}
 					save(user);
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_UNBLOCK, user.getId().toString(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time),time.getTime());
+					activityDAOInstance.create(Activity.ACTIVITY_UNBLOCK, user.getUsername(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time),time.getTime());
 					response.put("status", "success");
 				
 				} 
@@ -627,6 +881,7 @@ private Datastore gloonDatastore=null;
 		response.put("status", "fail");
 		User user =findByUsername(username);
 		Game game = gloonDatastore.get(Game.class, new ObjectId(gameId));
+		Date time = new Date();
 		if(user!=null || game!=null) //add game and user in their respective lists
 		{
 			InterestedGame interestedGame=null;
@@ -634,18 +889,12 @@ private Datastore gloonDatastore=null;
 			if(type == InterestedGame.INTERESTED)
 			{
 				interestedGame = new InterestedGame();
-				interestedGame.setGameId(game.getId().toString());
-				interestedGame.setGameReleaseDate(game.getReleaseDate());
-				interestedGame.setGameScore(game.getScore());
-				interestedGame.setGameTitle(game.getTitle());
-				Date time =new Date();				
+				interestedGame.setGameId(game.getId().toString());							
 				interestedGame.setInsertTime(Utility.convertDateToString(time));
 				interestedGame.setTimestamp(time.getTime());
 				
-				interestedUser = new InterestedUser();
-				interestedUser.setUserId(user.getId().toString());
-				interestedUser.setUserName(user.getUsername());
-				interestedUser.setAvatarPath(user.getAvatarPath());
+				interestedUser = new InterestedUser();				
+				interestedUser.setUserName(user.getUsername());				
 				interestedUser.setInsertTime(Utility.convertDateToString(time));
 				interestedUser.setTimestamp(time.getTime());
 				
@@ -666,6 +915,7 @@ private Datastore gloonDatastore=null;
 				
 				save(user);
 				gloonDatastore.save(game);
+				activityDAOInstance.create(Activity.ACTIVITY_FOLLOW_GAME, user.getUsername(), gameId, AppConstants.PUBLIC, Utility.convertDateToString(time), time.getTime());
 				response.put("status", "success");
 				
 			}
@@ -697,6 +947,7 @@ private Datastore gloonDatastore=null;
 				game.setInterestedIn(interestedUsers);
 				save(user);
 				gloonDatastore.save(game);
+				activityDAOInstance.create(Activity.ACTIVITY_UNFOLLOW_GAME, user.getUsername(),gameId, AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
 				response.put("status", "success");
 			}
 			
@@ -708,6 +959,36 @@ private Datastore gloonDatastore=null;
 		return response;
 	}
 	
+	@Override
+	public HashMap<String, String> saveOrUpdateUserAvatar(String username,FilePart avatarPart) {
+		
+		HashMap<String, String> response = new HashMap<>();
+		response= mediaDAOInstance.uploadImage(username, avatarPart);
+		if(response.get("status").equalsIgnoreCase("success"))
+		{
+			String fileName = avatarPart.getFilename();
+			User user = findByUsername(username);
+			String avatarRelativePath ="/"+username+"/uploads/"+fileName; 
+			user.setAvatarPath(avatarRelativePath);
+			response.put("avatarPath", AppConstants.APP_IMAGE_USER_URL_PATH+avatarRelativePath);
+			save(user);
+		}
+		
+		return response;
+	}
+	
+	@Override
+	public List<User> getTopUsers(int limit) {
+		if(limit>0)
+		  {
+			  return gloonDatastore.createQuery(User.class).order("-totalScore").limit(limit).asList();
+		  }
+		  else
+		  {
+			  return gloonDatastore.createQuery(User.class).order("-totalScore").asList();
+		  }	 
+	}
+	
 	/**
 	 * Register user. simply create new user object and feed username, password and email
 	 * 
@@ -716,7 +997,7 @@ private Datastore gloonDatastore=null;
 	 * @param email
 	 * @return
 	 */
-	private Boolean registerTheUser(String username, String password, String email)
+	private Boolean registerTheUser(String username, String password, String email,String firstName, String lastName)
 	{
 		Boolean response=false;
 		try
@@ -728,19 +1009,39 @@ private Datastore gloonDatastore=null;
 			newUser.setPasswordSalt(securePasswordMap.get("saltHex"));
 			newUser.setEmail(email);
 			newUser.setEmailConfirmed(AppConstants.EMAIL_NOT_CONFIRMED);
-			newUser.setFirstName("First");
-			newUser.setLastName("Last");
+			newUser.setFirstName(firstName);
+			newUser.setLastName(lastName);
 			Calendar now = GregorianCalendar.getInstance();
 			newUser.setDay(now.get(Calendar.DAY_OF_MONTH));
 			newUser.setMonth(now.get(Calendar.MONTH));
 			newUser.setYear(now.get(Calendar.YEAR));
-			newUser.setGameBio("Your Game Bio.");
-			newUser.setAvatarPath("System default avatar"); //TODO this need to be converted into actual system avatar			
-			gloonDatastore.save(newUser);
+			newUser.setGameBio("I love gaming.");
+			newUser.setCountry("India");
+			newUser.setBirthdayVisibility(User.PUBLIC);
+			newUser.setAvatarPath(""); 			
+			Achievement achievement = achievementDAOInstance.findByTitle("New Gloonie!");
+			ArrayList<Achievement> achievements = new ArrayList<>();
+			achievements.add(achievement);
+			newUser.setAchievements(achievements);
+			newUser.setArticlePublishRate(0.0);			
+			newUser.setFollowedBy(new ArrayList<Buddy>());
+			newUser.setFollowing(new ArrayList<Buddy>());
+			newUser.setFollowingGames(new ArrayList<InterestedGame>());
+			newUser.setInterestedGenres(new ArrayList<Genre>());
+			newUser.setInterestedPlatforms(new ArrayList<Platform>());
+			newUser.setTotalScore(0.0);
+			newUser.setUserArticleScore(0.0);
+			newUser.setUserFollowScore(0.0);
+			newUser.setUserTotalCoolScore(0.0);
+			save(newUser);					
+			String uptoUsername =AppConstants.APP_ABSOLUTE_IMAGE_USER_PATH+username+"\\uploads\\";
+			File makeUsernameDir = new File(uptoUsername);
+			makeUsernameDir.mkdirs();
 			response=true;
 		}
 		catch(Exception ex)
 		{
+			Logger.error("Error in UserDAO at registerUser ", ex.fillInStackTrace());
 			response=false;
 		}		
 		return response;
@@ -750,14 +1051,19 @@ private Datastore gloonDatastore=null;
 	 * Check whether the user exist or not for login. If exist, return user object else null
 	 * 
 	 * @param gloonDatastore
-	 * @param username
+	 * @param usernameOrEmail
 	 * @param password
 	 * @return
 	 */
-	private User checkUser(String username, String password)	
+	private User checkUser(String usernameOrEmail, String password)	
 	{
-		User user =findByUsername(username);
-		if(user!=null)
+		User user =findByUsername(usernameOrEmail);
+		if(user==null)
+		{
+			user = findByEmail(usernameOrEmail);			
+		}
+		
+		if(user!= null)
 		{
 			String storedHash = user.getPasswordHash();
 			String storedSalt = user.getPasswordSalt();
@@ -767,33 +1073,15 @@ private Datastore gloonDatastore=null;
 					return null;
 				}				
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
+				Logger.error("Error in UserDAO at checkUser ", e.fillInStackTrace());
 				e.printStackTrace();
 				return null;
 			}
-		}
+		}			
 		return user;		 
 	}
-	
+	 
 
-	/**
-	 * Get sorted users based on their ranks
-	 * 
-	 * @param gloonDatastore
-	 * @return
-	 */
-	private List<User> getTopUsers(int limit)
-	{
-	
-	  if(limit>0)
-	  {
-		  return gloonDatastore.createQuery(User.class).order("-totalScore").limit(limit).asList();
-	  }
-	  else
-	  {
-		  return gloonDatastore.createQuery(User.class).order("-totalScore").asList();
-	  }	  
-	}
 	
 	/**
 	 * Get user based on username or id
@@ -802,10 +1090,9 @@ private Datastore gloonDatastore=null;
 	 * @param username
 	 * @return
 	 */
-	private User getUserData(String usernameOrId, Integer mode)
+	private User getUserData(String usernameOrId)
 	{
 		User user= gloonDatastore.createQuery(User.class).filter("username", usernameOrId).get();
-		System.out.println(user);
 		if(user==null)
 		{						
 			user= gloonDatastore.get(User.class, new ObjectId(usernameOrId));			
@@ -813,16 +1100,10 @@ private Datastore gloonDatastore=null;
 		return user;
 	}
 
-	/**
-	 * Utility method to found all User Count
-	 * 
-	 * @return
-	 */
-	public Long allUserCount()
-	{		
-		return gloonDatastore.createQuery(User.class).countAll();
-				
-	}
+	
+
+	
+	
 
 	
 

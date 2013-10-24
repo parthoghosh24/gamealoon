@@ -3,7 +3,6 @@ package com.gamealoon.models;
 
 import java.util.ArrayList;
 import org.bson.types.ObjectId;
-import com.gamealoon.database.daos.UserDAO;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
@@ -41,13 +40,13 @@ public class User {
 	private String avatarPath; //path to avatar image file for user	
 	private String insertTime;
 	private String updateTime;
-	private String gameBio; //This is a game related bio for user, which will be shown on article page
-    private double articleBasedScore; // This is something like How often articles uploaded+other user score for articles uploaded
-    private double videoUploadBasedScore; //This is something like how often videos uploaded+other user score for videos uploaded
-    private double achievementsBasedScore; //This is a score based on achievements earned. Also knows as Gloon points!!!
-    private double userFollowScore; // will be calculated by considering the reps of users following
+	private String gameBio; //This is a game related bio for user, which will be shown on article page           	
+	private Double articlePublishRate; //sum(Ai-Ai+1)/N-1
+	private Double userFollowScore;
+	private Double userArticleScore;		
     @Indexed(value=IndexDirection.ASC, name="usr_scr")
-    private double totalScore;
+    private Double totalScore;
+    private Double userTotalCoolScore;
     
     //Chat states
     public static final int INVITE=0;
@@ -61,6 +60,7 @@ public class User {
     //User interests
     public static final int PLATFORM_INTEREST=1;
     public static final int GENRE_INTEREST=2;
+        
     
     @Embedded
     private ArrayList<Achievement> achievements = new ArrayList<>(); //Achievements earned    
@@ -227,47 +227,6 @@ public class User {
 		this.gameBio = gameBio;
 	}
 
-	/**
-	 * @return the articleBasedScore
-	 */
-	public double getArticleBasedScore() {
-		return articleBasedScore;
-	}
-
-	/**
-	 * @param articleBasedScore the articleBasedScore to set
-	 */
-	public void setArticleBasedScore(double articleBasedScore) {
-		this.articleBasedScore = articleBasedScore;
-	}
-
-	/**
-	 * @return the videoUploadBasedScore
-	 */
-	public double getVideoUploadBasedScore() {
-		return videoUploadBasedScore;
-	}
-
-	/**
-	 * @param videoUploadBasedScore the videoUploadBasedScore to set
-	 */
-	public void setVideoUploadBasedScore(double videoUploadBasedScore) {
-		this.videoUploadBasedScore = videoUploadBasedScore;
-	}
-
-	/**
-	 * @return the achievementsBasedScore
-	 */
-	public double getAchievementsBasedScore() {
-		return achievementsBasedScore;
-	}
-
-	/**
-	 * @param achievementsBasedScore the achievementsBasedScore to set
-	 */
-	public void setAchievementsBasedScore(double achievementsBasedScore) {
-		this.achievementsBasedScore = achievementsBasedScore;
-	}
 
 	/**
 	 * @return the achievements
@@ -281,20 +240,6 @@ public class User {
 	 */
 	public void setAchievements(ArrayList<Achievement> achievements) {
 		this.achievements = achievements;
-	}
-
-	/**
-	 * @return the userFollowScore
-	 */
-	public double getUserFollowScore() {
-		return userFollowScore;
-	}
-
-	/**
-	 * @param userFollowScore the userFollowScore to set
-	 */
-	public void setUserFollowScore(double userFollowScore) {
-		this.userFollowScore = userFollowScore;
 	}
 
 	/**
@@ -401,17 +346,6 @@ public class User {
 	public void setFollowingGames(ArrayList<InterestedGame> followingGames) {
 		this.followingGames = followingGames;
 	}	
-	
-	/**
-	 * Get total user count.
-	 * 
-	 * @return
-	 */
-    public static Long getAllUserCount()
-    {    	
-		UserDAO userDAO = UserDAO.instantiateDAO();
-    	return userDAO.allUserCount();
-    }
 
 	/**
 	 * @return the interestedGenres
@@ -481,5 +415,61 @@ public class User {
 	 */
 	public void setPasswordSalt(String passwordSalt) {
 		this.passwordSalt = passwordSalt;
+	}
+
+	/**
+	 * @return the articlePublishRate
+	 */
+	public Double getArticlePublishRate() {
+		return articlePublishRate;
+	}
+
+	/**
+	 * @param articlePublishRate the articlePublishRate to set
+	 */
+	public void setArticlePublishRate(Double articlePublishRate) {
+		this.articlePublishRate = articlePublishRate;
+	}
+
+	/**
+	 * @return the userFollowScore
+	 */
+	public Double getUserFollowScore() {
+		return userFollowScore;
+	}
+
+	/**
+	 * @param userFollowScore the userFollowScore to set
+	 */
+	public void setUserFollowScore(Double userFollowScore) {
+		this.userFollowScore = userFollowScore;
+	}
+
+	/**
+	 * @return the userArticleScore
+	 */
+	public Double getUserArticleScore() {
+		return userArticleScore;
+	}
+
+	/**
+	 * @param userArticleScore the userArticleScore to set
+	 */
+	public void setUserArticleScore(Double userArticleScore) {
+		this.userArticleScore = userArticleScore;
+	}
+
+	/**
+	 * @return the userTotalCoolScore
+	 */
+	public Double getUserTotalCoolScore() {
+		return userTotalCoolScore;
+	}
+
+	/**
+	 * @param userTotalCoolScore the userTotalCoolScore to set
+	 */
+	public void setUserTotalCoolScore(Double userTotalCoolScore) {
+		this.userTotalCoolScore = userTotalCoolScore;
 	}
 }

@@ -31,16 +31,24 @@ public class Article {
 	private String body;
 	private String publishDate;
 	private String insertTime;
-	private String updateTime;	
+	private String updateTime;
+	/**
+	 * This is the article publish timestamp
+	 * 
+	 */
+	private Long timestamp; 
 	private double coolScore;
 	private double notCoolScore;
-	private double coolNotCoolwilsonScore; //To be calculated in runtime.......... up/down vote or limit based voting..(e.g star)
-	private double pageHitCount; //Count of page hit
-	private double pageHitWilsonScore;	
+	private double coolNotCoolwilsonScore;
+	private double totalTimeSpent;
+	private double averageTimeSpent;	
+	private double pageHitCount; 	
 	private double commentScore;
-	private double totalScore; //sum of wilson+pagehit+comment
+	private double totalScore; //final article score
 	private String featuredImagePath;
 	private int state; //1: draft, 2:publish
+	private String author;
+	private String game;
 	
 	/**
 	 * Article states
@@ -48,18 +56,23 @@ public class Article {
 	public final static int DRAFT=1; 
 	public final static int PUBLISH=2;
 	
+	/**
+	 * Article List extractor modes
+	 */
+	public final static int PLATFORM=1;
+	public final static int USER=2;
+	public final static int GAME=3;
+	
+	/**
+	 * Voting Type
+	 * 
+	 */
+	public static final Integer COOL=0;
+	public static final Integer NOTCOOL=1;
+	
 	@Embedded
 	private ArrayList<Platform> platforms = new ArrayList<>();
-	
-	@Embedded
-	private User author;
-	
-
-	private Category category;
-	
-	@Embedded
-	private Game game;
-	
+	private Category category;	
 	
 	public ObjectId getId()
 	{
@@ -140,28 +153,28 @@ public class Article {
 	/**
 	 * @return the author
 	 */
-	public User getAuthor() {
+	public String getAuthor() {
 		return author;
 	}
 
 	/**
 	 * @param author the author to set
 	 */
-	public void setAuthor(User author) {
+	public void setAuthor(String author) {
 		this.author = author;
 	}
 
 	/**
 	 * @return the game
 	 */
-	public Game getGame() {
+	public String getGame() {
 		return game;
 	}
 
 	/**
 	 * @param game the game to set
 	 */
-	public void setGame(Game game) {
+	public void setGame(String game) {
 		this.game = game;
 	}
 	
@@ -272,20 +285,6 @@ public class Article {
 	}
 
 	/**
-	 * @return the pageHitScore
-	 */
-	public double getPageHitWilsonScore() {
-		return pageHitWilsonScore;
-	}
-
-	/**
-	 * @param pageHitWilsonScore the pageHitScore to set
-	 */
-	public void setPageHitWilsonScore(double pageHitWilsonScore) {
-		this.pageHitWilsonScore = pageHitWilsonScore;
-	}
-
-	/**
 	 * @return the commentScore
 	 */
 	public double getCommentScore() {
@@ -364,6 +363,48 @@ public class Article {
 		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
 		return articleDAO.allPublishedArticlesCount(user);
 		
+	}
+
+	/**
+	 * @return the article publish timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp the article publish timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/**
+	 * @return the totalTimeSpent
+	 */
+	public double getTotalTimeSpent() {
+		return totalTimeSpent;
+	}
+
+	/**
+	 * @param totalTimeSpent the totalTimeSpent to set
+	 */
+	public void setTotalTimeSpent(double totalTimeSpent) {
+		this.totalTimeSpent = totalTimeSpent;
+	}
+
+	/**
+	 * @return the averageTimeSpent
+	 */
+	public double getAverageTimeSpent() {
+		return averageTimeSpent;
+	}
+
+	/**
+	 * @param averageTimeSpent the averageTimeSpent to set
+	 */
+	public void setAverageTimeSpent(double averageTimeSpent) {
+		this.averageTimeSpent = averageTimeSpent;
 	}
 
 	

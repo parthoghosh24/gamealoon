@@ -1,5 +1,6 @@
 package com.gamealoon.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.gamealoon.database.daos.GameDAO;
@@ -18,6 +19,16 @@ public class GameController extends Controller{
 		return ok(toJson(gameMap));
 	}
 	
+	public static Result getGames(String term)
+	{		
+		ArrayList<HashMap<String, Object>> gameMaps = getGameMaps(term);
+		return ok(toJson(gameMaps));
+	}
+	
+	private static ArrayList<HashMap<String, Object>> getGameMaps(String term) {		
+		return gameDaoInstance.findAllByTerm(term);
+	}
+
 	/**
 	 * Fetch Game by Id
 	 * 

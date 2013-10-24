@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import play.data.DynamicForm;
+
 import com.gamealoon.models.Article;
 import com.gamealoon.models.User;
 
@@ -17,25 +19,37 @@ public interface ArticleInterface {
 	 */
 	public void save(Article article);
 	
+	/**
+	 * Get article by id
+	 * 
+	 * @param id
+	 */
+    public Article getById(String id);
+    
+	/**
+	 * Fetch all Articles for Carousel based on platform
+	 * 
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public HashMap<String, Object> getAllArticlesForCarousel(String platform);
+	
+	/**
+	 * Fetch all Articles for User page carousel. This is different because we will be marking one category as featured based on last updated.
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public HashMap<String, Object> getAllArticlesForUserCarousel(String username);
 
 	/**
-	 * Fetch all Articles for Carousel
+	 * Fetch all Articles for Game page carousel. 
 	 * 
-	 * 
-	 * @param type
+	 * @param gameId
 	 * @return
 	 */
-	public HashMap<String, Object> getAllArticlesForCarousel(String type);
-	
-	/**
-	 * Fetch all N Articles
-	 * 
-	 * 
-	 * @param type
-	 * @return
-	 */
-	
-	public HashMap<String, Object> getRecentAllNArticles(int limit, String platform);
+	public HashMap<String, Object> getAllArticlesForGameCarousel(String gameId);
 	
 	/**
 	 * Fetch Single Article
@@ -48,41 +62,25 @@ public interface ArticleInterface {
 	public HashMap<String, Object> getArticle(String userName, String titleOrId);	
 	
 	/**
-	 * Fetch all Articles by key and sort by sortField
+	 * Fetch all Articles by carousel selector that is platform, game or user and category. Timestamp to fetch data in batch for pagination. 
 	 * 
 	 * 
 	 * @param type
 	 * @return
 	 */
 	
-	public List<HashMap<String, Object>> getAllArticlesByKey(String key, String sortField);
+	public List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategory(String categorySelector, String category, Long timestamp, Integer mode);
 	
-	/**
-	 * Update Article's cool or uncool score
-	 * 
-	 * 
-	 * @param type
-	 * @return
-	 */
 	
-	public void updateArticleCoolUncoolScore(String urlTitle, String type);
 	
-	/**
-	 * Update Article Page Hit count
-	 * 
-	 * 
-	 * @param type
-	 * @return
-	 */
-	
-	public void updateArticlePageHitCount(String urlTitle);
+
 	
 	/**
 	 * Saves New Article
 	 * 
 	 * @return
 	 */
-	public HashMap<String, Object> saveArticle(String id, String articleTitle, String articleSubTitle, String articleBody, String category, String username, String platforms, String featuredImagePath, String game,String state);
+	public HashMap<String, Object> saveOrUpdateArticle(DynamicForm requestData);
 	
 	
 	/**
@@ -95,11 +93,44 @@ public interface ArticleInterface {
 	
 	
 	/**
-	 * Find all Published articles for a game
+	 * Find all Published articles for a game by category
 	 * 
 	 * @param gameId
 	 * @return
 	 */
-	public List<Article> findAllPublishedArticlesByGame(String gameId);
+	public List<Article> findAllPublishedArticlesByGame(String gameId, String category);
+	
+	
+	
+	/**
+	 * Fetch all articles by username
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public List<Article> findAllPublishedArticlesByUser(String username);
+	
+	
+	/**
+	 * Count All Published Articles. If no user passed, then total Published article count returned.
+	 * 
+	 */
+	public Long allPublishedArticlesCount(User user);
+		
+	/**
+	 * Create or update cool uncool value. Also this will update coolscore and notcoolscore of article as will as coolNotCoolWilsonScore for article
+	 * 
+	 * @param username
+	 * @param articleId
+	 * @param type
+	 * @return
+	 */
+	public HashMap<String, Object> createOrUpdateCoolUncoolValue(String username, String articleId, Integer type);
+	
+	/**
+	 * Update average time spent on article.
+	 * 
+	 */
+	public HashMap<String, Object> updateArticleAverageTimeSpent(String articleId, Double timeSpent);
 	
 }

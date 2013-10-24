@@ -2,9 +2,8 @@ package com.gamealoon.database.interfaces;
 
 import java.util.HashMap;
 import java.util.List;
-
 import play.data.DynamicForm;
-
+import play.mvc.Http.MultipartFormData.FilePart;
 import com.gamealoon.models.User;
 
 public interface UserInterface {
@@ -43,7 +42,7 @@ public interface UserInterface {
 	 * @param type
 	 * @return
 	 */
-	public HashMap<String, Object> registerUser(String username, String password, String email);
+	public HashMap<String, Object> registerUser(String username, String password, String email,String firstName, String lastName);
 	
 	/**
 	 * Fetch Single user by username or Id
@@ -92,6 +91,14 @@ public interface UserInterface {
 	public User findByUsername(String username);
 	
 	/**
+	 * Find User by email
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public User findByEmail(String email);
+	
+	/**
 	 * Add user in following/follower list
 	 * 
 	 * @param username
@@ -120,10 +127,43 @@ public interface UserInterface {
 	public HashMap<String, String> addOrRemoveInterestedGames(String username, String gameId, Integer type);
 	
 	/**
+	 * Save or update user avatar image
+	 * 
+	 * @param username
+	 * @param requestData
+	 * @return
+	 */
+	public HashMap<String, String> saveOrUpdateUserAvatar(String username, FilePart avatarPart);
+	
+	/**
 	 * Get count
 	 * 
 	 * @return
 	 */
 	public Long count();
 	
+	/**
+	 * Fetch N top Users based on Limit
+	 * 
+	 * @param gloonDatastore
+	 * @param limit
+	 * @return
+	 */
+	public List<User> getTopUsers(int limit);
+	
+	/**
+	 * Validate email whether email exists or not
+	 * 
+	 * @param email
+	 * @return
+	 */
+	public HashMap<String, String> validateEmail(String email);
+	
+	/**
+	 * Validate email whether username exists or not
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public HashMap<String, String> validateUsername(String username);
 }

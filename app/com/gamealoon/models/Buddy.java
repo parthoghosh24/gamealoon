@@ -11,9 +11,7 @@ import com.google.code.morphia.annotations.Embedded;
 
 @Embedded
 public class Buddy {
-	private String buddyId;
-	private String userName;
-	private String avatarPath;
+	private String userName;	
     private int chatState;
     private int blockState;
     private String insertTime;
@@ -26,18 +24,7 @@ public class Buddy {
     //Block states
     public static int UNBLOCK=0;
     public static int BLOCK=1;        
-	/**
-	 * @return the buddyId
-	 */
-	public String getBuddyId() {
-		return buddyId;
-	}
-	/**
-	 * @param buddyId the buddyId to set
-	 */
-	public void setBuddyId(String buddyId) {
-		this.buddyId = buddyId;
-	}
+	
 	/**
 	 * @return the userName
 	 */
@@ -50,18 +37,7 @@ public class Buddy {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	/**
-	 * @return the avatarPath
-	 */
-	public String getAvatarPath() {
-		return avatarPath;
-	}
-	/**
-	 * @param avatarPath the avatarPath to set
-	 */
-	public void setAvatarPath(String avatarPath) {
-		this.avatarPath = avatarPath;
-	}
+	
 	/**
 	 * @return the chatState
 	 */

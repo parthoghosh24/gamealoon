@@ -2,6 +2,7 @@ package com.gamealoon.controllers;
 
 import static play.data.Form.form;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import static play.libs.Json.toJson;
@@ -9,29 +10,15 @@ import com.gamealoon.database.daos.ConversationDAO;
 import com.gamealoon.models.Comment;
 import com.gamealoon.models.Conversation;
 import com.gamealoon.utility.Utility;
+import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Result;
 import play.mvc.Controller;
-import play.mvc.WebSocket;
 
 public class ConversationController extends Controller{
 	
 
 	private static final ConversationDAO conversationDaoInstance = ConversationDAO.instantiateDAO();
-	public static WebSocket<String> index()
-	{
-		return new WebSocket<String>()
-		{
-
-					@Override
-					public void onReady(In<String> in,Out<String> out) {
-						
-					
-						
-					}
-			
-		};
-	}
 	
 	public static Result addComment()
 	{
@@ -69,11 +56,15 @@ public class ConversationController extends Controller{
 	
 	public static Result getComment(String articleId, String timeStamp)
 	{
-		HashMap<String, Object> commentMap = getCommentMap(articleId, timeStamp);
-//		HashMap<String, Object> commentMap = CommentCore.fetchComment(articleId, Long.parseLong(timeStamp), conversationDaoInstance);
+		HashMap<String, Object> commentMap = new HashMap<>();
+		try {
+			commentMap = getCommentMap(articleId, timeStamp);
+		} catch (NumberFormatException | ParseException e) {
+			Logger.error("Error in Conversation Controller getComment ", e.fillInStackTrace()); 			
+		}
 		return ok(toJson(commentMap));
 	}
-	private static HashMap<String, Object> getCommentMap(String articleId, String timeStamp) {
+	private static HashMap<String, Object> getCommentMap(String articleId, String timeStamp) throws NumberFormatException, ParseException {
 		
 		return conversationDaoInstance.getCommentByTimestamp(articleId, Long.parseLong(timeStamp));
 	}

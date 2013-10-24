@@ -1,11 +1,12 @@
 package com.gamealoon.controllers;
 
 import java.util.HashMap;
-import java.util.List;
 import com.gamealoon.database.daos.UserDAO;
 import static play.data.Form.*;
 import play.data.DynamicForm;
 import play.mvc.Controller;
+import play.mvc.Http.MultipartFormData;
+import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
 
@@ -17,31 +18,26 @@ public class UserController extends Controller{
 	{
 		HashMap<String, Object> userMap= getUserMap(usernameOrId, mode, username);		
 		return ok(toJson(userMap));
-	}
-	
-	public static Result getUsers()
-	{
-		List<HashMap<String, Object>> userMaps = getUsersMap();
-		//TODO add href element to json
-		return ok(toJson(userMaps));
-	}
+	}		
 	
 	public static Result getLoggedInUser()
 	{
 		DynamicForm requestData = form().bindFromRequest();
-		String userName=requestData.get("username");
+		String usernameOrEmail=requestData.get("usernameOrEmail");
 		String password=requestData.get("password");
-		HashMap<String, Object> userObject=getLoggedInUserMap(userName, password) ;
+		HashMap<String, Object> userObject=getLoggedInUserMap(usernameOrEmail, password) ;
 		return ok(toJson(userObject));
 	}
 	
 	public static Result registerUser()
 	{
 		DynamicForm requestData = form().bindFromRequest();
+		String firstName = requestData.get("firstName");
+		String lastName = requestData.get("lastName");
 		String username=requestData.get("username");		
 		String password = requestData.get("password");
 		String email = requestData.get("email");
-		HashMap<String, Object> registeredUser=registerUserMap(username, password, email) ;
+		HashMap<String, Object> registeredUser=registerUserMap(username, password, email, firstName, lastName) ;
 		return ok(toJson(registeredUser));
 		
 	} 
@@ -69,20 +65,77 @@ public class UserController extends Controller{
 		return ok(toJson(response));
 	}
 	
-	public static Result addOrRemoveBuddy(String originalUsername, String buddyUsername, String type)
+	public static Result addOrRemoveBuddy()
 	{
+		DynamicForm requestData = form().bindFromRequest();
+		String originalUsername = requestData.get("originalUser");
+		String buddyUsername = requestData.get("buddyUser");
+		String type=requestData.get("type");
 		HashMap<String, String> response = addOrRemoveBuddyMap(originalUsername, buddyUsername, type);
 		return ok(toJson(response));
 	}
 	
-	public static Result blockOrUnblockBuddy(String originalUsername, String buddyUsername, String type)
+	public static Result blockOrUnblockBuddy()
 	{
+		DynamicForm requestData = form().bindFromRequest();
+		String originalUsername = requestData.get("originalUser");
+		String buddyUsername = requestData.get("buddyUser");
+		String type=requestData.get("type");
 		HashMap<String,String> response = blockOrUnblockBuddyMap(originalUsername, buddyUsername, type);
 		return ok(toJson(response));
 	}
+	
+	public static Result addOrRemoveInterestedGames()
+	{
+		DynamicForm requestData = form().bindFromRequest();
+		String originalUsername = requestData.get("originalUser");
+		String gameId = requestData.get("gameId");
+		String type=requestData.get("type");
+		HashMap<String, String> response = addOrRemoveInterestedGamesMap(originalUsername, gameId, type);
+		return ok(toJson(response));
+	}
+	
+	public static Result saveOrUpdateUserAvatar(String username)
+	{
+		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+	    response().setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
+	    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
+	    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!		
+		MultipartFormData body = request().body().asMultipartFormData();				
+		FilePart avatarPart = body.getFile("userAvatarFile");		
+		HashMap<String,String> response = saveOrUpdateUserAvatarMap(username,avatarPart);		
+		return ok(toJson(response));
+	}
+	
+	public static Result validateEmail(String email)
+	{
+		HashMap<String,String> response = validateEmailMap(email);
+		return ok(toJson(response));
+	}
+	
+	
+
+	public static Result validateUsername(String username)
+	{
+		HashMap<String,String> response = validateUsernameMap(username);
+		return ok(toJson(response));
+	}
+
+	
 
 	/**
-	 * Remove buddy for an user
+	 * Save or update user avatar image
+	 * 
+	 * @param username
+	 * @param requestData
+	 * @return
+	 */
+	private static HashMap<String, String> saveOrUpdateUserAvatarMap(String username, FilePart avatarPart) {				
+		return userDaoInstance.saveOrUpdateUserAvatar(username, avatarPart);
+	}
+
+	/**
+	 *	Block or unblock an user
 	 * 
 	 * @param originalUsername
 	 * @param buddyUsername
@@ -95,7 +148,7 @@ public class UserController extends Controller{
 	}
 	
 	/**
-	 * Add buddy for an user
+	 * Add or remove buddy for an user
 	 * 
 	 * @param originalUsername
 	 * @param buddyUsername
@@ -104,6 +157,18 @@ public class UserController extends Controller{
 	private static HashMap<String, String> addOrRemoveBuddyMap(String originalUsername, String buddyUsername, String type)
 	{
 		return userDaoInstance.addOrRemoveBuddy(originalUsername, buddyUsername, Integer.parseInt(type));
+	}
+	
+	/**
+	 * Add or remove interested game for an user
+	 * 
+	 * @param originalUsername
+	 * @param buddyUsername
+	 * @return
+	 */
+	private static HashMap<String, String> addOrRemoveInterestedGamesMap(String originalUsername, String gameId, String type)
+	{
+		return userDaoInstance.addOrRemoveInterestedGames(originalUsername, gameId, Integer.parseInt(type));
 	}
 	/**
 	 * Reset user for a particular user
@@ -150,19 +215,7 @@ public class UserController extends Controller{
 	private static HashMap<String, Object> getUserMap(String usernameOrId, Integer mode, String username)
 	{
 		return userDaoInstance.getUser(usernameOrId, mode, username);
-	}
-	
-	/**
-	 * Get all users sorted by score (High to low)
-	 * 
-	 * @param gloonDatastore
-	 * @return
-	 */
-	private static List<HashMap<String, Object>> getUsersMap()
-	{
-		//-1 signifies all
-		return userDaoInstance.getTopNUsers(-1);
-	}
+	}		
 	
 	/**
 	 * Check user exist or not. If yes, login the user else send false
@@ -171,9 +224,9 @@ public class UserController extends Controller{
 	 * @param password
 	 * @return
 	 */
-	private static HashMap<String, Object> getLoggedInUserMap(String username, String password)
+	private static HashMap<String, Object> getLoggedInUserMap(String usernameOrEmail, String password)
 	{
-		return userDaoInstance.getLoggedInUser(username, password);
+		return userDaoInstance.getLoggedInUser(usernameOrEmail, password);
 	}
 	
 	/**
@@ -185,8 +238,31 @@ public class UserController extends Controller{
 	 * @param email
 	 * @return
 	 */
-	private static HashMap<String, Object> registerUserMap(String username, String password, String email) {		
-		return userDaoInstance.registerUser(username, password, email);
+	private static HashMap<String, Object> registerUserMap(String username, String password, String email, String firstName, String lastName) {		
+		return userDaoInstance.registerUser(username, password, email, firstName, lastName);
+	}
+	
+	/**
+	 * Validate whether email exists or not
+	 * 
+	 * @param email
+	 * @return
+	 */
+	private static HashMap<String, String> validateEmailMap(String email) {
+		
+		return userDaoInstance.validateEmail(email);
+	}
+	
+	/**
+	 * Validate whether username exists or not
+	 * 
+	 * @param username
+	 * @return
+	 */
+	private static HashMap<String, String> validateUsernameMap(String username) {
+		
+		return userDaoInstance.validateUsername(username);
 	}
 
 }
+

@@ -1,11 +1,14 @@
 package com.gamealoon.controllers;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 //import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.daos.ArticleDAO;
 import com.gamealoon.database.daos.GameDAO;
 import com.gamealoon.database.daos.UserDAO;
+import com.gamealoon.models.Article;
+
 import play.mvc.Controller;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
@@ -23,19 +26,20 @@ public class PlatformController extends Controller {
 	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();
 	private static final GameDAO gameDaoInstance = GameDAO.instantiateDAO();	
 	  
-	public static Result getPlatformData(String platform) {
+	public static Result getPlatformData(String platform, String category) {
 
-		HashMap<String, Object> carouselArticleMaps = getAllArticlesForPlatformCarousel(platform);
-		HashMap<String, Object> top10Articles = getAllRecent10PlatformArticles(platform);
-		List<HashMap<String, Object>> top10Games = getTop10PlatformGames(platform);
+		HashMap<String, Object> carouselArticleMaps = getAllArticlesForPlatformCarousel(platform);		
+		List<HashMap<String, Object>> top5Games = getTop5PlatformGames(platform);
+		List<HashMap<String, Object>> recent5Games = getRecent5PlatformGames(platform);
 		List<HashMap<String, Object>> top5Users = getTop5Users();
 
 		HashMap<String, Object> platformDataMap = new HashMap<>();
 		platformDataMap.put("carouselArticles", carouselArticleMaps);
-		platformDataMap.put("top10Articles", top10Articles);
-		platformDataMap.put("top10Games", top10Games);
+		platformDataMap.put("recentNArticles", getRecentNPlatformArticles(platform,category));
+		platformDataMap.put("top5Games", top5Games);
+		platformDataMap.put("recent5Games", recent5Games);
 		platformDataMap.put("top5Users", top5Users);
-		platformDataMap.put("platform", platform);				
+		platformDataMap.put("platform", platform);
 		return ok(toJson(platformDataMap));
 	}
 
@@ -54,8 +58,17 @@ public class PlatformController extends Controller {
 	 * 
 	 * @return
 	 */
-	private static List<HashMap<String, Object>> getTop10PlatformGames(String platform) {
+	private static List<HashMap<String, Object>> getTop5PlatformGames(String platform) {
 		return gameDaoInstance.getTopNGames(5, platform);
+	}
+	
+	/**
+	 * This method returns all top/trending 5 games
+	 * 
+	 * @return
+	 */
+	private static List<HashMap<String, Object>> getRecent5PlatformGames(String platform) {
+		return gameDaoInstance.getRecentNGames(5, platform);
 	}
 
 	/**
@@ -63,8 +76,8 @@ public class PlatformController extends Controller {
 	 * 
 	 * @return
 	 */
-	private static HashMap<String, Object> getAllRecent10PlatformArticles(String platform) {
-		return articleDaoInstance.getRecentAllNArticles(10,platform);
+	private static List<HashMap<String, Object>> getRecentNPlatformArticles(String platform, String category) {
+		return articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, new Date().getTime(), Article.PLATFORM);
 	}
 
 	/**

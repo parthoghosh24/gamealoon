@@ -1,5 +1,6 @@
 package com.gamealoon.algorithm;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,6 +16,7 @@ public class CommentCore{
 	
 	public static HashMap<String, Object> fetchComment(String articleId, Long timeStamp, ConversationDAO conversationDaoInstance)
 	{
+		
 		HashMap<String, Object> response = new HashMap<>();
 		MyTask checkForCommentTask = new MyTask(COUNTDOWN, conversationDaoInstance, articleId, timeStamp);		
 		new Timer().scheduleAtFixedRate(checkForCommentTask, DELAY, PERIOD);
@@ -47,7 +49,12 @@ public class CommentCore{
 			}
 			else
 			{
-				response=conversationDaoInstance.getCommentByTimestamp(articleId, timeStamp); 
+				try {
+					response=conversationDaoInstance.getCommentByTimestamp(articleId, timeStamp);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 			}
 			
 		}

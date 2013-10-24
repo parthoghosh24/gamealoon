@@ -18,7 +18,7 @@ public class Activity {
 	@Id
 	private ObjectId id;
 	private Integer type;
-	private String  userId;
+	private String  username;
 	private String entityId;
 	private Integer visibility;
 	private String insertTime;
@@ -39,6 +39,8 @@ public class Activity {
 	public final static int ACTIVITY_UNBLOCK=10;
 	public final static int ACTIVITY_FOLLOW_GAME=11;
 	public final static int ACTIVITY_UNFOLLOW_GAME=12;
+	public final static int ACTIVITY_PUBLISH_FOR_GAME=13;
+	public final static int ACTIVITY_POST_NOT_COOL=14;
 
 	/**
 	 * Returns Activity instance Id
@@ -68,21 +70,21 @@ public class Activity {
 	}
 
 	/**
-	 * Get User ID
+	 * Get Username
 	 * 
-	 * @return the userId
+	 * @return the username
 	 */
-	public String getUserId() {
-		return userId;
+	public String getUsername() {
+		return username;
 	}
 
 	/**
-	 * Set User ID
+	 * Set Username
 	 * 
-	 * @param userId the userId to set
+	 * @param username the username to set
 	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	/**

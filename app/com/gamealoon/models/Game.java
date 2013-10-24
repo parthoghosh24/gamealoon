@@ -37,13 +37,10 @@ public class Game{
 	private String genere;
 	private String gameBoxShotPath;
 	private int gameReleaseStatus;
-	
-	@Indexed(value=IndexDirection.ASC, name="game_scr")
-	private double score; //This is review score.
+	private double totalScore;
 	
 	
-	@Embedded
-	//Game has many plaforms
+	@Embedded	
 	private ArrayList<Platform> platforms= new ArrayList<>();
 	
 	@Embedded
@@ -61,6 +58,22 @@ public class Game{
 	public static final String MATURE="mature";
 	public static final String ADULTS_ONLY="adultsOnly";
 	public static final String EARLY_CHILDHOOD="earlyChildhood";
+	
+	/**
+	 * Game Network Scale values
+	 */
+	public static final String DEAD_FISH="Dead Fish X_X";
+	public static final String TORUTURE="Torture :'((";
+	public static final String EW_DE_BARF="Ew De Barf :&";
+	public static final String CRAP="Crap :S";
+	public static final String MEH="Meh :'(";
+	public static final String BAD="Bad :(";
+	public static final String DOH="Doh :|";
+	public static final String HMM="Hmm :-/";
+	public static final String NICE="Nice :)";
+	public static final String SUPERB="Superb :D";
+	public static final String GLOONTASTIC="Gloontastic :O";
+	public static final String GLOONATIC="Gloonatic :')";
 
 	/**
 	 * @return the title
@@ -191,22 +204,6 @@ public class Game{
 
 
 	/**
-	 * @return the score
-	 */
-	public double getScore() {
-		return score;
-	}
-
-
-	/**
-	 * @param score the score to set
-	 */
-	public void setScore(double score) {
-		this.score = score;
-	}
-
-
-	/**
 	 * @return the platforms
 	 */
 	public ArrayList<Platform> getPlatforms() {
@@ -286,6 +283,72 @@ public class Game{
 		this.gameReleaseStatus = gameReleaseStatus;
 	}
 
-	
+	public static String getGameNetworkRating(Double score)
+	{
+		if(score==0.0)
+		{
+			return DEAD_FISH;
+		}
+		else if(score>0 && score<=1)
+		{
+			return TORUTURE;
+		}
+		else if(score>1 && score<=2)
+		{
+			return EW_DE_BARF;			
+		}
+		else if(score>2 && score<=3)
+		{
+			return CRAP;
+		}
+		else if(score>3 && score<=4)
+		{
+			return MEH;
+		}
+		else if(score>4 && score<=5)
+		{
+			return BAD;
+		}
+		else if(score>5 && score<=6)
+		{
+			return DOH;
+		}
+		else if(score>6 && score<=7)
+		{
+			return HMM;
+		}
+		else if(score>7 && score<=8)
+		{
+			return NICE;
+		}
+		else if(score>8 && score<=9)
+		{
+			return SUPERB;
+		}
+		else if(score>9 && score<=10)
+		{
+			return GLOONTASTIC;
+		}
+		else
+		{
+			return GLOONATIC;					
+		}		
+	}
+
+
+	/**
+	 * @return the totalScore
+	 */
+	public double getTotalScore() {
+		return totalScore;
+	}
+
+
+	/**
+	 * @param totalScore the totalScore to set
+	 */
+	public void setTotalScore(double totalScore) {
+		this.totalScore = totalScore;
+	}
 	
 }

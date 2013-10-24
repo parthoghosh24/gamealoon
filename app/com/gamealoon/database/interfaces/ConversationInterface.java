@@ -1,5 +1,6 @@
 package com.gamealoon.database.interfaces;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -61,7 +62,7 @@ public interface ConversationInterface {
 	 * @param articleId
 	 * @return
 	 */	
-	public ArrayList<HashMap<String, Object>> getComments(String articleId);
+	public ArrayList<HashMap<String, Object>> getComments(String articleId) throws ParseException;
 	
 	/**
 	 * Get latest comment based on conversationId
@@ -69,7 +70,7 @@ public interface ConversationInterface {
 	 * @return
 	 */
 	
-	public HashMap<String, Object> getComment(String conversationId);
+	public HashMap<String, Object> getComment(String conversationId) throws ParseException;
 	
 	/**
 	 * Get comment by latest timestamp and articleId.
@@ -77,7 +78,7 @@ public interface ConversationInterface {
 	 * @param timeStamp
 	 * @return
 	 */
-	public HashMap<String, Object> getCommentByTimestamp(String articleId, Long timeStamp);
+	public HashMap<String, Object> getCommentByTimestamp(String articleId, Long timeStamp)throws ParseException;
 	
 	
 }
