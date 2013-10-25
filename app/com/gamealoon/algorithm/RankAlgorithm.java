@@ -4,6 +4,7 @@ package com.gamealoon.algorithm;
 import java.util.List;
 
 import play.Logger;
+import play.Play;
 
 import com.gamealoon.models.Article;
 import com.gamealoon.utility.AppConstants;
@@ -36,6 +37,24 @@ public class RankAlgorithm {
 	 private static final double USER_ARTICLE_SCORE_RATIO=0.6;
 	
 	 
+	 private static DB initDb(Mongo instance)
+	 {
+		 DB db = null;
+		 if(Play.isDev())
+		 {
+			 db=instance.getDB(AppConstants.DB_NAME_DEV);
+		 }
+		 if(Play.isTest())
+		 {
+			 db=instance.getDB(AppConstants.DB_NAME_TEST);
+		 }	 
+		 if(Play.isProd())
+		 {
+			 db=instance.getDB(AppConstants.DB_NAME_PROD);
+		 }
+		 
+		 return db;
+	 }
 	 /**
 	  * This method calculates wilson score interval for up and down vote system.
 	  * Actual rights goes to http://www.linkedin.com/search?search=&industry=123&sortCriteria=R&keepFacets=true 
@@ -81,8 +100,8 @@ public class RankAlgorithm {
 	  */
 	 public static double calculateUserArticleScore(Mongo instance, String username)
 	 {
-		 double userArticleScore=0;
-		 DB db = instance.getDB(AppConstants.DB_NAME);
+		 double userArticleScore=0;		 
+		 DB db = initDb(instance);
 		 DBCollection articleCollection = db.getCollection("Article");
 		 String mapFunction="function(){emit(\"total\",this.totalScore);};";
          String reduceFunction="function(key, values){return Array.sum(values);};"; 
@@ -105,7 +124,7 @@ public class RankAlgorithm {
 	 public static double calculateUserArticleScoreRatio(double userArticleScore, Mongo instance)
 	 {
 		 double totalUserArticleScore = 0.0;
-         DB db = instance.getDB(AppConstants.DB_NAME);
+         DB db = initDb(instance);
          DBCollection articleCollection = db.getCollection("User");       
          String mapFunction="function(){emit(\"total\",this.userArticleScore);};";
          String reduceFunction="function(key, values){return Array.sum(values);};";      
@@ -131,7 +150,7 @@ public class RankAlgorithm {
 	 {
 			            	           
 	            double totalAverageTimeSpentForAllArticles = 0.0;
-	            DB db = instance.getDB(AppConstants.DB_NAME);
+	            DB db = initDb(instance);
 	            DBCollection articleCollection = db.getCollection("Article");       
 	            String mapFunction="function(){emit(\"total\",this.averageTimeSpent);};";
 	            String reduceFunction="function(key, values){return Array.sum(values);};";      
@@ -198,7 +217,7 @@ public class RankAlgorithm {
 	 {
 			            	           
 	            double totalArticlePublishRate = 0.0;
-	            DB db = instance.getDB(AppConstants.DB_NAME);
+	            DB db = initDb(instance);
 	            DBCollection articleCollection = db.getCollection("User");       
 	            String mapFunction="function(){emit(\"total\",this.articlePublishRate);};";
 	            String reduceFunction="function(key, values){return Array.sum(values);};";      
@@ -225,7 +244,7 @@ public class RankAlgorithm {
 	 public static double calculateUserScoreRatio(double userScore, Mongo instance)
 	 {
 		 double totalUserScore = 0.0;
-         DB db = instance.getDB(AppConstants.DB_NAME);
+         DB db = initDb(instance);
          DBCollection articleCollection = db.getCollection("User");       
          String mapFunction="function(){emit(\"total\",this.totalScore);};";
          String reduceFunction="function(key, values){return Array.sum(values);};";      
@@ -252,7 +271,7 @@ public class RankAlgorithm {
 		 double networkGameScore = 0.0;
 		 double finalScore =0.0;
 		 double totalWeight = calculateTotalGameNetworkUserWeight(gameId, instance);
-		 DB db = instance.getDB(AppConstants.DB_NAME);
+		 DB db = initDb(instance);
          DBCollection articleCollection = db.getCollection("UserGameScoreMap");       
          String mapFunction="function(){emit(\"total\",(this.gameScore*this.networkUserWeight));};";
          String reduceFunction="function(key, values){return Array.sum(values);};";      
@@ -272,7 +291,7 @@ public class RankAlgorithm {
 	 private static double calculateTotalGameNetworkUserWeight(String gameId, Mongo instance)
 	 {
 		 double totalGameNetworkUserWeight=0;
-		 DB db = instance.getDB(AppConstants.DB_NAME);
+		 DB db = initDb(instance);
 		 DBCollection articleCollection = db.getCollection("UserGameScoreMap");
 		 String mapFunction="function(){emit(\"total\",this.networkUserWeight);};";
          String reduceFunction="function(key, values){return Array.sum(values);};"; 
@@ -294,7 +313,7 @@ public class RankAlgorithm {
 	 public static double calculateNetworkTotalCoolScore(Mongo instance)
 	 {
 		 double networkTotalCoolScore=0;
-		 DB db = instance.getDB(AppConstants.DB_NAME);
+		 DB db = initDb(instance);
 		 DBCollection articleCollection = db.getCollection("Article");
 		 String mapFunction="function(){emit(\"total\",this.coolScore);};";
          String reduceFunction="function(key, values){return Array.sum(values);};"; 		 
@@ -317,7 +336,7 @@ public class RankAlgorithm {
 	 public static double calculateUserTotalCoolScore(String username, Mongo instance)
 	 {
 		 double userTotalCoolScore=0;
-		 DB db = instance.getDB(AppConstants.DB_NAME);
+		 DB db = initDb(instance);
 		 DBCollection articleCollection = db.getCollection("Article");
 		 String mapFunction="function(){emit(\"total\",this.coolScore);};";
          String reduceFunction="function(key, values){return Array.sum(values);};"; 

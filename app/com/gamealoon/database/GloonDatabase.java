@@ -2,6 +2,8 @@ package com.gamealoon.database;
 
 import java.net.UnknownHostException;
 
+import play.Logger;
+
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.Platform;
@@ -11,7 +13,7 @@ import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;
 import com.typesafe.config.ConfigFactory;
-
+import play.Play;
 /**
  * 
  * This initiates the Mongo DB connection. This is a singleton class 
@@ -33,10 +35,21 @@ public class GloonDatabase {
 			result = new Mongo(host,port);
 			Morphia gloonMorphiaInstance = new Morphia();
 			gloonMorphiaInstance.map(User.class).map(Article.class).map(Game.class).map(Platform.class);
-			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME);
+			if(Play.isDev())
+			{
+				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_DEV);
+			}
+			if(Play.isTest())
+			{
+				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_TEST);
+			}
+			if(Play.isProd())
+			{
+				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_PROD,"gloonAdmin","gamealoon@2013".toCharArray());
+			}
 			gloonDatastoreInstance.ensureIndexes();			
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			Logger.debug("Some error happened while connection with database:"+e.fillInStackTrace());
 			e.printStackTrace();
 		}
 	}	
