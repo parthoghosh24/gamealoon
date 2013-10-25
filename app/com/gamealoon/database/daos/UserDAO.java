@@ -129,8 +129,16 @@ private Datastore gloonDatastore=null;
 	
 	@Override
 	public HashMap<String, Object> getUser(String usernameOrId, Integer mode, String username) {
-		   Mongo instance = getDatabaseInstance().getMongoInstance();	
-		   User user = getUserData(usernameOrId);
+		   Mongo instance = getDatabaseInstance().getMongoInstance();
+		   User user=null;
+		   try
+		   {
+			   user = getUserData(usernameOrId);  
+		   }
+		   catch(IllegalArgumentException ie)
+		   {
+			   Logger.error("Error in Get user In UserDAO", ie.fillInStackTrace());
+		   }
 		   ArticleDAO articleDao = ArticleDAO.instantiateDAO();	
 		   ActivityDAO activityDAO = ActivityDAO.instantiateDAO();		   
 		   HashMap<String, Object> userMap = new HashMap<>();
@@ -1090,7 +1098,7 @@ private Datastore gloonDatastore=null;
 	 * @param username
 	 * @return
 	 */
-	private User getUserData(String usernameOrId)
+	private User getUserData(String usernameOrId) throws IllegalArgumentException
 	{
 		User user= gloonDatastore.createQuery(User.class).filter("username", usernameOrId).get();
 		if(user==null)
