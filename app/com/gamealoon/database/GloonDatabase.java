@@ -35,6 +35,8 @@ public class GloonDatabase {
 			result = new Mongo(host,port);
 			Morphia gloonMorphiaInstance = new Morphia();
 			gloonMorphiaInstance.map(User.class).map(Article.class).map(Game.class).map(Platform.class);
+			Logger.debug("IS PLAY IN DEV "+Play.isDev());
+			Logger.debug("IS PLAY IN POD "+Play.isProd());
 			if(Play.isDev())
 			{
 				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_DEV);

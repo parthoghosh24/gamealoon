@@ -1,5 +1,7 @@
 package com.gamealoon.database;
 
+import play.Logger;
+
 import com.google.code.morphia.Datastore;
 
 /**
@@ -18,7 +20,7 @@ public class GloonDAO{
 	{		
 	    if(gloonDatabaseInstance == null)
 	    {
-	    	System.out.println("In here...");
+	    	Logger.debug("In GLOONDAO ...");
 	    	gloonDatabaseInstance = GloonDatabase.instantiate();
 	    	gloonDatastore=gloonDatabaseInstance.gloonDatastoreInstance();	    	
 	    }

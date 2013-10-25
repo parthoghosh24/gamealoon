@@ -38,7 +38,7 @@ public class GloonGlobal extends GlobalSettings {
 	
 	 @Override
 	public void onStart(Application app) {
-		 if (userDAOInstance.count() < 1) {
+//		 if (userDAOInstance.count() < 1) {
 				System.out.println("Data getting created.............");
 				
 //				createAchievements();
@@ -61,7 +61,7 @@ public class GloonGlobal extends GlobalSettings {
 //				}
 				
 
-			}
+//			}
 	}
 
 
