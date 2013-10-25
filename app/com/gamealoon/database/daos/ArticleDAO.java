@@ -236,7 +236,15 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	public HashMap<String, Object> getArticle(String currentUser, String titleOrId) {
 		Logger.debug("Current User: "+currentUser);		
 		Mongo instance = getDatabaseInstance().getMongoInstance();
-		Article article = getArticleData(gloonDatastore,titleOrId);
+		Article article=null;
+		try
+		{
+			article = getArticleData(gloonDatastore,titleOrId);
+		}
+		catch(IllegalArgumentException ie)
+		{
+			Logger.error("Error in ArticleDAO getArticle", ie.fillInStackTrace());
+		}
 		HashMap<String , Object> response = new HashMap<>();
 		if(article!=null)
 		{
@@ -797,7 +805,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * @param title
 	 * @return
 	 */
-	private Article getArticleData(Datastore gloonDatastore,String titleOrId)
+	private Article getArticleData(Datastore gloonDatastore,String titleOrId) throws IllegalArgumentException
 	{
 		if(!titleOrId.contains("-"))
 		{
