@@ -28,12 +28,12 @@ import play.GlobalSettings;
 
 public class GloonGlobal extends GlobalSettings {
 
-	final AchievementDAO achievementDAOInstance = AchievementDAO.instantiateDAO();
+	/*final AchievementDAO achievementDAOInstance = AchievementDAO.instantiateDAO();
 	final ArticleDAO articleDAOInstance = ArticleDAO.instantiateDAO();
 	final GameDAO gameDAOInstance = GameDAO.instantiateDAO();
 	final UserDAO userDAOInstance = UserDAO.instantiateDAO();
 	final PlatformDAO platformDAOInstance = PlatformDAO.instantiateDAO();
-	final ActivityDAO activityDAOInstance = ActivityDAO.instantiateDAO();
+	final ActivityDAO activityDAOInstance = ActivityDAO.instantiateDAO();*/
 	
 	
 	 @Override
@@ -61,11 +61,11 @@ public class GloonGlobal extends GlobalSettings {
 //				}
 				
 
-//			}
-	}
+			}
+//	}
 
 
-	private void createAchievements()
+/*	private void createAchievements()
 		{
 			
 			Achievement newGloonie = new Achievement();
@@ -1165,7 +1165,7 @@ public class GloonGlobal extends GlobalSettings {
 		
 		private void createArticles() throws ParseException
 		{	
-		/*	
+			
 			ArrayList<Article> gameArticles= new ArrayList<>();
 			ArrayList<User> userWhoPlayedGame = new ArrayList<>();
 			ArrayList<User> userWhoScoredGame = new ArrayList<>();
@@ -2420,7 +2420,7 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3Review.setInsertTime("2013-04-11 09:00:00");
 			farCry3Review.setScore(0.78);
 			farCry3Review.setPlatforms(platforms);
-			gloonDatastore.save(farCry3Review);*/
+			gloonDatastore.save(farCry3Review);
 				
-		}
+		}*/
 }
