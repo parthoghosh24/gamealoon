@@ -41,7 +41,7 @@ public class GloonGlobal extends GlobalSettings {
 		 if (userDAOInstance.count() < 1) {
 				System.out.println("Data getting created.............");
 				
-				createAchievements();
+//				createAchievements();
 				/*try {
 					createUsers();
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -51,8 +51,8 @@ public class GloonGlobal extends GlobalSettings {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}*/
-				createPlatforms();					
-				createGames();							
+//				createPlatforms();					
+//				createGames();							
 //				try {
 //					createArticles();
 //				} catch (ParseException e) {
