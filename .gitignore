@@ -16,3 +16,6 @@ dist
 /.settings
 /.target
 /ui
+public/images/game
+public/images/user
+root

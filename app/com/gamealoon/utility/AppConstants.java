@@ -1,16 +1,15 @@
 package com.gamealoon.utility;
 
-import java.io.IOException;
 
-import play.api.Play;
+import com.typesafe.config.ConfigFactory;
 
 public class AppConstants {
 
 	//Total article categories
 	public static final int TOTAL_CATEGORIES=5;
-	public static final String DB_NAME_DEV="gloonDb_dev";
-	public static final String DB_NAME_TEST="gloonDb_test";
-	public static final String DB_NAME_PROD="gloonDb";
+	public static final String DB_NAME=ConfigFactory.load().getString("app.database.name");
+	public static final String DB_USERNAME=ConfigFactory.load().getString("app.database.username");
+	public static final String DB_PASSWORD=ConfigFactory.load().getString("app.database.password");
 	public static final String ALL="all";
 	public static final String REVIEW="review";
 	public static final String FEATURE="feature";
@@ -20,13 +19,13 @@ public class AppConstants {
 	public static final String COOL ="cool";
 	public static final String UNCOOL ="uncool";
 	public final static String SEEDURL ="http://localhost:8080";	//this is temp
-	public final static String APP_BASE_URL="http://192.168.0.103:9000";
+	public final static String APP_BASE_URL=ConfigFactory.load().getString("app.base.url");
 	public final static int EMAIL_NOT_CONFIRMED =0;
 	public final static int EMAIL_CONFIRMED =1;
 	public final static int USER_PROFILE=1;
 	public final static int USER_PAGE=2;
-	public final static String APP_ABSOLUTE_PATH=returnCanonicalPath();
-	public final static String APP_ABSOLUTE_IMAGE_PATH=APP_ABSOLUTE_PATH+"\\public\\images\\";
+	public final static String APP_ABSOLUTE_PATH=ConfigFactory.load().getString("app.uploads.path");
+	public final static String APP_ABSOLUTE_IMAGE_PATH=APP_ABSOLUTE_PATH+"\\images\\";
 	public final static String APP_ABSOLUTE_IMAGE_USER_PATH=APP_ABSOLUTE_IMAGE_PATH+"\\user\\";
 	public final static String APP_ABSOLUTE_IMAGE_GAME_PATH=APP_ABSOLUTE_IMAGE_PATH+"\\game\\";
 	public final static String APP_IMAGE_URL_PATH=APP_BASE_URL+"/assets/images";
@@ -51,24 +50,7 @@ public class AppConstants {
 	 * Visibility
 	 */
 	public final static int PUBLIC=1;
-	public final static int PRIVATE=2;
-	
-	
-	/**
-	 * Returns app canonical path
-	 * 
-	 * @return
-	 */
-	private static String returnCanonicalPath()
-	{
-		try {
-			return Play.current().path().getCanonicalPath();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
-	}
+	public final static int PRIVATE=2;	
 	
 	
 }

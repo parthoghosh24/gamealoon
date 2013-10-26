@@ -8,6 +8,7 @@ import com.gamealoon.database.daos.ArticleDAO;
 import com.gamealoon.database.daos.GameDAO;
 import com.gamealoon.database.daos.UserDAO;
 import com.gamealoon.models.Article;
+import com.gamealoon.utility.AppConstants;
 
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -40,6 +41,8 @@ public class PlatformController extends Controller {
 		platformDataMap.put("recent5Games", recent5Games);
 		platformDataMap.put("top5Users", top5Users);
 		platformDataMap.put("platform", platform);
+		System.out.println( AppConstants.APP_BASE_URL);
+		platformDataMap.put("baseUrl", AppConstants.APP_BASE_URL); // a hack to determine the base url to set resources in HTML
 		return ok(toJson(platformDataMap));
 	}
 

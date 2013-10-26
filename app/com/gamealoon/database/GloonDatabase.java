@@ -3,17 +3,11 @@ package com.gamealoon.database;
 import java.net.UnknownHostException;
 
 import play.Logger;
-
-import com.gamealoon.models.Article;
-import com.gamealoon.models.Game;
-import com.gamealoon.models.Platform;
-import com.gamealoon.models.User;
 import com.gamealoon.utility.AppConstants;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;
 import com.typesafe.config.ConfigFactory;
-import play.Play;
 /**
  * 
  * This initiates the Mongo DB connection. This is a singleton class 
@@ -29,26 +23,20 @@ public class GloonDatabase {
 	private Mongo result = null;
 	private GloonDatabase()
 	{
+		Logger.debug("IN GLOON DATABSE....");
 		String host = ConfigFactory.load().getString("mongo.host"); 
 		int port = (int) Long.parseLong(ConfigFactory.load().getString("mongo.port"));
 		try {			
 			result = new Mongo(host,port);
+			Logger.debug("MONGO INSTANCE "+result);
 			Morphia gloonMorphiaInstance = new Morphia();
-			gloonMorphiaInstance.map(User.class).map(Article.class).map(Game.class).map(Platform.class);
-			Logger.debug("IS PLAY IN DEV "+Play.isDev());
-			Logger.debug("IS PLAY IN POD "+Play.isProd());
-			if(Play.isDev())
-			{
-				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_DEV);
-			}
-			if(Play.isTest())
-			{
-				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_TEST);
-			}
-			if(Play.isProd())
-			{
-				gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME_PROD,"gloonAdmin","gamealoon@2013".toCharArray());
-			}
+			Logger.debug("GLOON MORPHIA INSTANCE "+gloonMorphiaInstance);		
+			Logger.debug("DB "+ AppConstants.DB_NAME);
+			Logger.debug("username "+ AppConstants.DB_USERNAME);
+			Logger.debug("password "+ AppConstants.DB_PASSWORD);
+			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME,AppConstants.DB_USERNAME,AppConstants.DB_PASSWORD.toCharArray());
+			Logger.debug("GLOON DATASTORE INSTANCE "+gloonDatastoreInstance);
+			
 			gloonDatastoreInstance.ensureIndexes();			
 		} catch (UnknownHostException e) {
 			Logger.debug("Some error happened while connection with database:"+e.fillInStackTrace());

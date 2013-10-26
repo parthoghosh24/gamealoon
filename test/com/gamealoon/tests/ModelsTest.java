@@ -32,9 +32,9 @@ import static play.test.Helpers.running;
  */
 public class ModelsTest {
 
-	final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
+	/*final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
 	final GameDAO gameDaoInstance = GameDAO.instantiateDAO();
-	final UserDAO userDaoInstance = UserDAO.instantiateDAO();	
+	final UserDAO userDaoInstance = UserDAO.instantiateDAO();	*/
 	/**
 	 * We are testing the db and various entites over here....
 	 * 
@@ -109,7 +109,7 @@ public class ModelsTest {
 
 
 			private void testUsernameDetection() {
-				System.out.println("User is: "+userDaoInstance.findByUsername("guest"));
+//				System.out.println("User is: "+userDaoInstance.findByUsername("guest"));
 				
 			}
 
@@ -211,7 +211,7 @@ public class ModelsTest {
 			
 			private void findAllRecentGames()
 			{
-				List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(-1);
+				/*List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(-1);
 				
 				System.out.println("Recent sorted games list size: "+ sortedGames.size());
 				
@@ -230,13 +230,13 @@ public class ModelsTest {
 						  }
 					  }
 					  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				}	
+				}	*/
 			}
 			
 			
 			private void findAllRecentReleasedGames()
 			{				
-				List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(5);
+				/*List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(5);
 				
 				System.out.println("Released sorted games list size: "+ sortedGames.size());
 				if(sortedGames.size()>0)
@@ -254,7 +254,7 @@ public class ModelsTest {
 						  }
 					  }
 					  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				}	
+				}*/	
 			}
 			
 						
