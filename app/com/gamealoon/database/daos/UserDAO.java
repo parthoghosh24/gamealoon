@@ -73,7 +73,7 @@ private Datastore gloonDatastore=null;
 				   HashMap<String, Object> userMap = new HashMap<>();
 				   userMap.put("userUserName", user.getUsername());
 				   if(!user.getAvatarPath().isEmpty())
-				   {
+				   {					   
 					   userMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
 				   }
 				   else
@@ -102,7 +102,7 @@ private Datastore gloonDatastore=null;
         	loggedInUserMap.put("username", user.getUsername());
         	loggedInUserMap.put("firstName", user.getFirstName());
         	loggedInUserMap.put("lastName", user.getLastName());
-        	loggedInUserMap.put("userid",user.getId().toString());
+        	loggedInUserMap.put("userid",user.getId().toString());        	
         	 if(!user.getAvatarPath().isEmpty())
 			   {
         		 loggedInUserMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
@@ -1027,7 +1027,9 @@ private Datastore gloonDatastore=null;
 			newUser.setCountry("India");
 			newUser.setBirthdayVisibility(User.PUBLIC);
 			newUser.setAvatarPath(""); 			
+			
 			Achievement achievement = achievementDAOInstance.findByTitle("New Gloonie!");
+			Logger.debug("Achievement "+achievement);
 			ArrayList<Achievement> achievements = new ArrayList<>();
 			achievements.add(achievement);
 			newUser.setAchievements(achievements);

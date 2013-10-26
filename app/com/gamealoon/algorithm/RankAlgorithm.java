@@ -2,10 +2,7 @@ package com.gamealoon.algorithm;
 
 
 import java.util.List;
-
 import play.Logger;
-import play.Play;
-
 import com.gamealoon.models.Article;
 import com.gamealoon.utility.AppConstants;
 import com.mongodb.BasicDBObject;
@@ -38,21 +35,8 @@ public class RankAlgorithm {
 	
 	 
 	 private static DB initDb(Mongo instance)
-	 {
-		 DB db = null;
-		 if(Play.isDev())
-		 {
-			 db=instance.getDB(AppConstants.DB_NAME_DEV);
-		 }
-		 if(Play.isTest())
-		 {
-			 db=instance.getDB(AppConstants.DB_NAME_TEST);
-		 }	 
-		 if(Play.isProd())
-		 {
-			 db=instance.getDB(AppConstants.DB_NAME_PROD);
-		 }
-		 
+	 {		  
+	     DB db=instance.getDB(AppConstants.DB_NAME);		 
 		 return db;
 	 }
 	 /**

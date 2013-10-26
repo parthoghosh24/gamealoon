@@ -28,8 +28,8 @@ import play.GlobalSettings;
 
 public class GloonGlobal extends GlobalSettings {
 
-	/*final AchievementDAO achievementDAOInstance = AchievementDAO.instantiateDAO();
-	final ArticleDAO articleDAOInstance = ArticleDAO.instantiateDAO();
+	final AchievementDAO achievementDAOInstance = AchievementDAO.instantiateDAO();
+	/*final ArticleDAO articleDAOInstance = ArticleDAO.instantiateDAO();
 	final GameDAO gameDAOInstance = GameDAO.instantiateDAO();
 	final UserDAO userDAOInstance = UserDAO.instantiateDAO();
 	final PlatformDAO platformDAOInstance = PlatformDAO.instantiateDAO();
@@ -38,10 +38,9 @@ public class GloonGlobal extends GlobalSettings {
 	
 	 @Override
 	public void onStart(Application app) {
-//		 if (userDAOInstance.count() < 1) {
-				System.out.println("Data getting created.............");
-				
-//				createAchievements();
+//		 if () {
+				System.out.println("Data getting created.............");				
+				createAchievements();
 				/*try {
 					createUsers();
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -61,46 +60,29 @@ public class GloonGlobal extends GlobalSettings {
 //				}
 				
 
-			}
-//	}
+//			}
+	}
 
 
-/*	private void createAchievements()
+	private void createAchievements()
 		{
-			
-			Achievement newGloonie = new Achievement();
-			newGloonie.setTitle("New Gloonie!");
-			newGloonie.setDescription("Welcome to gamealoon!!!");
-			newGloonie.setImagePath("newGloonieImagePath");
-			achievementDAOInstance.save(newGloonie);
-			
-			Achievement videoGlooniac= new Achievement();
-			videoGlooniac.setTitle("Video Glooniac!");
-			videoGlooniac.setDescription("Uploaded 500 videos!!!");
-			videoGlooniac.setImagePath("videoGlooniacPath");
-			achievementDAOInstance.save(videoGlooniac);
-			
-			Achievement  glooniacWriter = new Achievement();
-			glooniacWriter.setTitle("Glooniac Writer!!!");
-			glooniacWriter.setDescription("Wrote 1000 articles in total!!!");
-			glooniacWriter.setImagePath("glooniacWriterPath");
-			achievementDAOInstance.save(glooniacWriter);
-			
-			Achievement gloonyAboutgames = new Achievement();
-			gloonyAboutgames.setTitle("Gloony about games!");
-			gloonyAboutgames.setDescription("Played 1000 times in 1 week!!!");
-			gloonyAboutgames.setImagePath("gloonyAboutGamesPath");
-			achievementDAOInstance.save(gloonyAboutgames);
-			
-			Achievement gloonyAboutVideos = new Achievement();
-			gloonyAboutVideos.setTitle("Gloony about videos!");
-			gloonyAboutVideos.setDescription("Seen 1000 videos in 1 week!!!");					
-			gloonyAboutVideos.setImagePath("gloonyAboutVideosPath");
-			achievementDAOInstance.save(gloonyAboutVideos);
+			/**
+			 * Temporary way to save achievement...
+			 * 
+			 */
+			Achievement newGloonie = achievementDAOInstance.findByTitle("New Gloonie!");
+			if(newGloonie == null)
+			{
+				newGloonie = new Achievement();
+				newGloonie.setTitle("New Gloonie!");
+				newGloonie.setDescription("Welcome to gamealoon!!!");
+				newGloonie.setImagePath("newGloonieImagePath");
+			}			
+			achievementDAOInstance.save(newGloonie);			
 		}
 		
 		
-		private void createUsers() throws NoSuchAlgorithmException, InvalidKeySpecException, ParseException
+	/*		private void createUsers() throws NoSuchAlgorithmException, InvalidKeySpecException, ParseException
 		{
 			Achievement newGloonie = achievementDAOInstance.findByTitle("New Gloonie!");
 			Achievement glooniacWriter = achievementDAOInstance.findByTitle("Glooniac Writer!!!");

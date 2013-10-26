@@ -54,4 +54,10 @@ GET /converse/comment/get/:articleId/:timeStamp     com.gamealoon.controllers.Co
 
 
 # Map static resources from the /public folder to the /assets URL path
+  
+%{if(play.mode.isDev()){}%
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+%{}}%
+%{if(play.mode.isProd()){}%
+GET     /assets/*file               controllers.Assets.at(path="/root/uploads", file)
+%{}}%
