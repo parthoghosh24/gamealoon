@@ -20,6 +20,9 @@ public class GloonDatabase {
 
 	private static final GloonDatabase INSTANCE =new GloonDatabase();	
 	private  Datastore gloonDatastoreInstance =null;
+	private final String DB_NAME=ConfigFactory.load().getString("gloon.database.name");
+	private final String DB_USERNAME=ConfigFactory.load().getString("gloon.database.username");
+	private final String DB_PASSWORD=ConfigFactory.load().getString("gloon.database.password");
 	private Mongo result = null;
 	private GloonDatabase()
 	{
@@ -31,10 +34,11 @@ public class GloonDatabase {
 			Logger.debug("MONGO INSTANCE "+result);
 			Morphia gloonMorphiaInstance = new Morphia();
 			Logger.debug("GLOON MORPHIA INSTANCE "+gloonMorphiaInstance);		
-			Logger.debug("DB "+ AppConstants.DB_NAME);
-			Logger.debug("username "+ AppConstants.DB_USERNAME);
-			Logger.debug("password "+ AppConstants.DB_PASSWORD);
-			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, AppConstants.DB_NAME,AppConstants.DB_USERNAME,AppConstants.DB_PASSWORD.toCharArray());
+			Logger.debug("DB NAME"+ConfigFactory.load().getString("gloon.database.name"));
+ 			Logger.debug("DB "+ DB_NAME);
+			Logger.debug("username "+ DB_USERNAME);
+			Logger.debug("password "+ DB_PASSWORD);
+			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, DB_NAME,DB_USERNAME,DB_PASSWORD.toCharArray());
 			Logger.debug("GLOON DATASTORE INSTANCE "+gloonDatastoreInstance);
 			
 			gloonDatastoreInstance.ensureIndexes();			
