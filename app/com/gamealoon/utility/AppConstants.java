@@ -3,6 +3,7 @@ package com.gamealoon.utility;
 
 import java.io.IOException;
 
+import play.Application;
 import play.Logger;
 import play.api.Play;
 
@@ -10,11 +11,8 @@ import com.typesafe.config.ConfigFactory;
 
 public class AppConstants {
 
-	//Total article categories
-	public static final int TOTAL_CATEGORIES=5;
-	public static final String DB_NAME=ConfigFactory.load().getString("app.database.name");
-	public static final String DB_USERNAME=ConfigFactory.load().getString("app.database.username");
-	public static final String DB_PASSWORD=ConfigFactory.load().getString("app.database.password");
+	//Total article categories	
+	public static final int TOTAL_CATEGORIES=5;	
 	public static final String ALL="all";
 	public static final String REVIEW="review";
 	public static final String FEATURE="feature";
@@ -24,7 +22,7 @@ public class AppConstants {
 	public static final String COOL ="cool";
 	public static final String UNCOOL ="uncool";
 	public final static String SEEDURL ="http://localhost:8080";	//this is temp
-	public final static String APP_BASE_URL=ConfigFactory.load().getString("app.base.url");
+	public final static String APP_BASE_URL=ConfigFactory.load().getString("gloon.base.url");
 	public final static int EMAIL_NOT_CONFIRMED =0;
 	public final static int EMAIL_CONFIRMED =1;
 	public final static int USER_PROFILE=1;

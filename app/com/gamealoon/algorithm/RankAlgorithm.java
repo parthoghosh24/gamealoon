@@ -4,7 +4,6 @@ package com.gamealoon.algorithm;
 import java.util.List;
 import play.Logger;
 import com.gamealoon.models.Article;
-import com.gamealoon.utility.AppConstants;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -12,6 +11,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceOutput;
 import com.mongodb.Mongo;
+import com.typesafe.config.ConfigFactory;
 
 /**
  * RankAlgorithm class. This class is meant for group all ranking related algorithm methods.
@@ -23,7 +23,7 @@ public class RankAlgorithm {
 
 	
 	 private static final double ZSCORE=1.96; //1.96 for confidence level 95%
-	 
+	 private static final String DB_NAME=ConfigFactory.load().getString("gloon.database.name");
 	 //Article Score weights
 	 private static final double ARTICLE_VOTING_WILSON_WEIGHT=0.75;
 	 private static final double ARTICLE_AVERAGE_TIME_SPENT_WEIGHT=0.25;
@@ -36,7 +36,7 @@ public class RankAlgorithm {
 	 
 	 private static DB initDb(Mongo instance)
 	 {		  
-	     DB db=instance.getDB(AppConstants.DB_NAME);		 
+	     DB db=instance.getDB(DB_NAME);		 
 		 return db;
 	 }
 	 /**
