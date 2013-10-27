@@ -1,6 +1,11 @@
 package com.gamealoon.utility;
 
 
+import java.io.IOException;
+
+import play.Logger;
+import play.api.Play;
+
 import com.typesafe.config.ConfigFactory;
 
 public class AppConstants {
@@ -24,8 +29,8 @@ public class AppConstants {
 	public final static int EMAIL_CONFIRMED =1;
 	public final static int USER_PROFILE=1;
 	public final static int USER_PAGE=2;
-	public final static String APP_ABSOLUTE_PATH=ConfigFactory.load().getString("app.uploads.path");
-	public final static String APP_ABSOLUTE_IMAGE_PATH=APP_ABSOLUTE_PATH+"\\images\\";
+	public final static String APP_ABSOLUTE_PATH=returnCanonicalPath();
+	public final static String APP_ABSOLUTE_IMAGE_PATH=APP_ABSOLUTE_PATH+"\\public\\images\\";
 	public final static String APP_ABSOLUTE_IMAGE_USER_PATH=APP_ABSOLUTE_IMAGE_PATH+"\\user\\";
 	public final static String APP_ABSOLUTE_IMAGE_GAME_PATH=APP_ABSOLUTE_IMAGE_PATH+"\\game\\";
 	public final static String APP_IMAGE_URL_PATH=APP_BASE_URL+"/assets/images";
@@ -51,6 +56,23 @@ public class AppConstants {
 	 */
 	public final static int PUBLIC=1;
 	public final static int PRIVATE=2;	
+	
+	/**
+     * Returns app canonical path
+     * 
+     * @return
+     */
+    private static String returnCanonicalPath()
+    {
+            try {
+                    return Play.current().path().getCanonicalPath();
+            } catch (IOException e) {
+                    // TODO Auto-generated catch block
+            	    Logger.error("Cannot detect canonical Path");
+                    e.printStackTrace();
+                    return "";
+            }
+    }
 	
 	
 }
