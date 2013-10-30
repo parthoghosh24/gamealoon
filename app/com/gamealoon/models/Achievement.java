@@ -20,7 +20,10 @@ public class Achievement {
 	private ObjectId id;
 	private String title;
 	private String description;
-	private String imagePath;
+	private String achievementImage;
+	private String insertTime;
+	private String updateTime;
+	private Long timestamp;
 	/**
 	 * @return the title
 	 */
@@ -46,16 +49,16 @@ public class Achievement {
 		this.description = description;
 	}
 	/**
-	 * @return the imagePath
+	 * @return the achievementImage
 	 */
-	public String getImagePath() {
-		return imagePath;
+	public String getAchievementImage() {
+		return achievementImage;
 	}
 	/**
-	 * @param imagePath the imagePath to set
+	 * @param achievementImage the achievementImage to set
 	 */
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
+	public void setAchievementImage(String achievementImage) {
+		this.achievementImage = achievementImage;
 	}
 	
 	/**
@@ -76,5 +79,41 @@ public class Achievement {
 	{		
 		AchievementDAO achievementDAO = AchievementDAO.instantiateDAO();
 		return achievementDAO.allAchievementCount();
+	}
+	/**
+	 * @return the insertTime
+	 */
+	public String getInsertTime() {
+		return insertTime;
+	}
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(String insertTime) {
+		this.insertTime = insertTime;
+	}
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+	/**
+	 * @return the updateTime
+	 */
+	public String getUpdateTime() {
+		return updateTime;
+	}
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}
 }

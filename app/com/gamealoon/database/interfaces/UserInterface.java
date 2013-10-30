@@ -1,5 +1,6 @@
 package com.gamealoon.database.interfaces;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
 import play.data.DynamicForm;
@@ -24,7 +25,7 @@ public interface UserInterface {
 	 * @return
 	 */
 	
-	public List<HashMap<String, Object>> getTopNUsers(int limit);
+	public List<HashMap<String, Object>> getTopNUsers(int limit)throws MalformedURLException;
 	
 	/**
 	 * Get Status of Logged in User.
@@ -33,7 +34,7 @@ public interface UserInterface {
 	 * @param type
 	 * @return
 	 */
-	public HashMap<String, Object> getLoggedInUser(String username, String password);
+	public HashMap<String, Object> getLoggedInUser(String username, String password) throws MalformedURLException;
 	
 	/**
 	 * Register a user and insert into database on success.
@@ -52,7 +53,7 @@ public interface UserInterface {
 	 * @return
 	 */
 	
-	public HashMap<String, Object> getUser(String usernameOrId, Integer mode, String username);
+	public HashMap<String, Object> getUser(String usernameOrId, Integer mode, String username)throws MalformedURLException;
 	
 	/**
 	 * This method saves or updates user interests
@@ -133,7 +134,7 @@ public interface UserInterface {
 	 * @param requestData
 	 * @return
 	 */
-	public HashMap<String, String> saveOrUpdateUserAvatar(String username, FilePart avatarPart);
+	public HashMap<String, String> saveOrUpdateUserAvatar(String mediaId, String username,FilePart avatarPart);
 	
 	/**
 	 * Get count

@@ -1,7 +1,9 @@
 package com.gamealoon.database.daos;
 
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +11,6 @@ import java.util.TreeMap;
 import org.bson.types.ObjectId;
 import play.Logger;
 import play.data.DynamicForm;
-
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.ArticleInterface;
@@ -17,6 +18,7 @@ import com.gamealoon.models.Activity;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
+import com.gamealoon.models.Media;
 import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
 import com.gamealoon.models.UserArticleVotingMap;
@@ -32,7 +34,10 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		
 	private static final ArticleDAO DATA_ACCESS_LAYER=new ArticleDAO();	
 	private static final GameDAO gameDaoInstance = GameDAO.instantiateDAO();
+	private static final PlatformDAO platformDaoInstance = PlatformDAO.instantiateDAO();
 	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();
+	private static final MediaDAO mediaDaoInstance = MediaDAO.instantiateDAO();
+	private static final ArticleMediaMapDAO articleMediaMapDaoInstance = ArticleMediaMapDAO.instantiateDAO();
 	private static final ActivityDAO activityDaoInstance = ActivityDAO.instantiateDAO();
 	private static final ConversationDAO conversationDaoInstance = ConversationDAO.instantiateDAO();
 	private static final UserArticleVotingMapDAO articleVotingMapDAOInstance = UserArticleVotingMapDAO.instantiateDAO();
@@ -60,9 +65,10 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * articles:[article1, article2, article3, ...]
 	 * 
 	 * The list will contain upto 5 hashMaps in general.
+	 * @throws MalformedURLException 
 	 */
 	@Override
-	public HashMap<String, Object> getAllArticlesForCarousel(String platform) {
+	public HashMap<String, Object> getAllArticlesForCarousel(String platform) throws MalformedURLException {
 	
 		List<User> topUsers= userDaoInstance.getTopUsers(0);
 		HashMap<String, Object> allArticlesForCarouselMap= new HashMap<String,Object>();
@@ -95,7 +101,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 
 
 	@Override
-	public HashMap<String, Object> getAllArticlesForUserCarousel(String username) {
+	public HashMap<String, Object> getAllArticlesForUserCarousel(String username) throws MalformedURLException {
 		HashMap<String, Object> userPageCarouselMap = new HashMap<>();
 		List<HashMap<String, Object>> carouselReviews = new ArrayList<>();
 		List<HashMap<String, Object>> carouselFeatures= new ArrayList<>();
@@ -211,7 +217,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	}
 
 	@Override
-	public HashMap<String, Object> getAllArticlesForGameCarousel(String gameId) {
+	public HashMap<String, Object> getAllArticlesForGameCarousel(String gameId) throws MalformedURLException {
 		HashMap<String, Object> gameCarouselMap = new HashMap<>();
 		List<HashMap<String, Object>> carouselActivities = new ArrayList<>();
 		List<HashMap<String, Object>> carouselVideos= new ArrayList<>();
@@ -233,7 +239,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	}
 	
 	@Override
-	public HashMap<String, Object> getArticle(String currentUser, String titleOrId) {
+	public HashMap<String, Object> getArticle(String currentUser, String titleOrId) throws MalformedURLException {
 		Logger.debug("Current User: "+currentUser);		
 		Mongo instance = getDatabaseInstance().getMongoInstance();
 		Article article=null;
@@ -255,7 +261,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			response.put("articleCategory", article.getCategory().toString());
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
 			try {
-				response.put("articlePublishDate", Utility.covertFromOneFormatToAnother(article.getPublishDate()));
+				response.put("articlePublishDate", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
 			} catch (ParseException e) {
 				response.put("articlePublishDate", article.getPublishDate());
 				e.printStackTrace();
@@ -271,14 +277,15 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			userMap.put("articleAuthorTotalAchievements", author.getAchievements().size());
 			userMap.put("articleAuthorTotalFollowers", author.getFollowedBy().size());
 			userMap.put("articleAuthorTotalFollowing", author.getFollowing().size());
-			String avatarPath = author.getAvatarPath();			
-			if(avatarPath.isEmpty())
+			String authorAvatar = author.getAvatar();			
+			if(authorAvatar.isEmpty())
 			{
 				userMap.put("articleAuthorAvatarPath", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
 			}
 			else
 			{
-				userMap.put("articleAuthorAvatarPath", AppConstants.APP_IMAGE_USER_URL_PATH+avatarPath);
+				Media media = mediaDaoInstance.getById(authorAvatar);
+				userMap.put("articleAuthorAvatarPath", media.getUrl());
 			}
 			response.put("articleAuthor", userMap);			
 			response.put("articleCoolScore", (int)article.getCoolScore());
@@ -299,13 +306,15 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			} catch (ParseException parseEx) {
 				Logger.error("Error in ArticleDAO getArticle", parseEx.fillInStackTrace());				
 			}
-			if(article.getFeaturedImagePath().isEmpty())
+			String articleFeatureImage=article.getFeaturedImage();
+			if(articleFeatureImage.isEmpty())
 			{
 				response.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 			}
 			else
 			{
-				response.put("articleFeaturedImage", AppConstants.APP_IMAGE_USER_URL_PATH+article.getFeaturedImagePath());
+				Media media = mediaDaoInstance.getById(articleFeatureImage);
+				response.put("articleFeaturedImage", media.getUrl());
 			}
 			String gameId = article.getGame();						
 			if(gameId!=null)
@@ -314,7 +323,17 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				HashMap<String, Object> gameMap = new HashMap<>();
 				gameMap.put("gameId", game.getId().toString());
 				gameMap.put("title", game.getTitle());
-				gameMap.put("boxshotPath", AppConstants.APP_IMAGE_GAME_URL_PATH+"/"+Utility.shortenString(game.getTitle())+"/uploads/boxshot/"+game.getGameBoxShotPath());
+				String gameBoxShot = game.getGameBoxShot();
+				if(gameBoxShot.isEmpty())
+				{
+					gameMap.put("boxshotPath", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/boxShot.png");
+				}
+				else
+				{
+					Media media = mediaDaoInstance.getById(gameBoxShot);
+					gameMap.put("boxshotPath", media.getUrl());
+				}	
+				
 				gameMap.put("developer", game.getDeveloper());
 				gameMap.put("publisher", game.getPublisher());
 				gameMap.put("releaseDate", game.getReleaseDate());
@@ -322,11 +341,12 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				gameMap.put("rating", game.getRating());				
 				gameMap.put("gameEncodedUrl",  Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
 				List<HashMap<String, Object>> platformList = new ArrayList<>();
-				for(Platform gamePlatform: game.getPlatforms())
+				for(String gamePlatform: game.getPlatforms())
 				{
 					HashMap<String, Object> platformMap = new HashMap<>();
-					platformMap.put("title", gamePlatform.getTitle());
-					platformMap.put("shortTitle", gamePlatform.getShortTitle());
+					Platform platform = platformDaoInstance.findByShortTitle(gamePlatform);
+					platformMap.put("title", platform.getTitle());
+					platformMap.put("shortTitle", platform.getShortTitle());
 					platformList.add(platformMap);
 				}
 				gameMap.put("gamePlatforms", platformList);
@@ -364,10 +384,11 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			{
 				response.put("articleGame","");
 			}
-			ArrayList<HashMap<String, Object>> platforms = new ArrayList<>();
-			for(Platform platform: article.getPlatforms())
+			ArrayList<HashMap<String, Object>> platforms = new ArrayList<>();			
+			for(String gamePlatform: article.getPlatforms())
 			{
 				HashMap<String, Object> platformMap = new HashMap<>();
+				Platform platform = platformDaoInstance.findByShortTitle(gamePlatform);
 				platformMap.put("platformTitle", platform.getTitle());
 				platformMap.put("platformShortTitle", platform.getShortTitle());
 				platforms.add(platformMap);
@@ -388,7 +409,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	
 	
 	@Override
-	public List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategory(String carouselSelector, String category, Long timestamp, Integer mode) {
+	public List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategory(String carouselSelector, String category, Long timestamp, Integer mode) throws MalformedURLException {
 		List<Article> articles = getNRecentArticles(gloonDatastore, 10, category, carouselSelector, timestamp, mode);
 		List<HashMap<String, Object>> articleLists = new ArrayList<>();
 		if(articles.size()>0)
@@ -407,7 +428,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					response.put("articlePublishDate", article.getPublishDate());	
 					response.put("articleTimestamp", article.getTimestamp());
 					try {
-						response.put("articleTimeSpentFromPublish", Utility.covertFromOneFormatToAnother(article.getPublishDate()));
+						response.put("articleTimeSpentFromPublish", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
 					} catch (ParseException e1) {
 						Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
 						response.put("articleTimeSpentFromPublish", "NaN");
@@ -421,23 +442,34 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 						Logger.error("Error in ArticleDAO getNArticlesByCarouselSelectorAndCategory", e.fillInStackTrace());		
 						e.printStackTrace();
 					}
+					
+					String[] platforms =article.getPlatforms();
+					String[] platfomsToBeProcessed=platforms;
+					if(platforms.length>5)
+					{
+						platfomsToBeProcessed = Arrays.copyOfRange(platforms, 0, 5);
+					}
 					List<HashMap<String, Object>> platformList = new ArrayList<>();
-					for(Platform gamePlatform: article.getPlatforms())
+					for(String gamePlatform: platfomsToBeProcessed)
 					{
 						HashMap<String, Object> platformMap = new HashMap<>();
-						platformMap.put("title", gamePlatform.getTitle());
-						platformMap.put("shortTitle", gamePlatform.getShortTitle());
+						Platform platform = platformDaoInstance.findByShortTitle(gamePlatform);
+						platformMap.put("title", platform.getTitle());
+						platformMap.put("shortTitle", platform.getShortTitle());
 						platformList.add(platformMap);
 					}
 					response.put("articlePlatforms", platformList);		
-					if(article.getFeaturedImagePath().isEmpty())
+					String featuredImage =article.getFeaturedImage(); 
+					if(featuredImage.isEmpty())
 					{
 						response.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 					}
 					else
 					{
-						response.put("articleFeaturedImage", AppConstants.APP_IMAGE_USER_URL_PATH+article.getFeaturedImagePath());
+						Media media = mediaDaoInstance.getById(featuredImage);
+						response.put("articleFeaturedImage", media.getUrl());						
 					}			
+					
 					articleLists.add(response);
 				}
 				
@@ -455,16 +487,15 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	
 	//TODO modfiy this method to check whether in the case of review, user in not posting a review for same game on same set of platforms. This is not allowed
 	@Override
-	public HashMap<String, Object> saveOrUpdateArticle(DynamicForm requestData) {
+	public HashMap<String, Object> createOrUpdateArticle(DynamicForm requestData) {
 			 Mongo instance = getDatabaseInstance().getMongoInstance();
 			 UserGameScoreMapDAO scoreMapDAO = UserGameScoreMapDAO.instantiateDAO();
-		     HashMap<String, Object> response = new HashMap<>();
-		     Date time = new Date();
+		     HashMap<String, Object> response = new HashMap<>();		     
 		     response.put("status", "fail");		     		         
 		     Article article=null;
 		     try
 		     {
-		    	 article = createOrUpdateArticle(requestData);
+		    	 article = createOrUpdateArticleInstance(requestData);
 		    	 Logger.debug("ARTICLE     "+article);
 		    	 save(article);
 		    	 if(article.getState() == Article.PUBLISH)
@@ -506,8 +537,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		            		{
 		            			Double refinedGameScore = articleGameScore/10.0;  
 		            			Double userScoreRatio =RankAlgorithm.calculateUserScoreRatio(author.getTotalScore(), instance);
-		            			Logger.debug("USER SCORE RATIO "+userScoreRatio);		            			
-		            			scoreMapDAO.createScoreMap(gameId, author.getUsername(), refinedGameScore, userScoreRatio);		
+		            			Logger.debug("USER SCORE RATIO "+userScoreRatio);		    
+		            			scoreMapDAO.createOrUpdateScoreMap("", gameId, author.getUsername(), refinedGameScore, userScoreRatio);		            			
 		            			fetchedGame.setTotalScore(RankAlgorithm.calculateNetworkGameScore(gameId.toString(), instance));
 		            			gameDaoInstance.save(fetchedGame);
 		            		}
@@ -515,7 +546,29 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		            		save(article);
 		            	}
 		            }
-		         	activityDaoInstance.create(Activity.ACTIVITY_POST_PUBLISH, article.getAuthor(), article.getId().toString(), AppConstants.PUBLIC,Utility.convertDateToString(time), time.getTime());
+		         	HashMap<String, String> activityMap = new HashMap<>();
+		         	activityMap.put("id", "");
+		         	activityMap.put("username", article.getAuthor());
+		         	activityMap.put("entityId", article.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_POST_PUBLISH);
+		         	activityMap.put("visibility", ""+Activity.PUBLIC);
+		         	
+		         	activityDaoInstance.createOrUpdateActivity(activityMap);
+		         	String articleBody = article.getBody();
+		         	ArrayList<String> mediaIds = Article.fetchMediaIdsFromBody(articleBody);
+		         	Logger.debug("MediaIds created");
+		         	if(mediaIds.size()>0)
+		         	{
+		         		/**
+		         		 * This saves all the images from article body to DB
+		         		 * 
+		         		 */
+		         		for(String mediaId: mediaIds)
+						{
+							articleMediaMapDaoInstance.createOrUpdateArticleMediaMap("", article.getId().toString(), mediaId);
+						}
+		         	}
+		         	
 		         }
 		    	 
 		    	 response.put("status", "success");
@@ -560,19 +613,19 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			   articleMap.put("articleUpdateTime", article.getUpdateTime());
 			   articleMap.put("articlePublishDate", article.getPublishDate());
 			   try {
-				   articleMap.put("publishTimeFormatted", Utility.covertFromOneFormatToAnother(article.getPublishDate()));
+				   articleMap.put("publishTimeFormatted", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
 				} catch (ParseException e1) {
 					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
 					articleMap.put("articleTimeSpentFromPublish", "NaN");
 				}
 			   try {
-				   articleMap.put("insertTimeFormatted", Utility.covertFromOneFormatToAnother(article.getInsertTime()));
+				   articleMap.put("insertTimeFormatted", Utility.convertFromOneFormatToAnother(article.getInsertTime()));
 				} catch (ParseException e1) {
 					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
 					articleMap.put("articleTimeSpentFromPublish", "NaN");
 				}
 			   try {
-				   articleMap.put("updateTimeFormatted", Utility.covertFromOneFormatToAnother(article.getUpdateTime()));
+				   articleMap.put("updateTimeFormatted", Utility.convertFromOneFormatToAnother(article.getUpdateTime()));
 				} catch (ParseException e1) {
 					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
 					articleMap.put("articleTimeSpentFromPublish", "NaN");
@@ -583,15 +636,18 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			   try {
 				articleMap.put("articleCommentCount", conversationDaoInstance.getComments(article.getId().toString()).size());
 			   } catch (ParseException e) {
-				   Logger.error("Error in ArticleDAO getArticleListForUser",e.fillInStackTrace());	 				
-			   }
+				   Logger.error("{Parse Error in ArticleDAO getArticleListForUser",e.fillInStackTrace());	 				
+			   } catch (MalformedURLException e) {
+				   Logger.error("Malformed Error in ArticleDAO getArticleListForUser",e.fillInStackTrace());
+				
+			}
 			   try {
-				   articleMap.put("articleTimeSpentFromPublish", Utility.covertFromOneFormatToAnother(article.getPublishDate()));
+				   articleMap.put("articleTimeSpentFromPublish", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
 				} catch (ParseException e1) {
 					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
 					articleMap.put("articleTimeSpentFromPublish", "NaN");
 				}			   
-			   articleMap.put("articlePlatforms", Utility.titleList(article.getPlatforms()));			   
+			   articleMap.put("articlePlatforms", article.getPlatforms());			   
 			   articleMapList.add(articleMap);
 			   
 		   }
@@ -728,7 +784,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * @return
 	 * @throws ParseException 
 	 */		
-	private Article createOrUpdateArticle(DynamicForm requestData) throws ParseException 
+	private Article createOrUpdateArticleInstance(DynamicForm requestData) throws ParseException 
 	{
 		
 		Article article=null;
@@ -744,8 +800,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		Logger.debug("USERNAME:   "+username);
 		String articlePlatforms = requestData.get("articlePlatforms");		
 		String[] platformList = articlePlatforms.split(",");
-		String featuredImagePath = requestData.get("articleFeaturedImage").substring(requestData.get("articleFeaturedImage").indexOf("/"+username));
-		Logger.debug("Featured image path: "+featuredImagePath);				
+		String featuredImage = requestData.get("articleFeaturedImage");		
+		
+		Logger.debug("Featured image: "+featuredImage);				
 		if(!id.isEmpty())
 		{
 			ObjectId _id = new ObjectId(id);			
@@ -758,6 +815,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				{
 					article.setPublishDate(dateTime);
 					article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
+					
+					
 				}				
 				
 			}			
@@ -778,20 +837,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		article.setSubtitle(articleSubTitle);
 		article.setBody(articleBody);
 		article.setCategory(Category.valueOf(category));     		
-        article.setAuthor(username);                
-        ArrayList<Platform> platforms = new ArrayList<>();
-        
-        for(String platformName:platformList)
-        {        	
-        	Platform platform = gloonDatastore.createQuery(Platform.class).filter("shortTitle", platformName.trim()).get();        	
-        	if(platform!=null)
-        	{
-        		platforms.add(platform);
-        	}
-        	
-        }
-        article.setPlatforms(platforms);        
-        article.setFeaturedImagePath(featuredImagePath);               
+        article.setAuthor(username);                        
+        article.setPlatforms(platformList);        
+        article.setFeaturedImage(featuredImage);               
         article.setState(state);        
         
 		return article;
@@ -822,8 +870,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * @param type
 	 * @return
 	 * @throws ParseException 
+	 * @throws MalformedURLException 
 	 */
-	private List<HashMap<String, Object>> getReviewsForCarousel(List<User> topUsers, String type) throws ParseException
+	private List<HashMap<String, Object>> getReviewsForCarousel(List<User> topUsers, String type) throws ParseException, MalformedURLException
 	{
 		List<Game> recentlyReleasedNGames= gameDaoInstance.getRecentReleasedGames(0);		
 		List<User> reviewTopUsers = new ArrayList<>();
@@ -843,7 +892,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					}
 					else
 					{
-						article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("game", game.getId().toString()).filter("platforms.shortTitle",type).filter("category", Category.Review).filter("state", Article.PUBLISH).get();
+						article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("game", game.getId().toString()).filter("platforms",type).filter("category", Category.Review).filter("state", Article.PUBLISH).get();
 					}							
 					if(article!=null)
 					{
@@ -855,23 +904,16 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 						articleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
 						articleMap.put("articleAuthor", article.getAuthor());						
 						articleMap.put("articlepublishDate", article.getPublishDate());
-						if(article.getFeaturedImagePath().isEmpty())
+						String featuredImage=article.getFeaturedImage(); 
+						if(featuredImage.isEmpty())
 						{
 							articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 						}
 						else
 						{
-							articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_USER_URL_PATH+article.getFeaturedImagePath());
-						}
-						List<HashMap<String, Object>> platformList = new ArrayList<>();
-						for(Platform gamePlatform: article.getPlatforms())
-						{
-							HashMap<String, Object> platformMap = new HashMap<>();
-							platformMap.put("title", gamePlatform.getTitle());
-							platformMap.put("shortTitle", gamePlatform.getShortTitle());
-							platformList.add(platformMap);
-						}
-						articleMap.put("articlePlatforms",platformList);
+							Media media = mediaDaoInstance.getById(featuredImage);
+							articleMap.put("articleFeaturedImage", media.getUrl());							
+						}						
 						articleMap.put("articleCommentCount", conversationDaoInstance.getComments(article.getId().toString()).size());
 						fetchedReviews.add(articleMap);
 						counter++;						
@@ -901,8 +943,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * @param type
 	 * @return
 	 * @throws ParseException 
+	 * @throws MalformedURLException 
 	 */
-	private List<HashMap<String, Object>> getArticlesForCarousel(List<User> topUsers, String type, Category category) throws ParseException
+	private List<HashMap<String, Object>> getArticlesForCarousel(List<User> topUsers, String type, Category category) throws ParseException, MalformedURLException
 	{		
 		
 		Logger.debug("TOP USER SIZE:-> "+topUsers);
@@ -921,7 +964,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			}
 			else
 			{
-				article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("platforms.shortTitle",type).filter("category", category).filter("state", Article.PUBLISH).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("platforms",type).filter("category", category).filter("state", Article.PUBLISH).get();
 			}												
 			if(article!=null)
 			{
@@ -933,23 +976,16 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				articleMap.put("articleBody", article.getBody());
 				articleMap.put("articleAuthor", article.getAuthor());												
 				articleMap.put("articlepublishDate", article.getPublishDate());
-				if(article.getFeaturedImagePath().isEmpty())
+				String featuredImage=article.getFeaturedImage(); 
+				if(featuredImage.isEmpty())
 				{
 					articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 				}
 				else
 				{
-					articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_USER_URL_PATH+article.getFeaturedImagePath());
-				}
-				List<HashMap<String, Object>> platformList = new ArrayList<>();
-				for(Platform gamePlatform: article.getPlatforms())
-				{
-					HashMap<String, Object> platformMap = new HashMap<>();
-					platformMap.put("title", gamePlatform.getTitle());
-					platformMap.put("shortTitle", gamePlatform.getShortTitle());
-					platformList.add(platformMap);
-				}
-				articleMap.put("articlePlatforms",platformList);				
+					Media media = mediaDaoInstance.getById(featuredImage);
+					articleMap.put("articleFeaturedImage", media.getUrl());					
+				}							
 				articleMap.put("articleCommentCount", conversationDaoInstance.getComments(article.getId().toString()).size());				
 				fetchedArticles.add(articleMap);			    
 				counter++;
@@ -988,7 +1024,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					}
 					else
 					{
-						recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms.shortTitle",carouselSelector).order("-publishDate").limit(limit).filter("timestamp <",timestamp).filter("state", Article.PUBLISH).asList();
+						recent10Articles=gloonDatastore.createQuery(Article.class).filter("platforms",carouselSelector).order("-publishDate").limit(limit).filter("timestamp <",timestamp).filter("state", Article.PUBLISH).asList();
 					}
 				}
 				else
@@ -999,7 +1035,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					}
 					else
 					{
-						recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Utility.capitalizeString(category)).filter("platforms.shortTitle",carouselSelector).order("-publishDate").limit(limit).filter("timestamp <",timestamp).filter("state", Article.PUBLISH).asList();
+						recent10Articles=gloonDatastore.createQuery(Article.class).filter("category", Utility.capitalizeString(category)).filter("platforms",carouselSelector).order("-publishDate").limit(limit).filter("timestamp <",timestamp).filter("state", Article.PUBLISH).asList();
 					}
 				}
 				break;
@@ -1050,8 +1086,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * @param category
 	 * @return
 	 * @throws ParseException 
+	 * @throws MalformedURLException 
 	 */
-	private List<HashMap<String, Object>> getCarouselArticlesForUserMap(String username, String category) throws ParseException
+	private List<HashMap<String, Object>> getCarouselArticlesForUserMap(String username, String category) throws ParseException, MalformedURLException
 	{
 		List<HashMap<String, Object>> carouselArticlesForUser = new ArrayList<>();
 		List<Article> carouselArticles= getCarouselArticlesForUser(username, category);
@@ -1065,24 +1102,18 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			articleMap.put("articleBody", article.getBody());
 			articleMap.put("articleAuthor", article.getAuthor());												
 			articleMap.put("articlepublishDate", article.getPublishDate());
-			if(article.getFeaturedImagePath().isEmpty())
+			String featuredImage=article.getFeaturedImage(); 
+			if(featuredImage.isEmpty())
 			{
 				articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 			}
 			else
 			{
-				articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_USER_URL_PATH+article.getFeaturedImagePath());
+				Media media = mediaDaoInstance.getById(featuredImage);
+				articleMap.put("articleFeaturedImage", media.getUrl());
+				articleMap.put("articleFeaturedImageId", media.getId().toString());
 			}
-			articleMap.put("articleTimestamp", article.getTimestamp());
-			List<HashMap<String, Object>> platformList = new ArrayList<>();
-			for(Platform gamePlatform: article.getPlatforms())
-			{
-				HashMap<String, Object> platformMap = new HashMap<>();
-				platformMap.put("title", gamePlatform.getTitle());
-				platformMap.put("shortTitle", gamePlatform.getShortTitle());
-				platformList.add(platformMap);
-			}
-			articleMap.put("articlePlatforms",platformList);				
+			articleMap.put("articleTimestamp", article.getTimestamp());					
 			articleMap.put("articleCommentCount", conversationDaoInstance.getComments(article.getId().toString()).size());
 			carouselArticlesForUser.add(articleMap);
 		}
@@ -1097,8 +1128,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	 * @param category
 	 * @return
 	 * @throws ParseException 
+	 * @throws MalformedURLException 
 	 */
-	private List<HashMap<String, Object>> getGameCarouselArticles(String gameId, String category) throws ParseException
+	private List<HashMap<String, Object>> getGameCarouselArticles(String gameId, String category) throws ParseException, MalformedURLException
 	{
 		List<HashMap<String, Object>> carouselArticlesForGame = new ArrayList<>();
 		
@@ -1115,24 +1147,17 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			articleMap.put("articleBody", article.getBody());
 			articleMap.put("articleAuthor", article.getAuthor());												
 			articleMap.put("articlepublishDate", article.getPublishDate());
-			if(article.getFeaturedImagePath().isEmpty())
+			String featuredImage=article.getFeaturedImage(); 
+			if(featuredImage.isEmpty())
 			{
 				articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 			}
 			else
 			{
-				articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_USER_URL_PATH+article.getFeaturedImagePath());
+				Media media = mediaDaoInstance.getById(featuredImage);
+				articleMap.put("articleFeaturedImage", media.getUrl());				
 			}
-			articleMap.put("articleTimestamp", article.getTimestamp());
-			List<HashMap<String, Object>> platformList = new ArrayList<>();
-			for(Platform gamePlatform: article.getPlatforms())
-			{
-				HashMap<String, Object> platformMap = new HashMap<>();
-				platformMap.put("title", gamePlatform.getTitle());
-				platformMap.put("shortTitle", gamePlatform.getShortTitle());
-				platformList.add(platformMap);
-			}
-			articleMap.put("articlePlatforms",platformList);				
+			articleMap.put("articleTimestamp", article.getTimestamp());						
 			articleMap.put("articleCommentCount", conversationDaoInstance.getComments(article.getId().toString()).size());
 			carouselArticlesForGame.add(articleMap);
 		}

@@ -1,5 +1,7 @@
 package com.gamealoon.controllers;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import com.gamealoon.database.daos.ArticleDAO;
@@ -60,7 +62,15 @@ public class ArticleController extends Controller{
 	 */
 	private static HashMap<String, Object> getArticleMap(String userName, String articleTitleOrId)
 	{
-		return articleDaoInstance.getArticle(userName, articleTitleOrId);
+		HashMap<String, Object> response = new HashMap<>();
+		
+		try {
+			response= articleDaoInstance.getArticle(userName, articleTitleOrId);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 	/**
@@ -73,8 +83,14 @@ public class ArticleController extends Controller{
 	 */	
 	private static List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategoryMap(String platform, String category, String timestamp, Integer mode)
 	{
-		
-		return articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, Long.parseLong(timestamp), mode);
+		List<HashMap<String, Object>> response = new ArrayList<>();
+		try {
+			response= articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, Long.parseLong(timestamp), mode);
+		} catch (NumberFormatException | MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 	/**
@@ -85,7 +101,7 @@ public class ArticleController extends Controller{
 	 */
 	private static HashMap<String, Object> saveArticle(DynamicForm requestData)
 	{
-		return articleDaoInstance.saveOrUpdateArticle(requestData);
+		return articleDaoInstance.createOrUpdateArticle(requestData);
 	}
 	
 	/**

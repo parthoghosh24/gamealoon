@@ -1,5 +1,6 @@
 package com.gamealoon.database.interfaces;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.gamealoon.models.UserGameScoreMap;
@@ -19,7 +20,7 @@ public interface UserGameScoreMapInterface {
 	 * @param gameId
 	 * @param userId
 	 */
-	public void createScoreMap(String gameId, String username, Double gameScore, Double weightedNetworkGameScore);
+	public HashMap<String, String> createOrUpdateScoreMap(String id, String gameId, String username, Double gameScore, Double weightedNetworkGameScore);
 	
 	/**
 	 * Find all instances by game id
@@ -46,5 +47,12 @@ public interface UserGameScoreMapInterface {
 	 */
 	public UserGameScoreMap findByUserAndGame(String userId, String gameId);
 	
+	/**
+	 * Fetch UserGameScoreMap by id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public UserGameScoreMap getById(String id);
 	
 }

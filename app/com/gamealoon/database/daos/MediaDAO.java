@@ -1,21 +1,20 @@
 package com.gamealoon.database.daos;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.bson.types.ObjectId;
-
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
+import plugins.S3Plugin;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.MediaInterface;
 import com.gamealoon.models.Media;
-import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
@@ -55,94 +54,111 @@ public class MediaDAO extends GloonDAO implements MediaInterface {
 		}
 
 		@Override
-		public void createOrUpdateMedia(String mediaId, HashMap<String, String> mediaMap, String parentId) {
+		public HashMap<String, String> createOrUpdateMedia(String mediaId, FilePart filePart, String username, String mediaOwnerType) {
+			
+			HashMap<String, String> response = new HashMap<>();
+			response.put("status", "fail");
+			Media media=createOrUpdateMediaInstance(mediaId, filePart, username, mediaOwnerType);
+			if(media!=null)//New media getting created
+			{
+				response = uploadMedia(media);
+				save(media);
+				response.put("mediaId", media.getId().toString());				
+			}			
+			return response;
+		}
+		
+		/**
+		 * Media instance
+		 * 
+		 * @return
+		 */
+		private Media createOrUpdateMediaInstance(String mediaId, FilePart filePart, String username, String mediaOwnerType)
+		{
 			Media media=null;
 			Date time = new Date();
-			if(mediaId.isEmpty())//New media getting created
+			if(mediaId.isEmpty() || "none".equalsIgnoreCase(mediaId))
 			{
 				media = new Media();
-				media.setMediaType(Media.IMAGE);
 				media.setTimestamp(time.getTime());
 				media.setInsertTime(Utility.convertDateToString(time));
 			}
-			else //Media updated
+			else
 			{
 				media = getById(mediaId);
 				media.setUpdateTime(Utility.convertDateToString(time));
-			}			
-			media.setMediaTitle(mediaMap.get("mediaTitle"));
-			media.setFileName(mediaMap.get("mediaFileName"));
-			media.setParentId(parentId);
-			media.setRelativeFilePath(mediaMap.get("mediaRelativeFilePath"));
-			
-			save(media);
-			
-			
+			}
+			media.setFileName(filePart.getFilename());		
+			media.setMediaType(Media.IMAGE);
+			media.setFile(filePart.getFile());
+			media.setUrl("");
+			media.setOwner(mediaOwnerType);
+			media.setImmediateOwner(username);
+			return media;
 		}
 
 		@Override
-		public HashMap<String, String> uploadImage(String userName,FilePart imagePart) {
+		public HashMap<String, String> uploadMedia(Media media) {
 			
 			HashMap<String, String> response = new HashMap<>();
 			response.put("status", "fail");			
-			Logger.debug("Actual File name: "+imagePart.getFilename());				
-			File image = imagePart.getFile();					
-			String requiredFileName = AppConstants.APP_ABSOLUTE_IMAGE_USER_PATH+userName+"\\uploads\\"+imagePart.getFilename();
-			Logger.debug("requiredFileName "+requiredFileName);			
-			File finalImage = new File(requiredFileName);
-			Logger.debug("Final image exist: "+finalImage.exists());								     
-			try {
-			      if(!finalImage.exists())
-				  {
-			    	  finalImage.createNewFile();
-			    	  Utility.mediaCopy(image, finalImage);
-				   } 
-					  response.put("status", "success");
-						
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();					
-				}
+			String actualFileName=media.getFileName();
+			String owner = media.getOwner();
+			String immediateOwner=media.getImmediateOwner();
+			Logger.debug("Actual File name: "+actualFileName);				
+			File image = media.getFile();				
+			String subFolder=owner+"/"+immediateOwner+"/uploads/";
+			String relativeFileName =subFolder+actualFileName;
+			Logger.debug("relativeFileName "+relativeFileName);
+			if(S3Plugin.amazonS3==null)
+			{
+				Logger.error("Could not save because amazon S3 instance was null");				
+				throw new RuntimeException("Could not save");
+				
+			}
+			else
+			{				
+				PutObjectRequest putObjectRequest = new PutObjectRequest(S3Plugin.s3Bucket, relativeFileName, image);
+				putObjectRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
+				S3Plugin.amazonS3.putObject(putObjectRequest);				
+				Logger.debug("S3 Bucket   "+S3Plugin.s3Bucket);
+				Logger.debug("Owner "+owner);
+				String url=Media.BASE_AWS_URL+S3Plugin.s3Bucket+"/"+relativeFileName;
+				Logger.debug(url);
+				media.setUrl(url);
+				save(media); 
+				response.put("status", "success");
+			}
+			
+			
 			return response;
 		}
 
 		@Override
-		public HashMap<String, ArrayList<HashMap<String,String>>> fetchImageForBrowser(String userName, Long timeStamp) {
+		public HashMap<String, ArrayList<HashMap<String,String>>> fetchImageForBrowser(String userName, Long timeStamp) throws MalformedURLException {
 			HashMap<String, ArrayList<HashMap<String,String>>> response = new HashMap<>();
-			ArrayList<HashMap<String,String>> imageUrls = fetchImageUrls(userName,timeStamp);
+			ArrayList<HashMap<String, String>> imageUrls = new ArrayList<>();
+			List<Media> mediaList = fetchImageUrls(userName,timeStamp);
+			
+			if(mediaList.size()>0)
+			{
+				for(Media media: mediaList)
+				{
+					HashMap<String, String> mediaMap= new HashMap<>();
+					mediaMap.put("mediaId", media.getId().toString());
+					mediaMap.put("mediaUrl", media.getUrl());
+					mediaMap.put("mediaTimestamp", media.getTimestamp().toString());
+					imageUrls.add(mediaMap);
+				}
+			}
+			
 			response.put("images", imageUrls);
 			return response;
 		}
 		
-		private ArrayList<HashMap<String,String>> fetchImageUrls(String userName, Long timeStamp)
-		{
-			ArrayList<HashMap<String,String>> urlList = new ArrayList<>();
-			String uploadsDirectoryName = AppConstants.APP_ABSOLUTE_IMAGE_USER_PATH+userName+"\\uploads";
-			File uploadsDirectory = new File(uploadsDirectoryName);
-			File[] files =uploadsDirectory.listFiles();
-			Arrays.sort(files, new Comparator<File>() {
-
-				@Override
-				public int compare(File file1, File file2) {					
-					return Long.valueOf(file2.lastModified()).compareTo(Long.valueOf(file1.lastModified()));
-				}
-			});
-			
-			if(uploadsDirectory.exists() && uploadsDirectory.isDirectory())
-			{
-				for(File file: files)
-				{
-					if(!file.isDirectory() && file.lastModified()>timeStamp)
-					{
-						String url=AppConstants.APP_IMAGE_USER_URL_PATH+"/"+userName+"/uploads/"+file.getName();
-						HashMap<String, String> urlMap = new HashMap<>();
-						urlMap.put("url", url);
-						urlMap.put("timeStamp", Long.toString(file.lastModified()));
-						urlList.add(urlMap);
-					}
-				}
-			}
-			return urlList;
+		private List<Media> fetchImageUrls(String userName, Long timeStamp)
+		{						
+			return gloonDatastore.createQuery(Media.class).filter("immediateOwner", userName).order("-insertTime").filter("timestamp >", timeStamp).asList();
 		}
 	
 

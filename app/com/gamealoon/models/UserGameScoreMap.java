@@ -14,6 +14,9 @@ public class UserGameScoreMap {
 	private String gameId;
 	private Double gameScore;
 	private Double networkUserWeight;
+	private String insertTime;
+	private String updateTime;
+	private Long timestamp;
 	/**
 	 * @return the id
 	 */
@@ -70,5 +73,47 @@ public class UserGameScoreMap {
 	 */
 	public void setNetworkUserWeight(Double networkUserWeight) {
 		this.networkUserWeight = networkUserWeight;
+	}
+
+	/**
+	 * @return the insertTime
+	 */
+	public String getInsertTime() {
+		return insertTime;
+	}
+
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(String insertTime) {
+		this.insertTime = insertTime;
+	}
+
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/**
+	 * @return the updateTime
+	 */
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}
 }

@@ -1,18 +1,17 @@
 package com.gamealoon.database.daos;
 
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import org.bson.types.ObjectId;
-
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.ConversationInterface;
 import com.gamealoon.models.Activity;
 import com.gamealoon.models.Comment;
 import com.gamealoon.models.Conversation;
+import com.gamealoon.models.Media;
 import com.gamealoon.models.User;
 import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
@@ -22,6 +21,7 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 
 	private static final ConversationDAO DATA_ACCESS_LAYER=new ConversationDAO();	
 	private static final UserDAO userDAOInstance =UserDAO.instantiateDAO();
+	private static final MediaDAO mediaDAOInstance =MediaDAO.instantiateDAO();
 	private static final ActivityDAO activityDaoInstance = ActivityDAO.instantiateDAO();
 	private Datastore gloonDatastore=null;
 	
@@ -60,8 +60,7 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 		
 		HashMap<String, Object> conversationMap = new HashMap<>();
 		conversationMap.put("status", "fail");
-		Conversation conversation=null;
-		Date time = new Date();
+		Conversation conversation=null;		
 		if(!conversationId.isEmpty())
 		{
 			conversation = gloonDatastore.get(Conversation.class, new ObjectId(conversationId));
@@ -103,7 +102,13 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 				
 				conversationMap=getComment(conversation.getId().toString());
 				conversationMap.put("status", "success");
-				activityDaoInstance.create(Activity.ACTIVITY_POST_COMMENT, userName, articleId, AppConstants.PUBLIC,Utility.convertDateToString(time), time.getTime());
+				HashMap<String, String> activityMap = new HashMap<>();
+				activityMap.put("id", "");
+	         	activityMap.put("username", userName);
+	         	activityMap.put("entityId", conversation.getId().toString());
+	         	activityMap.put("type", ""+Activity.ACTIVITY_POST_COMMENT);
+	         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
+	         	activityDaoInstance.createOrUpdateActivity(activityMap);				
 			}
 			catch(Exception e)
 			{
@@ -137,7 +142,7 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 	}
 
 	@Override
-	public ArrayList<HashMap<String, Object>> getComments(String articleId) throws ParseException {
+	public ArrayList<HashMap<String, Object>> getComments(String articleId) throws ParseException, MalformedURLException {
 		ArrayList<HashMap<String, Object>> commentMaps= new ArrayList<>();
 		List<Conversation> conversations = getCommentConversations(Conversation.COMMENT, articleId);		
 		for(Conversation conversation: conversations)
@@ -150,18 +155,19 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 				commentMap.put("ownerName", conversation.getOwnerName());
 				commentMap.put("message", conversation.getMessage());
 				commentMap.put("conversationInsertTime", conversation.getInsertTime());
-				commentMap.put("converstationTimeFormatted", Utility.convertFromStringToDate(conversation.getInsertTime()));
+				commentMap.put("converstationTimeFormatted", Utility.convertFromOneFormatToAnother(conversation.getInsertTime()));
 				commentMap.put("conversationTimeStamp", conversation.getTimeStamp());
 				commentMap.put("conversationComment",conversation.getComment());
 				User user = userDAOInstance.findByUsername(conversation.getOwnerName());
-				String ownerAvatarImage = user.getAvatarPath();
+				String ownerAvatarImage = user.getAvatar();
 				if(ownerAvatarImage.isEmpty())
 				{
 					commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
 				}
 				else
 				{
-					commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_USER_URL_PATH+ownerAvatarImage);
+					Media media=mediaDAOInstance.getById(ownerAvatarImage);
+					commentMap.put("ownerAvatarImage", media.getUrl());
 				}	
 				commentMaps.add(commentMap);
 			}
@@ -170,7 +176,7 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 	}
 	
 	@Override
-	public HashMap<String, Object> getCommentByTimestamp(String articleId, Long timeStamp) throws ParseException {		
+	public HashMap<String, Object> getCommentByTimestamp(String articleId, Long timeStamp) throws ParseException, MalformedURLException {		
 		HashMap<String,Object> commentMap = new HashMap<>();
 		Conversation commentConversation = gloonDatastore.createQuery(Conversation.class).filter("comment.articleId", articleId).filter("timeStamp >", timeStamp).order("-timeStamp").get();
 		
@@ -181,25 +187,26 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 			commentMap.put("ownerName", commentConversation.getOwnerName());
 			commentMap.put("message", commentConversation.getMessage());
 			commentMap.put("conversationInsertTime", commentConversation.getInsertTime());
-			commentMap.put("converstationTimeFormatted", Utility.convertFromStringToDate(commentConversation.getInsertTime()));
+			commentMap.put("converstationTimeFormatted", Utility.convertFromOneFormatToAnother(commentConversation.getInsertTime()));
 			commentMap.put("conversationTimeStamp", commentConversation.getTimeStamp());
 			commentMap.put("conversationComment",commentConversation.getComment());
 			User user = userDAOInstance.findByUsername(commentConversation.getOwnerName());
-			String ownerAvatarImage = user.getAvatarPath();
+			String ownerAvatarImage = user.getAvatar();
 			if(ownerAvatarImage.isEmpty())
 			{
 				commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
 			}
 			else
 			{
-				commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_USER_URL_PATH+ownerAvatarImage);
+				Media media=mediaDAOInstance.getById(ownerAvatarImage);
+				commentMap.put("ownerAvatarImage", media.getUrl());				
 			}	
 		}
 		return commentMap;
 	}
 	
 	@Override
-	public HashMap<String, Object> getComment(String conversationId) throws ParseException {
+	public HashMap<String, Object> getComment(String conversationId) throws ParseException, MalformedURLException {
 		HashMap<String,Object> commentMap = new HashMap<>();
 		Conversation commentConversation = gloonDatastore.get(Conversation.class, new ObjectId(conversationId));
 		
@@ -210,18 +217,19 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 			commentMap.put("ownerName", commentConversation.getOwnerName());
 			commentMap.put("message", commentConversation.getMessage());
 			commentMap.put("conversationInsertTime", commentConversation.getInsertTime());
-			commentMap.put("converstationTimeFormatted", Utility.convertFromStringToDate(commentConversation.getInsertTime()));
+			commentMap.put("converstationTimeFormatted", Utility.convertFromOneFormatToAnother(commentConversation.getInsertTime()));			
 			commentMap.put("conversationTimeStamp", commentConversation.getTimeStamp());
 			commentMap.put("conversationComment",commentConversation.getComment());
 			User user = userDAOInstance.findByUsername(commentConversation.getOwnerName());
-			String ownerAvatarImage = user.getAvatarPath();
+			String ownerAvatarImage = user.getAvatar();
 			if(ownerAvatarImage.isEmpty())
 			{
 				commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
 			}
 			else
 			{
-				commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_USER_URL_PATH+ownerAvatarImage);
+				Media media=mediaDAOInstance.getById(ownerAvatarImage);
+				commentMap.put("ownerAvatarImage", media.getUrl());	
 			}	
 			
 		}

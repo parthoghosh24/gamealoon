@@ -81,7 +81,7 @@ public class Utility {
 	 * @return
 	 * @throws ParseException 
 	 */
-	public static String covertFromOneFormatToAnother(String dateText) throws ParseException
+	public static String convertFromOneFormatToAnother(String dateText) throws ParseException
 	{
 		Date fromFormat = convertFromStringToDate(dateText);
 		String response = new SimpleDateFormat("dd MMMMM,yyyy h:mm a").format(fromFormat);
@@ -249,6 +249,11 @@ public class Utility {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	public static Boolean date1BeforeDate2(Date date1, Date date2)
+	{
+		return date1.compareTo(date2)<=0;
 	}
 	
 	/**

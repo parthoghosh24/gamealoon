@@ -34,17 +34,19 @@ public class Game{
 	private String rating; //mature, adults only, everyone, etc. This should ideally modify according to region. 
 	private String publisher;
 	private String developer;
-	private String genere;
-	private String gameBoxShotPath;
+	private Genre genre;
+	private String insertTime;
+	private String updateTime;
+	private Long timestamp;
+	private String gameBoxShot;
 	private int gameReleaseStatus;
 	private double totalScore;
 	
-	
-	@Embedded	
-	private ArrayList<Platform> platforms= new ArrayList<>();
+		
+	private String[] platforms= {};
 	
 	@Embedded
-	private ArrayList<InterestedUser> interestedIn = new ArrayList<>(); //followed by users or users interested in this game
+	private ArrayList<InterestedUser> interestedIn = new ArrayList<>(); //users interested in this game
 	
 	
 	
@@ -188,25 +190,25 @@ public class Game{
 
 
 	/**
-	 * @return the genere
+	 * @return the genre
 	 */
-	public String getGenere() {
-		return genere;
+	public Genre getGenere() {
+		return genre;
 	}
 
 
 	/**
-	 * @param genere the genere to set
+	 * @param genre the genre to set
 	 */
-	public void setGenere(String genere) {
-		this.genere = genere;
+	public void setGenere(Genre genere) {
+		this.genre = genere;
 	}
 
 
 	/**
 	 * @return the platforms
 	 */
-	public ArrayList<Platform> getPlatforms() {
+	public String[] getPlatforms() {
 		return platforms;
 	}
 
@@ -214,7 +216,7 @@ public class Game{
 	/**
 	 * @param platforms2 the platforms to set
 	 */
-	public void setPlatforms(ArrayList<Platform> platforms) {
+	public void setPlatforms(String[] platforms) {
 		this.platforms = platforms;
 	}
 	
@@ -253,18 +255,18 @@ public class Game{
 
 
 	/**
-	 * @return the gameBoxShotPath
+	 * @return the gameBoxShot
 	 */
-	public String getGameBoxShotPath() {
-		return gameBoxShotPath;
+	public String getGameBoxShot() {
+		return gameBoxShot;
 	}
 
 
 	/**
-	 * @param gameBoxShotPath the gameBoxShotPath to set
+	 * @param gameBoxShot the gameBoxShot to set
 	 */
-	public void setGameBoxShotPath(String gameBoxShotPath) {
-		this.gameBoxShotPath = gameBoxShotPath;
+	public void setGameBoxShot(String gameBoxShot) {
+		this.gameBoxShot = gameBoxShot;
 	}
 
 
@@ -349,6 +351,54 @@ public class Game{
 	 */
 	public void setTotalScore(double totalScore) {
 		this.totalScore = totalScore;
+	}
+
+
+	/**
+	 * @return the insertTime
+	 */
+	public String getInsertTime() {
+		return insertTime;
+	}
+
+
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(String insertTime) {
+		this.insertTime = insertTime;
+	}
+
+
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+
+	/**
+	 * @return the updateTime
+	 */
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}
 	
 }

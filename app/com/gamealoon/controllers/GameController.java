@@ -1,5 +1,6 @@
 package com.gamealoon.controllers;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,7 +27,14 @@ public class GameController extends Controller{
 	}
 	
 	private static ArrayList<HashMap<String, Object>> getGameMaps(String term) {		
-		return gameDaoInstance.findAllByTerm(term);
+		ArrayList<HashMap<String, Object>> response = new ArrayList<>();
+		try {
+			response=gameDaoInstance.findAllByTerm(term);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**
@@ -36,7 +44,14 @@ public class GameController extends Controller{
 	 * @return
 	 */
 	private static HashMap<String, Object> getGameMap(String urlOrid, String username) {		 
-		return gameDaoInstance.findById(urlOrid, username);
+		HashMap<String, Object> response = new HashMap<>();
+		try {
+			response = gameDaoInstance.getById(urlOrid, username);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 }

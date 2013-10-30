@@ -1,9 +1,7 @@
 package com.gamealoon.database;
 
 import java.net.UnknownHostException;
-
 import play.Logger;
-import com.gamealoon.utility.AppConstants;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;

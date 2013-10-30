@@ -6,6 +6,7 @@ public enum Genre {
 	Adventure("Adventure"),
 	Rpg("RPG"),
 	Fps("First Person Shooter"),
+	Tps("Third Person Shooter"),
 	SurvivalHorror("Survival Horror"),
 	Sports("Sports"),
 	Strategy("Strategy"),

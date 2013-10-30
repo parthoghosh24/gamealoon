@@ -37,8 +37,9 @@ public class User {
 	private int day;
 	private int month;
 	private int year;
-	private String avatarPath; //path to avatar image file for user	
+	private String avatar; //path to avatar image file for user	
 	private String insertTime;
+	private Long timestamp;
 	private String updateTime;
 	private String gameBio; //This is a game related bio for user, which will be shown on article page           	
 	private Double articlePublishRate; //sum(Ai-Ai+1)/N-1
@@ -77,7 +78,8 @@ public class User {
 		
     private ArrayList<Genre> interestedGenres = new ArrayList<>();
     
-    private ArrayList<Platform> interestedPlatforms = new ArrayList<>();
+    private String[] interestedPlatforms = {};
+       
 	/**
 	 * @return the username
 	 */
@@ -149,17 +151,17 @@ public class User {
 	}
 
 	/**
-	 * @return the avatarPath
+	 * @return the avatar
 	 */
-	public String getAvatarPath() {
-		return avatarPath;
+	public String getAvatar() {
+		return avatar;
 	}
 
 	/**
-	 * @param avatarPath the avatarPath to set
+	 * @param avatar the avatar to set
 	 */
-	public void setAvatarPath(String avatarPath) {
-		this.avatarPath = avatarPath;
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 	/**
@@ -364,14 +366,14 @@ public class User {
 	/**
 	 * @return the interestedPlatforms
 	 */
-	public ArrayList<Platform> getInterestedPlatforms() {
+	public String[] getInterestedPlatforms() {
 		return interestedPlatforms;
 	}
 
 	/**
 	 * @param interestedPlatforms the interestedPlatforms to set
 	 */
-	public void setInterestedPlatforms(ArrayList<Platform> interestedPlatforms) {
+	public void setInterestedPlatforms(String[] interestedPlatforms) {
 		this.interestedPlatforms = interestedPlatforms;
 	}
 
@@ -471,5 +473,19 @@ public class User {
 	 */
 	public void setUserTotalCoolScore(Double userTotalCoolScore) {
 		this.userTotalCoolScore = userTotalCoolScore;
+	}
+
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

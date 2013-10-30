@@ -1,6 +1,6 @@
 package com.gamealoon.database.daos;
 
-import java.io.File;
+import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import org.bson.types.ObjectId;
 import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Http.MultipartFormData.FilePart;
-
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.algorithm.SecurePassword;
 import com.gamealoon.database.GloonDAO;
@@ -28,6 +27,7 @@ import com.gamealoon.models.Game;
 import com.gamealoon.models.Genre;
 import com.gamealoon.models.InterestedGame;
 import com.gamealoon.models.InterestedUser;
+import com.gamealoon.models.Media;
 import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
 import com.gamealoon.models.UserGameScoreMap;
@@ -42,7 +42,9 @@ public class UserDAO extends GloonDAO implements UserInterface{
 	
 private static final UserDAO DATA_ACCESS_LAYER=new UserDAO();	
 private static final MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
+private static final PlatformDAO platformDAOInstance = PlatformDAO.instantiateDAO();
 private static final ActivityDAO activityDAOInstance=ActivityDAO.instantiateDAO();
+private static final ArticleDAO articleDao = ArticleDAO.instantiateDAO();	
 private static final AchievementDAO achievementDAOInstance=AchievementDAO.instantiateDAO();
 private static final GameDAO gameDAOInstance=GameDAO.instantiateDAO();
 private Datastore gloonDatastore=null;
@@ -63,7 +65,7 @@ private Datastore gloonDatastore=null;
 	
 	
 	@Override
-	public List<HashMap<String, Object>> getTopNUsers(int limit) {
+	public List<HashMap<String, Object>> getTopNUsers(int limit) throws MalformedURLException {
 		 List<HashMap<String, Object>> userMaps = new ArrayList<>();
 		   List<User> topUsers = getTopUsers(limit);
 		   if(topUsers.size()>0)
@@ -72,9 +74,11 @@ private Datastore gloonDatastore=null;
 			   {
 				   HashMap<String, Object> userMap = new HashMap<>();
 				   userMap.put("userUserName", user.getUsername());
-				   if(!user.getAvatarPath().isEmpty())
-				   {					   
-					   userMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
+				   String avatar=user.getAvatar();
+				   if(!avatar.isEmpty())
+				   {		
+					   Media media = mediaDAOInstance.getById(avatar);
+					   userMap.put("userAvatar", media.getUrl());  
 				   }
 				   else
 				   {					   
@@ -92,7 +96,7 @@ private Datastore gloonDatastore=null;
 	}
 	
 	@Override
-	public HashMap<String, Object> getLoggedInUser(String username, String password) {
+	public HashMap<String, Object> getLoggedInUser(String username, String password) throws MalformedURLException {
 		HashMap<String, Object> loggedInUserMap= new HashMap<>();		
 		loggedInUserMap.put("status", "fail");
 		User user = checkUser(username, password);
@@ -103,14 +107,16 @@ private Datastore gloonDatastore=null;
         	loggedInUserMap.put("firstName", user.getFirstName());
         	loggedInUserMap.put("lastName", user.getLastName());
         	loggedInUserMap.put("userid",user.getId().toString());        	
-        	 if(!user.getAvatarPath().isEmpty())
-			   {
-        		 loggedInUserMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
+        	String avatar=user.getAvatar();
+			   if(!avatar.isEmpty())
+			   {		
+				   Media media = mediaDAOInstance.getById(avatar);
+				   loggedInUserMap.put("userAvatar", media.getUrl());  
 			   }
 			   else
-			   {
+			   {					   
 				   loggedInUserMap.put("userAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
-			   }
+			   }        	 
         	
         }
 		return loggedInUserMap;
@@ -128,7 +134,7 @@ private Datastore gloonDatastore=null;
 	}
 	
 	@Override
-	public HashMap<String, Object> getUser(String usernameOrId, Integer mode, String username) {
+	public HashMap<String, Object> getUser(String usernameOrId, Integer mode, String username) throws MalformedURLException {
 		   Mongo instance = getDatabaseInstance().getMongoInstance();
 		   User user=null;
 		   try
@@ -139,8 +145,7 @@ private Datastore gloonDatastore=null;
 		   {
 			   Logger.error("Error in Get user In UserDAO", ie.fillInStackTrace());
 		   }
-		   ArticleDAO articleDao = ArticleDAO.instantiateDAO();	
-		   ActivityDAO activityDAO = ActivityDAO.instantiateDAO();		   
+		   		   
 		   HashMap<String, Object> userMap = new HashMap<>();
 		   if(user!=null)
 		   {
@@ -152,26 +157,30 @@ private Datastore gloonDatastore=null;
 			   userMap.put("userEmail",user.getEmail());
 			   userMap.put("userBirthdayVisibility", user.getBirthdayVisibility());
 			   userMap.put("userUserName", user.getUsername());
-			   if(!user.getAvatarPath().isEmpty())
+			   String avatar = user.getAvatar();
+			   if(!avatar.isEmpty())
 			   {
 				   Logger.debug("Image available.......");
-				   userMap.put("userAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+user.getAvatarPath());  
+				   Media media = mediaDAOInstance.getById(avatar);
+				   userMap.put("userAvatarUrl", media.getUrl());
+				   userMap.put("userAvatarId", media.getId().toString());
 			   }
 			   else
 			   {
-				   userMap.put("userAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+				   userMap.put("userAvatarUrl", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+				   userMap.put("userAvatarId", "none");
 			   }			   
 			   userMap.put("userAchievementCount", user.getAchievements().size());
 			   userMap.put("userFollowersCount", user.getFollowedBy().size());
 			   userMap.put("userFollowingCount", user.getFollowing().size());
 			   userMap.put("userGameBio", user.getGameBio());
-			   userMap.put("userTotalCount", count()-1); //N-1 users. You don't wanna count yourself duh!!!			   
-			   userMap.put("userTotalAchievements", Achievement.getAllAchievementCount());
-			   articleDao = ArticleDAO.instantiateDAO();					   
-			   userMap.put("userTotalPublishedArticles",Article.allPublishedArticleCount());
+			   userMap.put("userTotalCount", count()-1); //N-1 users. You don't wanna count yourself duh!!!
+			   long allPublishedArticleCount=Article.allPublishedArticleCount();
+			   userMap.put("userTotalAchievements", Achievement.getAllAchievementCount());					   
+			   userMap.put("userTotalPublishedArticles",allPublishedArticleCount);
 			   userMap.put("userTotalArticlesPublishedByUser",Article.allPublishedArticleCount(user));
 			   userMap.put("userTotalCoolScore", user.getUserTotalCoolScore());
-			   if(articleDao.allPublishedArticlesCount(null)>0)
+			   if(allPublishedArticleCount>0)
 			   {
 				   userMap.put("userNetworkTotalCoolScore", RankAlgorithm.calculateNetworkTotalCoolScore(instance));  
 			   }
@@ -179,7 +188,18 @@ private Datastore gloonDatastore=null;
 			   {
 				   userMap.put("userNetworkTotalCoolScore", 0);
 			   }
-			   userMap.put("userInterestedPlatforms", user.getInterestedPlatforms());
+			   String[] interestedPlatforms=user.getInterestedPlatforms();
+			   ArrayList<Platform> platforms = new ArrayList<>();
+			   for(String platform: interestedPlatforms)
+			   {
+				   Platform fetchedPlatform= platformDAOInstance.findByShortTitle(platform);
+				   if(fetchedPlatform!=null)
+				   {
+					   platforms.add(fetchedPlatform);   
+				   }	   
+				   
+			   }
+			   userMap.put("userInterestedPlatforms", platforms);
 			   userMap.put("userCountry", user.getCountry());
 			   ArrayList<HashMap<String, Object>> genreMapList = new ArrayList<>();
 			   for(Genre genre: user.getInterestedGenres())
@@ -221,14 +241,15 @@ private Datastore gloonDatastore=null;
 					   Game game = gameDAOInstance.getGameById(selectedGame.getGameId());
 					   interestedGameMap.put("interestedGameId", game.getId().toString());
 					   interestedGameMap.put("interestedGameTitle", game.getTitle());
-					   String gameBoxShotPath = game.getGameBoxShotPath();
-					   if(gameBoxShotPath.isEmpty())
+					   String gameBoxShot = game.getGameBoxShot();
+					   if(gameBoxShot.isEmpty())
 					   {
 						   interestedGameMap.put("interestedGameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/boxShot.png");
 					   }
 					   else
 					   {
-						   interestedGameMap.put("interestedGameBoxShot", AppConstants.APP_IMAGE_GAME_URL_PATH+"/"+Utility.shortenString(game.getTitle())+"/uploads/boxshot/"+gameBoxShotPath);   
+						   Media media = mediaDAOInstance.getById(gameBoxShot);
+						   interestedGameMap.put("interestedGameBoxShot", media.getUrl());   
 					   }	   
 					   interestedGameMap.put("interestedGameURL",  Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
 					   interestedGameMap.put("interestedGameTimestamp",  selectedGame.getTimestamp());
@@ -276,17 +297,18 @@ private Datastore gloonDatastore=null;
 				   for(Buddy buddy: selectedBuddyList)
 				   {
 					   HashMap<String, Object> buddyMap = new HashMap<>();
-					   User buddyUser = findByUsername(buddy.getUserName());
+					   User buddyUser = findByUsername(buddy.getUserName());					   
 					   buddyMap.put("buddyUserId", buddyUser.getId().toString());
 					   buddyMap.put("buddyUsername", buddyUser.getUsername());
-					   String buddyAvatarImage = buddyUser.getAvatarPath();
+					   String buddyAvatarImage = buddyUser.getAvatar();
 					   if(buddyAvatarImage.isEmpty())
 					   {
 						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
 					   }
 					   else
 					   {
-						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+buddyUser.getAvatarPath());  						     
+						   Media media =mediaDAOInstance.getById(buddyAvatarImage);
+						   buddyMap.put("buddyUserAvatar", media.getUrl());  						     
 					   }	 
 					   buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
 					   buddyListMaps.add(buddyMap);
@@ -339,14 +361,15 @@ private Datastore gloonDatastore=null;
 					   User buddyUser = findByUsername(buddy.getUserName());
 					   buddyMap.put("buddyUserId", buddyUser.getId().toString());
 					   buddyMap.put("buddyUsername", buddyUser.getUsername());
-					   String buddyAvatarImage = buddyUser.getAvatarPath();
+					   String buddyAvatarImage = buddyUser.getAvatar();
 					   if(buddyAvatarImage.isEmpty())
 					   {
 						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
 					   }
 					   else
 					   {
-						   buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_USER_URL_PATH+buddyUser.getAvatarPath());  						     
+						   Media media =mediaDAOInstance.getById(buddyAvatarImage);
+						   buddyMap.put("buddyUserAvatar", media.getUrl());						     						    
 					   }	 
 					   buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
 					   buddyListMaps.add(buddyMap);
@@ -386,7 +409,7 @@ private Datastore gloonDatastore=null;
 				   
 				   
 				   //10 recent activities							   
-				   userMap.put("userActivities", activityDAO.getActivities(user));
+				   userMap.put("userActivities", activityDAOInstance.getActivities(user));
 			   }
 			   if(mode == AppConstants.USER_PAGE)
 			   {
@@ -444,25 +467,15 @@ private Datastore gloonDatastore=null;
 	@Override
 	public HashMap<String, Object> saveOrUpdateUserInterest(String username,int type, String[] interests) {	
 		
-		HashMap<String, Object> response = new HashMap<>();
-		PlatformDAO platformDAO = PlatformDAO.instantiateDAO();
+		HashMap<String, Object> response = new HashMap<>();		
 		response.put("status", "fail");
 		User user = findByUsername(username);
 		try
 		{
+			Logger.debug("interests  "+ interests);
 			if(type == User.PLATFORM_INTEREST)
-			{
-				ArrayList<Platform> userInterestPlatforms= new ArrayList<>();
-				for(String interest: interests)
-				{
-				    	Platform platform = platformDAO.findByShortTitle(interest);				    	
-				    	if(platform!=null)
-				    	{
-				    		userInterestPlatforms.add(platform);
-				    	}
-				    					    	
-				}
-				user.setInterestedPlatforms(userInterestPlatforms);
+			{								
+				user.setInterestedPlatforms(interests);
 				response.put("status", "success");
 			}
 			else
@@ -500,6 +513,7 @@ private Datastore gloonDatastore=null;
 		HashMap<String, Object> response = new HashMap<>();
 		User user = findByUsername(username);
 		response.put("status", "fail");
+		Date time = new Date();
 		try
 		{			
 			String firstName = requestData.get("firstName");
@@ -518,6 +532,7 @@ private Datastore gloonDatastore=null;
 			user.setBirthdayVisibility(birthdayVisibility);
 			String gameBio = requestData.get("gameBio");
 			user.setGameBio(gameBio);
+			user.setUpdateTime(Utility.convertDateToString(time));
 			save(user);
 			response.put("status", "success");			
 		}
@@ -565,6 +580,7 @@ private Datastore gloonDatastore=null;
 		User user = findByUsername(username);
 		User buddy = findByUsername(buddyUsername);
 		Date time = new Date();
+		HashMap<String, String> activityMap = new HashMap<>();
 		try
 		{
 			if(user!= null && buddy!=null)
@@ -608,7 +624,13 @@ private Datastore gloonDatastore=null;
 					save(user);
 					
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_USER_FOLLOWS, user.getUsername(), buddy.getId().toString(), AppConstants.PUBLIC, Utility.convertDateToString(time), time.getTime());
+					
+					activityMap.put("id", "");
+		         	activityMap.put("username", user.getUsername());
+		         	activityMap.put("entityId", buddy.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_USER_FOLLOWS);
+		         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
+		         	activityDAOInstance.createOrUpdateActivity(activityMap);					
 					response.put("status", "success");
 				}
 				else
@@ -640,8 +662,13 @@ private Datastore gloonDatastore=null;
 					buddyUserFollowedBy.remove(originalUser);
 					buddy.setFollowedBy(buddyUserFollowedBy);
 					save(user);
-					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_USER_UNFOLLOWS, user.getUsername(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
+					save(buddy);					
+					activityMap.put("id", "");
+		         	activityMap.put("username", user.getUsername());
+		         	activityMap.put("entityId", buddy.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_USER_UNFOLLOWS);
+		         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+		         	activityDAOInstance.createOrUpdateActivity(activityMap);					
 					response.put("status", "success");
 					
 				}					
@@ -769,8 +796,8 @@ private Datastore gloonDatastore=null;
 		HashMap<String, String> response = new HashMap<>();		
 		response.put("status", "fail");
 		User user = findByUsername(username);
-		User buddy = findByUsername(buddyUsername);					
-		Date time = new Date();
+		User buddy = findByUsername(buddyUsername);							
+		HashMap<String, String> activityMap = new HashMap<>();
 		try
 		{
 			if(user!= null && buddy!=null)
@@ -830,7 +857,12 @@ private Datastore gloonDatastore=null;
 					}
 					save(user);
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_BLOCK, user.getUsername(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
+					activityMap.put("id", "");
+		         	activityMap.put("username", user.getUsername());
+		         	activityMap.put("entityId", buddy.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_BLOCK);
+		         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+		         	activityDAOInstance.createOrUpdateActivity(activityMap);					
 					response.put("status", "success");
 				}
 				else //unblock user
@@ -862,7 +894,12 @@ private Datastore gloonDatastore=null;
 					}
 					save(user);
 					save(buddy);
-					activityDAOInstance.create(Activity.ACTIVITY_UNBLOCK, user.getUsername(), buddy.getId().toString(), AppConstants.PRIVATE, Utility.convertDateToString(time),time.getTime());
+					activityMap.put("id", "");
+		         	activityMap.put("username", user.getUsername());
+		         	activityMap.put("entityId", buddy.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_UNBLOCK);
+		         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+		         	activityDAOInstance.createOrUpdateActivity(activityMap);					
 					response.put("status", "success");
 				
 				} 
@@ -890,6 +927,7 @@ private Datastore gloonDatastore=null;
 		User user =findByUsername(username);
 		Game game = gloonDatastore.get(Game.class, new ObjectId(gameId));
 		Date time = new Date();
+		HashMap<String, String> activityMap = new HashMap<>();
 		if(user!=null || game!=null) //add game and user in their respective lists
 		{
 			InterestedGame interestedGame=null;
@@ -923,7 +961,12 @@ private Datastore gloonDatastore=null;
 				
 				save(user);
 				gloonDatastore.save(game);
-				activityDAOInstance.create(Activity.ACTIVITY_FOLLOW_GAME, user.getUsername(), gameId, AppConstants.PUBLIC, Utility.convertDateToString(time), time.getTime());
+				activityMap.put("id", "");
+	         	activityMap.put("username", user.getUsername());
+	         	activityMap.put("entityId", gameId);
+	         	activityMap.put("type", ""+Activity.ACTIVITY_FOLLOW_GAME);
+	         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
+	         	activityDAOInstance.createOrUpdateActivity(activityMap);				
 				response.put("status", "success");
 				
 			}
@@ -955,7 +998,12 @@ private Datastore gloonDatastore=null;
 				game.setInterestedIn(interestedUsers);
 				save(user);
 				gloonDatastore.save(game);
-				activityDAOInstance.create(Activity.ACTIVITY_UNFOLLOW_GAME, user.getUsername(),gameId, AppConstants.PRIVATE, Utility.convertDateToString(time), time.getTime());
+				activityMap.put("id", "");
+	         	activityMap.put("username", user.getUsername());
+	         	activityMap.put("entityId", gameId);
+	         	activityMap.put("type", ""+Activity.ACTIVITY_UNFOLLOW_GAME);
+	         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+	         	activityDAOInstance.createOrUpdateActivity(activityMap);				
 				response.put("status", "success");
 			}
 			
@@ -968,17 +1016,23 @@ private Datastore gloonDatastore=null;
 	}
 	
 	@Override
-	public HashMap<String, String> saveOrUpdateUserAvatar(String username,FilePart avatarPart) {
+	public HashMap<String, String> saveOrUpdateUserAvatar(String mediaId, String username,FilePart avatarPart) {
 		
 		HashMap<String, String> response = new HashMap<>();
-		response= mediaDAOInstance.uploadImage(username, avatarPart);
+		response= mediaDAOInstance.createOrUpdateMedia(mediaId,avatarPart,username, Media.USER);
 		if(response.get("status").equalsIgnoreCase("success"))
-		{
-			String fileName = avatarPart.getFilename();
-			User user = findByUsername(username);
-			String avatarRelativePath ="/"+username+"/uploads/"+fileName; 
-			user.setAvatarPath(avatarRelativePath);
-			response.put("avatarPath", AppConstants.APP_IMAGE_USER_URL_PATH+avatarRelativePath);
+		{			
+			User user = findByUsername(username);		
+			String fetchedMediaId=response.get("mediaId");
+			user.setAvatar(response.get("mediaId"));
+			Media media =mediaDAOInstance.getById(fetchedMediaId);
+			try {
+				response.put("avatarPath", media.getUrl());
+				response.put("avatarId", media.getId().toString());
+			} catch (MalformedURLException e) {
+				response.put("avatarPath", "");
+				Logger.error("Url is malformed "+e.fillInStackTrace());				
+			}
 			save(user);
 		}
 		
@@ -1008,9 +1062,22 @@ private Datastore gloonDatastore=null;
 	private Boolean registerTheUser(String username, String password, String email,String firstName, String lastName)
 	{
 		Boolean response=false;
+		Date time = new Date();
 		try
 		{
 			User newUser = new User();
+			Achievement achievement = achievementDAOInstance.findByTitle("New Gloonie!");
+			Logger.debug("Achievement "+achievement);
+			if(achievement==null)
+			{
+				throw new RuntimeException("Achievement is null");
+			}
+			else
+			{
+				ArrayList<Achievement> achievements = new ArrayList<>();
+				achievements.add(achievement);
+				newUser.setAchievements(achievements);
+			}
 			newUser.setUsername(username);
 			HashMap<String, String> securePasswordMap = SecurePassword.createHash(password);
 			newUser.setPasswordHash(securePasswordMap.get("hashHex"));
@@ -1026,27 +1093,28 @@ private Datastore gloonDatastore=null;
 			newUser.setGameBio("I love gaming.");
 			newUser.setCountry("India");
 			newUser.setBirthdayVisibility(User.PUBLIC);
-			newUser.setAvatarPath(""); 			
-			
-			Achievement achievement = achievementDAOInstance.findByTitle("New Gloonie!");
-			Logger.debug("Achievement "+achievement);
-			ArrayList<Achievement> achievements = new ArrayList<>();
-			achievements.add(achievement);
-			newUser.setAchievements(achievements);
+			newUser.setAvatar(""); 			
 			newUser.setArticlePublishRate(0.0);			
 			newUser.setFollowedBy(new ArrayList<Buddy>());
 			newUser.setFollowing(new ArrayList<Buddy>());
 			newUser.setFollowingGames(new ArrayList<InterestedGame>());
 			newUser.setInterestedGenres(new ArrayList<Genre>());
-			newUser.setInterestedPlatforms(new ArrayList<Platform>());
+			String[] interestedPlatforms={};
+			newUser.setInterestedPlatforms(interestedPlatforms);
 			newUser.setTotalScore(0.0);
 			newUser.setUserArticleScore(0.0);
 			newUser.setUserFollowScore(0.0);
 			newUser.setUserTotalCoolScore(0.0);
-			save(newUser);					
-			String uptoUsername =AppConstants.APP_ABSOLUTE_IMAGE_USER_PATH+username+"\\uploads\\";
-			File makeUsernameDir = new File(uptoUsername);
-			makeUsernameDir.mkdirs();
+			newUser.setInsertTime(Utility.convertDateToString(time));
+			newUser.setTimestamp(time.getTime());
+			save(newUser);								
+			HashMap<String, String> activityMap = new HashMap<>();
+			activityMap.put("id", "");
+         	activityMap.put("username", newUser.getUsername());
+         	activityMap.put("entityId", achievement.getId().toString());
+         	activityMap.put("type", ""+Activity.ACTIVITY_NEW_ACHIEVMENT);
+         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+         	activityDAOInstance.createOrUpdateActivity(activityMap);			
 			response=true;
 		}
 		catch(Exception ex)

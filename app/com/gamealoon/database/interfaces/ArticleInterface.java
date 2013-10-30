@@ -1,5 +1,6 @@
 package com.gamealoon.database.interfaces;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,7 @@ public interface ArticleInterface {
 	 * @param type
 	 * @return
 	 */
-	public HashMap<String, Object> getAllArticlesForCarousel(String platform);
+	public HashMap<String, Object> getAllArticlesForCarousel(String platform) throws MalformedURLException;
 	
 	/**
 	 * Fetch all Articles for User page carousel. This is different because we will be marking one category as featured based on last updated.
@@ -41,7 +42,7 @@ public interface ArticleInterface {
 	 * @param username
 	 * @return
 	 */
-	public HashMap<String, Object> getAllArticlesForUserCarousel(String username);
+	public HashMap<String, Object> getAllArticlesForUserCarousel(String username) throws MalformedURLException;
 
 	/**
 	 * Fetch all Articles for Game page carousel. 
@@ -49,7 +50,7 @@ public interface ArticleInterface {
 	 * @param gameId
 	 * @return
 	 */
-	public HashMap<String, Object> getAllArticlesForGameCarousel(String gameId);
+	public HashMap<String, Object> getAllArticlesForGameCarousel(String gameId) throws MalformedURLException;
 	
 	/**
 	 * Fetch Single Article
@@ -59,7 +60,7 @@ public interface ArticleInterface {
 	 * @return
 	 */
 		
-	public HashMap<String, Object> getArticle(String userName, String titleOrId);	
+	public HashMap<String, Object> getArticle(String userName, String titleOrId) throws MalformedURLException;	
 	
 	/**
 	 * Fetch all Articles by carousel selector that is platform, game or user and category. Timestamp to fetch data in batch for pagination. 
@@ -69,7 +70,7 @@ public interface ArticleInterface {
 	 * @return
 	 */
 	
-	public List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategory(String categorySelector, String category, Long timestamp, Integer mode);
+	public List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategory(String categorySelector, String category, Long timestamp, Integer mode) throws MalformedURLException;
 	
 	
 	
@@ -80,7 +81,7 @@ public interface ArticleInterface {
 	 * 
 	 * @return
 	 */
-	public HashMap<String, Object> saveOrUpdateArticle(DynamicForm requestData);
+	public HashMap<String, Object> createOrUpdateArticle(DynamicForm requestData);
 	
 	
 	/**

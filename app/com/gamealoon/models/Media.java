@@ -1,7 +1,11 @@
 package com.gamealoon.models;
+import java.io.File;
+import java.net.MalformedURLException;
+
 import org.bson.types.ObjectId;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Transient;
 
 /**
  * Media domain keeps track of image and video uploaded in this system
@@ -13,45 +17,35 @@ import com.google.code.morphia.annotations.Id;
 public class Media {
 
 	@Id
-	private ObjectId id;
-	private String mediaTitle;
-	private String fileName;
-	private String relativeFilePath;
-	private String parentId;
+	private ObjectId id;	
+	private String fileName;		
+	private String url;
 	private int mediaType;
 	private String insertTime;
 	private String updateTime;
-	private Long timestamp;
+	private Long timestamp;	
+	private String owner;  //parent owner group
+	private String immediateOwner; //particular game or user
 	
-	public static int IMAGE=1;
-	public static int VIDEO=2;
+	@Transient
+	private File file;
+	
+	public final static int IMAGE=1;
+	public final static int VIDEO=2;
+	public final static String BASE_AWS_URL="https://s3.amazonaws.com/";
+	
+	/**
+	 * Media Owner Type
+	 * 
+	 */
+	public final static String USER="user";
+	public final static String GAME="game";
 
 	/**
 	 * @return the id
 	 */
 	public ObjectId getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the mediaTitle
-	 */
-	public String getMediaTitle() {
-		return mediaTitle;
-	}
-
-	/**
-	 * @param mediaTitle the mediaTitle to set
-	 */
-	public void setMediaTitle(String mediaTitle) {
-		this.mediaTitle = mediaTitle;
+		return id; 
 	}
 
 	/**
@@ -97,20 +91,6 @@ public class Media {
 	}
 
 	/**
-	 * @return the parentId
-	 */
-	public String getParentId() {
-		return parentId;
-	}
-
-	/**
-	 * @param parentId the parentId to set
-	 */
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
-
-	/**
 	 * @return the fileName
 	 */
 	public String getFileName() {
@@ -125,20 +105,6 @@ public class Media {
 	}
 
 	/**
-	 * @return the relativeFilePath
-	 */
-	public String getRelativeFilePath() {
-		return relativeFilePath;
-	}
-
-	/**
-	 * @param relativeFilePath the relativeFilePath to set
-	 */
-	public void setRelativeFilePath(String relativeFilePath) {
-		this.relativeFilePath = relativeFilePath;
-	}
-
-	/**
 	 * @return the updateTime
 	 */
 	public String getUpdateTime() {
@@ -150,5 +116,61 @@ public class Media {
 	 */
 	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	/**
+	 * @return the url
+	 */
+	public String getUrl() throws MalformedURLException {
+		return url;
+	}
+
+	/**
+	 * @param url the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the file
+	 */
+	public File getFile() {
+		return file;
+	}
+
+	/**
+	 * @param file the file to set
+	 */
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	/**
+	 * @return the owner
+	 */
+	public String getOwner() {
+		return owner;
+	}
+
+	/**
+	 * @param owner the owner to set
+	 */
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	/**
+	 * @return the immediateOwner
+	 */
+	public String getImmediateOwner() {
+		return immediateOwner;
+	}
+
+	/**
+	 * @param immediateOwner the immediateOwner to set
+	 */
+	public void setImmediateOwner(String immediateOwner) {
+		this.immediateOwner = immediateOwner;
 	}
 }
