@@ -1,5 +1,6 @@
 package com.gamealoon.database.interfaces;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,7 @@ public interface MediaInterface {
 	 * @param mediaId
 	 * @param parentId
 	 */
-	public void createOrUpdateMedia(String mediaId, HashMap<String, String> mediaMap, String parentId);	
+	public HashMap<String, String> createOrUpdateMedia(String mediaId, FilePart filePart, String username, String mediaOwnerType);	
 	
 	/**
 	 * Upload image in uploads folder of user
@@ -48,7 +49,7 @@ public interface MediaInterface {
 	 * @param imagePart
 	 * @return
 	 */
-	public HashMap<String, String> uploadImage(String userName, FilePart imagePart);
+	public HashMap<String, String> uploadMedia(Media media);
 	
 	/**
 	 * Fetch images from uploads folder of a particular user
@@ -56,5 +57,5 @@ public interface MediaInterface {
 	 * @param userName
 	 * @return
 	 */
-	public HashMap<String, ArrayList<HashMap<String,String>>> fetchImageForBrowser(String userName,Long timeStamp);
+	public HashMap<String, ArrayList<HashMap<String,String>>> fetchImageForBrowser(String userName,Long timeStamp) throws MalformedURLException;
 }

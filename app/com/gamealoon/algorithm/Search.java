@@ -166,7 +166,7 @@ public class Search {
 		while(startIndex!=-1)
 		{
 			int hrefIndex= page.indexOf("href=\"", startIndex);			
-			int endIndex=page.indexOf('"',hrefIndex+6);
+			int endIndex=page.indexOf("\"",hrefIndex+6);
 			String link =page.substring(hrefIndex+6, endIndex);			
 			links.add(link);
 			startIndex=page.indexOf("<a", endIndex);			

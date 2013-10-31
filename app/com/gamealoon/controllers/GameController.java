@@ -1,7 +1,9 @@
 package com.gamealoon.controllers;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.gamealoon.database.daos.GameDAO;
 
@@ -19,14 +21,27 @@ public class GameController extends Controller{
 		return ok(toJson(gameMap));
 	}
 	
-	public static Result getGames(String term)
+	public static Result getGamesByTerm(String term)
 	{		
 		ArrayList<HashMap<String, Object>> gameMaps = getGameMaps(term);
 		return ok(toJson(gameMaps));
 	}
 	
+	public static Result getAllGames()
+	{
+		List<HashMap<String, Object>> gameMaps=getAllRecentPlatformGames("all");
+		return ok(toJson(gameMaps));
+	}
+	
 	private static ArrayList<HashMap<String, Object>> getGameMaps(String term) {		
-		return gameDaoInstance.findAllByTerm(term);
+		ArrayList<HashMap<String, Object>> response = new ArrayList<>();
+		try {
+			response=gameDaoInstance.findAllByTerm(term);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**
@@ -36,7 +51,30 @@ public class GameController extends Controller{
 	 * @return
 	 */
 	private static HashMap<String, Object> getGameMap(String urlOrid, String username) {		 
-		return gameDaoInstance.findById(urlOrid, username);
+		HashMap<String, Object> response = new HashMap<>();
+		try {
+			response = gameDaoInstance.getById(urlOrid, username);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	/**
+	 * This method returns all top/trending 5 games
+	 * 
+	 * @return
+	 */
+	private static List<HashMap<String, Object>> getAllRecentPlatformGames(String platform) {
+		List <HashMap<String, Object>> response = new ArrayList<>();
+		try {
+			response=gameDaoInstance.getRecentNGames(0, platform);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.gamealoon.controllers;
 
 import static play.data.Form.form;
 
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,8 +66,14 @@ public class ConversationController extends Controller{
 		return ok(toJson(commentMap));
 	}
 	private static HashMap<String, Object> getCommentMap(String articleId, String timeStamp) throws NumberFormatException, ParseException {
-		
-		return conversationDaoInstance.getCommentByTimestamp(articleId, Long.parseLong(timeStamp));
+		HashMap<String, Object> response = new HashMap<>();
+		try {
+			response= conversationDaoInstance.getCommentByTimestamp(articleId, Long.parseLong(timeStamp));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**

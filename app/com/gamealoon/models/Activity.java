@@ -22,6 +22,7 @@ public class Activity {
 	private String entityId;
 	private Integer visibility;
 	private String insertTime;
+	private String updateTime;
 	private Long timestamp;
 	/**
 	 * Activity Types
@@ -41,6 +42,13 @@ public class Activity {
 	public final static int ACTIVITY_UNFOLLOW_GAME=12;
 	public final static int ACTIVITY_PUBLISH_FOR_GAME=13;
 	public final static int ACTIVITY_POST_NOT_COOL=14;
+	
+	
+	/**
+	 * Visibility
+	 */
+	public final static int PUBLIC=1;
+	public final static int PRIVATE=2;
 
 	/**
 	 * Returns Activity instance Id
@@ -147,6 +155,20 @@ public class Activity {
 	 */
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	/**
+	 * @return the updateTime
+	 */
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}
 
 }

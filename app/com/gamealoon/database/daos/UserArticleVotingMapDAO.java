@@ -1,9 +1,8 @@
 package com.gamealoon.database.daos;
 
-import java.util.Date;
 
+import java.util.HashMap;
 import play.Logger;
-
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.UserArticleVotingMapInterface;
@@ -11,8 +10,6 @@ import com.gamealoon.models.Activity;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.User;
 import com.gamealoon.models.UserArticleVotingMap;
-import com.gamealoon.utility.AppConstants;
-import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 import com.mongodb.Mongo;
 
@@ -45,33 +42,44 @@ public class UserArticleVotingMapDAO extends GloonDAO implements UserArticleVoti
 	@Override
 	public UserArticleVotingMap createOrUpdateUserArticleVotingMapInstance(User viewer, Article article, Integer type) {
 		Mongo instance = getDatabaseInstance().getMongoInstance();
-		User author = userDaoInstance.findByUsername(article.getAuthor());
-		Date time = new Date();
+		User author = userDaoInstance.findByUsername(article.getAuthor());		
 		UserArticleVotingMap articleVotingMap=null;		
 		try
 		{
 			articleVotingMap = gloonDatastore.createQuery(UserArticleVotingMap.class).filter("username", viewer.getUsername()).filter("articleId", article.getId().toString()).get();			
 			Double coolScore = article.getCoolScore();
 			Double notCoolScore = article.getNotCoolScore();
+			HashMap<String, String> activityMap = new HashMap<>();
 			if(articleVotingMap==null)			
 			{
 				articleVotingMap = new UserArticleVotingMap();
 				articleVotingMap.setArticleId(article.getId().toString());
 				articleVotingMap.setUsername(viewer.getUsername());
+				
 				if(Article.COOL == type)
 				{
 					articleVotingMap.setCool(UserArticleVotingMap.SET);
 					article.setCoolScore(++coolScore);
 					author.setUserTotalCoolScore(RankAlgorithm.calculateUserTotalCoolScore(author.getUsername(), instance));
-					articleVotingMap.setNotCool(UserArticleVotingMap.UNSET);
-					activityDaoInstance.create(Activity.ACTIVITY_POST_COOL, viewer.getUsername(), article.getId().toString(), AppConstants.PUBLIC,Utility.convertDateToString(time), time.getTime());
+					articleVotingMap.setNotCool(UserArticleVotingMap.UNSET);					
+		         	activityMap.put("id", "");
+		         	activityMap.put("username", viewer.getUsername());
+		         	activityMap.put("entityId", article.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_POST_COOL);
+		         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
+		         	activityDaoInstance.createOrUpdateActivity(activityMap);					
 				}
 				else if(Article.NOTCOOL == type)
 				{
 					articleVotingMap.setNotCool(UserArticleVotingMap.SET);
 					article.setNotCoolScore(++notCoolScore);
 					articleVotingMap.setCool(UserArticleVotingMap.UNSET);
-					activityDaoInstance.create(Activity.ACTIVITY_POST_NOT_COOL, viewer.getUsername(), article.getId().toString(), AppConstants.PRIVATE,Utility.convertDateToString(time), time.getTime());
+		         	activityMap.put("id", "");
+		         	activityMap.put("username", viewer.getUsername());
+		         	activityMap.put("entityId", article.getId().toString());
+		         	activityMap.put("type", ""+Activity.ACTIVITY_POST_NOT_COOL);
+		         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+		         	activityDaoInstance.createOrUpdateActivity(activityMap);					
 				}
 				gloonDatastore.save(article);				
 				gloonDatastore.save(author);
@@ -101,8 +109,13 @@ public class UserArticleVotingMapDAO extends GloonDAO implements UserArticleVoti
 								gloonDatastore.save(article);
 								author.setUserTotalCoolScore(RankAlgorithm.calculateUserTotalCoolScore(author.getUsername(), instance));								
 								gloonDatastore.save(author);
-								save(articleVotingMap);			
-								activityDaoInstance.create(Activity.ACTIVITY_POST_COOL, viewer.getUsername(), article.getId().toString(), AppConstants.PUBLIC,Utility.convertDateToString(time), time.getTime());
+								save(articleVotingMap);		
+								activityMap.put("id", "");
+					         	activityMap.put("username", viewer.getUsername());
+					         	activityMap.put("entityId", article.getId().toString());
+					         	activityMap.put("type", ""+Activity.ACTIVITY_POST_COOL);
+					         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
+					         	activityDaoInstance.createOrUpdateActivity(activityMap);								
 							}	
 					
 					
@@ -128,7 +141,12 @@ public class UserArticleVotingMapDAO extends GloonDAO implements UserArticleVoti
 								}
 								gloonDatastore.save(article);
 								save(articleVotingMap);			
-								activityDaoInstance.create(Activity.ACTIVITY_POST_NOT_COOL, viewer.getUsername(), article.getId().toString(), AppConstants.PRIVATE,Utility.convertDateToString(time), time.getTime());
+								activityMap.put("id", "");
+					         	activityMap.put("username", viewer.getUsername());
+					         	activityMap.put("entityId", article.getId().toString());
+					         	activityMap.put("type", ""+Activity.ACTIVITY_POST_NOT_COOL);
+					         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
+					         	activityDaoInstance.createOrUpdateActivity(activityMap);								
 							}
 					
 				}

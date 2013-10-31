@@ -1,5 +1,7 @@
 package com.gamealoon.controllers;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +34,22 @@ public class PlatformController extends Controller {
 		HashMap<String, Object> carouselArticleMaps = getAllArticlesForPlatformCarousel(platform);		
 		List<HashMap<String, Object>> top5Games = getTop5PlatformGames(platform);
 		List<HashMap<String, Object>> recent5Games = getRecent5PlatformGames(platform);
-		List<HashMap<String, Object>> top5Users = getTop5Users();
+		List<HashMap<String, Object>> top5Users= new ArrayList<>();
+		try {
+			top5Users = getTop5Users();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		HashMap<String, Object> platformDataMap = new HashMap<>();
 		platformDataMap.put("carouselArticles", carouselArticleMaps);
-		platformDataMap.put("recentNArticles", getRecentNPlatformArticles(platform,category));
+		try {
+			platformDataMap.put("recentNArticles", getRecentNPlatformArticles(platform,category));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		platformDataMap.put("top5Games", top5Games);
 		platformDataMap.put("recent5Games", recent5Games);
 		platformDataMap.put("top5Users", top5Users);
@@ -51,9 +64,17 @@ public class PlatformController extends Controller {
 	 * 
 	 * @return
 	 */
-	private static HashMap<String, Object> getAllArticlesForPlatformCarousel(String platform) {
+	private static HashMap<String, Object> getAllArticlesForPlatformCarousel(String platform) 
+	{
+		HashMap<String, Object> response = new HashMap<>();
 
-		return articleDaoInstance.getAllArticlesForCarousel(platform);
+		try {
+			response= articleDaoInstance.getAllArticlesForCarousel(platform);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**
@@ -62,7 +83,14 @@ public class PlatformController extends Controller {
 	 * @return
 	 */
 	private static List<HashMap<String, Object>> getTop5PlatformGames(String platform) {
-		return gameDaoInstance.getTopNGames(5, platform);
+		List <HashMap<String, Object>> response = new ArrayList<>();
+		try {
+			response=gameDaoInstance.getTopNGames(5, platform);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 	/**
@@ -71,15 +99,23 @@ public class PlatformController extends Controller {
 	 * @return
 	 */
 	private static List<HashMap<String, Object>> getRecent5PlatformGames(String platform) {
-		return gameDaoInstance.getRecentNGames(5, platform);
+		List <HashMap<String, Object>> response = new ArrayList<>();
+		try {
+			response=gameDaoInstance.getRecentNGames(5, platform);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**
 	 * This method returns all recent 10 articles in all categories
 	 * 
 	 * @return
+	 * @throws MalformedURLException 
 	 */
-	private static List<HashMap<String, Object>> getRecentNPlatformArticles(String platform, String category) {
+	private static List<HashMap<String, Object>> getRecentNPlatformArticles(String platform, String category) throws MalformedURLException {
 		return articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, new Date().getTime(), Article.PLATFORM);
 	}
 
@@ -87,8 +123,9 @@ public class PlatformController extends Controller {
 	 * This method returns top 5 users
 	 * 
 	 * @return
+	 * @throws MalformedURLException 
 	 */
-	private static List<HashMap<String, Object>> getTop5Users() {
+	private static List<HashMap<String, Object>> getTop5Users() throws MalformedURLException {
 		return userDaoInstance.getTopNUsers(5);
 	}
 }

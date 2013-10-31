@@ -1,5 +1,6 @@
 package com.gamealoon.database.interfaces;
 
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public interface ConversationInterface {
 	 * @param articleId
 	 * @return
 	 */	
-	public ArrayList<HashMap<String, Object>> getComments(String articleId) throws ParseException;
+	public ArrayList<HashMap<String, Object>> getComments(String articleId) throws ParseException, MalformedURLException;
 	
 	/**
 	 * Get latest comment based on conversationId
@@ -70,7 +71,7 @@ public interface ConversationInterface {
 	 * @return
 	 */
 	
-	public HashMap<String, Object> getComment(String conversationId) throws ParseException;
+	public HashMap<String, Object> getComment(String conversationId) throws ParseException, MalformedURLException;
 	
 	/**
 	 * Get comment by latest timestamp and articleId.
@@ -78,7 +79,7 @@ public interface ConversationInterface {
 	 * @param timeStamp
 	 * @return
 	 */
-	public HashMap<String, Object> getCommentByTimestamp(String articleId, Long timeStamp)throws ParseException;
+	public HashMap<String, Object> getCommentByTimestamp(String articleId, Long timeStamp) throws ParseException, MalformedURLException;
 	
 	
 }

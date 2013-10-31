@@ -1,12 +1,10 @@
 package com.gamealoon.models;
 
 
-
 import java.util.ArrayList;
-import org.bson.types.ObjectId;
 
+import org.bson.types.ObjectId;
 import com.gamealoon.database.daos.ArticleDAO;
-import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 
@@ -45,7 +43,7 @@ public class Article {
 	private double pageHitCount; 	
 	private double commentScore;
 	private double totalScore; //final article score
-	private String featuredImagePath;
+	private String featuredImage;
 	private int state; //1: draft, 2:publish
 	private String author;
 	private String game;
@@ -69,9 +67,8 @@ public class Article {
 	 */
 	public static final Integer COOL=0;
 	public static final Integer NOTCOOL=1;
-	
-	@Embedded
-	private ArrayList<Platform> platforms = new ArrayList<>();
+		
+	private String[] platforms = {};
 	private Category category;	
 	
 	public ObjectId getId()
@@ -229,30 +226,30 @@ public class Article {
 	}
 
 	/**
-	 * @return the featuredImagePath
+	 * @return the featuredImage
 	 */
-	public String getFeaturedImagePath() {
-		return featuredImagePath;
+	public String getFeaturedImage() {
+		return featuredImage;
 	}
 
 	/**
-	 * @param featuredImagePath the featuredImagePath to set
+	 * @param featuredImage the featuredImage to set
 	 */
-	public void setFeaturedImagePath(String featuredImagePath) {
-		this.featuredImagePath = featuredImagePath;
+	public void setFeaturedImage(String featuredImage) {
+		this.featuredImage = featuredImage;
 	}
 
 	/**
 	 * @return the platforms
 	 */
-	public ArrayList<Platform> getPlatforms() {
+	public String[] getPlatforms() {
 		return platforms;
 	}
 
 	/**
 	 * @param platforms the platforms to set
 	 */
-	public void setPlatforms(ArrayList<Platform> platforms) {
+	public void setPlatforms(String[] platforms) {
 		this.platforms = platforms;
 	}
 
@@ -339,31 +336,6 @@ public class Article {
 	public void setState(int state) {
 		this.state = state;
 	}
-	
-	/**
-	 * Get all publishedArticles
-	 * 
-	 * @return
-	 */
-	public static Long allPublishedArticleCount()
-	{		
-		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
-		return articleDAO.allPublishedArticlesCount(null);
-		
-	}
-	
-	/**
-	 * Get all publishedArticles for Single User
-	 * 
-	 * @return
-	 */
-	public static Long allPublishedArticleCount(User user)
-	{
-		
-		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
-		return articleDAO.allPublishedArticlesCount(user);
-		
-	}
 
 	/**
 	 * @return the article publish timestamp
@@ -407,7 +379,52 @@ public class Article {
 		this.averageTimeSpent = averageTimeSpent;
 	}
 
-	
+	  /**
+     * Get all publishedArticles
+     * 
+     * @return
+     */
+    public static Long allPublishedArticleCount()
+    {               
+            ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
+            return articleDAO.allPublishedArticlesCount(null);
+            
+    }
+    
+    /**
+     * Get all publishedArticles for Single User
+     * 
+     * @return
+     */
+    public static Long allPublishedArticleCount(User user)
+    {
+            
+            ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
+            return articleDAO.allPublishedArticlesCount(user);
+            
+    }
+    
+    /**
+     * Fetch Media Is From Body
+     * 
+     * @param body
+     * @return
+     */
+    public static ArrayList<String> fetchMediaIdsFromBody(String body)
+    {
+    	ArrayList<String> mediaIds= new ArrayList<>();
+    	int startIndex=body.indexOf("<img");
+    	while(startIndex!=-1)
+    	{
+    		int mediaIdIndex=body.indexOf("id=\"", startIndex);
+    		int endIndex=body.indexOf("\"", mediaIdIndex+4);
+    		String mediaId = body.substring(mediaIdIndex+4, endIndex);
+    		mediaIds.add(mediaId);
+    		startIndex=body.indexOf("<img",endIndex);
+    	}
+    	return mediaIds;
+    	
+    }
 
 
 

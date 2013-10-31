@@ -19,31 +19,33 @@ POST /article/updateAverageTimeSpent								 com.gamealoon.controllers.ArticleCo
 
 # Users
 
-POST /user/register 			   			 com.gamealoon.controllers.UserController.registerUser()
-POST /login     							 com.gamealoon.controllers.UserController.getLoggedInUser()  
-GET /user/:usernameOrId/:mode/:username      com.gamealoon.controllers.UserController.getUser(usernameOrId:String, mode:Integer, username:String)   
-POST /user/interest/:userName                com.gamealoon.controllers.UserController.saveOrUpdateUserInterest(userName:String)
-POST /user/save/:userName                    com.gamealoon.controllers.UserController.saveOrUpdateUser(userName:String)
-POST /user/password/change/:userName		 com.gamealoon.controllers.UserController.resetPassword(userName:String)
-POST /user/addOrRemoveBuddy                  com.gamealoon.controllers.UserController.addOrRemoveBuddy()
-POST /user/blockOrUnblockBuddy               com.gamealoon.controllers.UserController.blockOrUnblockBuddy()
-POST /user/interestedOrNotInGame			 com.gamealoon.controllers.UserController.addOrRemoveInterestedGames()
-POST /user/saveOrUpdateUserAvatar/:userName  com.gamealoon.controllers.UserController.saveOrUpdateUserAvatar(userName:String)
-GET /user/validateEmail/:email				 com.gamealoon.controllers.UserController.validateEmail(email:String)	
-GET /user/validateUsername/:username         com.gamealoon.controllers.UserController.validateUsername(username:String)  
+POST /user/register 			   			 							com.gamealoon.controllers.UserController.registerUser()
+POST /login     							 							com.gamealoon.controllers.UserController.getLoggedInUser()  
+GET /user/:usernameOrId/:mode/:username      							com.gamealoon.controllers.UserController.getUser(usernameOrId:String, mode:Integer, username:String)   
+POST /user/interest/:userName                							com.gamealoon.controllers.UserController.saveOrUpdateUserInterest(userName:String)
+POST /user/save/:userName                    							com.gamealoon.controllers.UserController.saveOrUpdateUser(userName:String)
+POST /user/password/change/:userName		 							com.gamealoon.controllers.UserController.resetPassword(userName:String)
+POST /user/addOrRemoveBuddy                  							com.gamealoon.controllers.UserController.addOrRemoveBuddy()
+POST /user/blockOrUnblockBuddy               							com.gamealoon.controllers.UserController.blockOrUnblockBuddy()
+POST /user/interestedOrNotInGame			 							com.gamealoon.controllers.UserController.addOrRemoveInterestedGames()
+POST /user/saveOrUpdateUserAvatar/:userName/:mediaId		            com.gamealoon.controllers.UserController.saveOrUpdateUserAvatar(userName:String, mediaId:String)
+GET /user/validateEmail/:email				 							com.gamealoon.controllers.UserController.validateEmail(email:String)	
+GET /user/validateUsername/:username         							com.gamealoon.controllers.UserController.validateUsername(username:String)  
+GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
 
 # Media								
-#OPTIONS /media/uploadImage/:userName		com.gamealoon.controllers.MediaController.checkStatus(userName:String)			
-POST /media/uploadImage/:userName           com.gamealoon.controllers.MediaController.uploadImage(userName:String)
-GET /media/images/:userName/:timeStamp      com.gamealoon.controllers.MediaController.fetchImages(userName:String, timeStamp:String)
+#OPTIONS /media/uploadImage/:userName								 com.gamealoon.controllers.MediaController.checkStatus(userName:String)			
+POST /media/uploadImage/:userName/:mediaId/:mediaOwnerType           com.gamealoon.controllers.MediaController.uploadImage(userName:String, mediaId:String, mediaOwnerType:String)
+GET /media/images/:userName/:timeStamp      						 com.gamealoon.controllers.MediaController.fetchImages(userName:String, timeStamp:String)
 
 # Search
 
 GET /search/:keywords             			com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
 
 # Game		
-GET /game/fetchGame/games/:term                             com.gamealoon.controllers.GameController.getGames(term:String) 
+GET /game/fetchGame/games/:term                             com.gamealoon.controllers.GameController.getGamesByTerm(term:String) 
 GET /game/:urlOrid/:username				com.gamealoon.controllers.GameController.getGame(urlOrid:String, username:String)
+GET /games                                   com.gamealoon.controllers.GameController.getAllGames() 
 
 
 # Conversation

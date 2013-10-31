@@ -75,13 +75,25 @@ public class Utility {
 	}
 	
 	/**
+	 * Covert String into date into yyyy-MM-dd format
+	 * 
+	 * @param dateText
+	 * @return
+	 * @throws ParseException
+	 */
+	public static Date convertFromStringToDateFormat2(String dateText) throws ParseException
+	{
+		return new SimpleDateFormat("yyyy-MM-dd").parse(dateText);
+	}
+	
+	/**
 	 * Convert from yyyy-MM-dd HH:mm:ss to dd M, yyyy
 	 * 
 	 * @param dateText
 	 * @return
 	 * @throws ParseException 
 	 */
-	public static String covertFromOneFormatToAnother(String dateText) throws ParseException
+	public static String convertFromOneFormatToAnother(String dateText) throws ParseException
 	{
 		Date fromFormat = convertFromStringToDate(dateText);
 		String response = new SimpleDateFormat("dd MMMMM,yyyy h:mm a").format(fromFormat);
@@ -124,6 +136,14 @@ public class Utility {
 		return response;
 	}
 	
+	/**
+	 * Shorten the string by removing all special characters and whitespaces and converting to text into lower case
+	 * 
+	 * E.g Grand Theft Auto V = grandtheftautov
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static String shortenString(String text)
 	{
 		String response ="";
@@ -249,6 +269,11 @@ public class Utility {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	public static Boolean date1BeforeDate2(Date date1, Date date2)
+	{
+		return date1.compareTo(date2)<=0;
 	}
 	
 	/**

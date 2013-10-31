@@ -3,6 +3,7 @@ package com.gamealoon.database.daos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +19,6 @@ import com.gamealoon.models.Buddy;
 import com.gamealoon.models.Conversation;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.User;
-import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
@@ -50,19 +50,54 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 		
 	}
 	
+	@Override
+	public HashMap<String, String> createOrUpdateActivity(HashMap<String, String> activityMap)
+	{				
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		Activity activity = createOrUpdateActivityInstance(activityMap);
+		if(activity!=null)
+		{
+			save(activity);
+			response.put("status", "success");
+		}		
+		return response;
+		
+	}
 	
-	public void create(Integer type, String username, String entityId, Integer visbility, String insertTime, Long timestamp)
-	{		
-		Activity activity = new Activity();
+	/**
+	 * Create or update activity instance
+	 * 
+	 * @param activityMap
+	 * @return
+	 */
+	private Activity createOrUpdateActivityInstance(HashMap<String, String> activityMap)
+	{
+		String id = activityMap.get("id");
+		String username = activityMap.get("username");
+		String entityId = activityMap.get("entityId");
+		Integer type    = Integer.parseInt(activityMap.get("type")); 
+		Integer visbility    = Integer.parseInt(activityMap.get("visibility"));
+		Date time = new Date();
+		Activity activity = null;
+		if(id.isEmpty())
+		{
+			activity = new Activity();
+			activity.setInsertTime(Utility.convertDateToString(time));
+			activity.setTimestamp(time.getTime());
+		}
+		else
+		{
+			activity = getById(id);
+			activity.setUpdateTime(Utility.convertDateToString(time));
+		}
 		activity.setType(type);
 		activity.setUsername(username);
 		activity.setEntityId(entityId);
-		activity.setVisibility(visbility);		
-		activity.setInsertTime(insertTime);
-		activity.setTimestamp(timestamp);
-		save(activity);
-		
+		activity.setVisibility(visbility);
+		return activity;
 	}
+		
 	
 	@Override
 	public ArrayList<HashMap<String, Object>> getActivities(User user)
@@ -72,7 +107,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 		String userName="";
 		if(user == null)
 		{
-			allActivites = gloonDatastore.createQuery(Activity.class).filter("visibility", AppConstants.PUBLIC).order("-insertTime").asList();
+			allActivites = gloonDatastore.createQuery(Activity.class).filter("visibility", Activity.PUBLIC).order("-insertTime").asList();
 		} 
 		else{
 			userName=user.getUsername();			
@@ -83,7 +118,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 			
 			for(Buddy setUser: allUsersInCurrentUserCircle)
 			{
-				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class).filter("username", setUser.getUserName()).filter("visibility", AppConstants.PUBLIC).order("-insertTime").asList();
+				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class).filter("username", setUser.getUserName()).filter("visibility", Activity.PUBLIC).order("-insertTime").asList();
 				allActivites.addAll(circleUserActivites);
 			}		
 			
@@ -103,7 +138,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 	@Override
 	public ArrayList<HashMap<String, Object>> getPublicActivitiesForUser(User user) {		
 		ArrayList<HashMap<String,Object>> activites = new ArrayList<>();
-		List<Activity> allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername()).filter("visibility", AppConstants.PUBLIC).order("-insertTime").limit(10).asList();
+		List<Activity> allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername()).filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
 		activites = getActivityMaps(allActivites, user.getUsername());
 		return activites;
 	}
@@ -118,7 +153,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 		for(Article article: allGameArticles)
 		{
 			Logger.debug("ARTICLE ID: "+article.getId().toString());
-			List<Activity> tempActivities= gloonDatastore.createQuery(Activity.class).filter("entityId", article.getId().toString()).filter("visibility", AppConstants.PUBLIC).order("-insertTime").limit(10).asList();
+			List<Activity> tempActivities= gloonDatastore.createQuery(Activity.class).filter("entityId", article.getId().toString()).filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
 			Logger.debug("Temp activities size   "+tempActivities.size());
 			if(tempActivities.size()>0)
 			{
@@ -126,7 +161,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 			}			
 		}		
 		Logger.debug(allActivites.toString());
-		List<Activity> gameActivities= gloonDatastore.createQuery(Activity.class).filter("entityId", game.getId().toString()).filter("visibility", AppConstants.PUBLIC).order("-insertTime").limit(10).asList();
+		List<Activity> gameActivities= gloonDatastore.createQuery(Activity.class).filter("entityId", game.getId().toString()).filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
 		Logger.debug("All activities size: "+allActivites.size());
 		if(gameActivities.size()>0)
 		{
@@ -134,6 +169,11 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 		}						
 		activites = getGameActivityMaps(allActivites, game);
 		return activites;
+	}
+	
+	@Override
+	public Activity getById(String id) {		
+		return gloonDatastore.get(Activity.class, new ObjectId(id));
 	}
 	
 	/**
@@ -198,7 +238,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 					activityMap.put("activityComment", commentMessage);
 				}	
 				
-				Article commentArticle= gloonDatastore.createQuery(Article.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+				Article commentArticle= gloonDatastore.get(Article.class, new ObjectId(conversation.getComment().getArticleId()));
 				activityMap.put("articleTitle", commentArticle.getTitle());
 				activityMap.put("articleEncodedUrl", Utility.encodeForUrl(commentArticle.getTitle())+"-"+commentArticle.getId().toString());
 				activityMap.put("activityType", activityType);				
@@ -333,5 +373,7 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 		}		
 		return activites;
 	}
+
+	
 
 }

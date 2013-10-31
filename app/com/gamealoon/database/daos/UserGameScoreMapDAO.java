@@ -1,10 +1,15 @@
 package com.gamealoon.database.daos;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import org.bson.types.ObjectId;
 
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.UserGameScoreMapInterface;
 import com.gamealoon.models.UserGameScoreMap;
+import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
 public class UserGameScoreMapDAO extends GloonDAO implements UserGameScoreMapInterface{
@@ -33,13 +38,40 @@ public class UserGameScoreMapDAO extends GloonDAO implements UserGameScoreMapInt
 	}
 
 	@Override
-	public void createScoreMap(String gameId, String username, Double gameScore, Double networkUserWeight) {
-		UserGameScoreMap scoreMap = new UserGameScoreMap();
+	public HashMap<String, String> createOrUpdateScoreMap(String id, String gameId, String username, Double gameScore, Double networkUserWeight) {
+		HashMap<String, String> response = new HashMap<>();
+		
+		UserGameScoreMap userGameScoreMap = createOrUpdateScoreMapInstance(id,gameId, username, gameScore, networkUserWeight);
+		if(userGameScoreMap!=null)
+		{
+			save(userGameScoreMap);
+			response.put("status", "success");
+		}
+		
+		
+		
+		return response;
+	}
+
+	private UserGameScoreMap createOrUpdateScoreMapInstance(String id,String gameId, String username, Double gameScore,Double networkUserWeight) {
+		UserGameScoreMap scoreMap = null;
+		Date time = new Date();
+		if(id.isEmpty())
+		{
+			scoreMap=new UserGameScoreMap();
+			scoreMap.setInsertTime(Utility.convertDateToString(time));
+			scoreMap.setTimestamp(time.getTime());
+		}
+		else
+		{
+			scoreMap=getById(id);
+			scoreMap.setUpdateTime(Utility.convertDateToString(time));
+		}
 		scoreMap.setUsername(username);
 		scoreMap.setGameId(gameId);
 		scoreMap.setGameScore(gameScore);
 		scoreMap.setNetworkUserWeight(networkUserWeight);
-		save(scoreMap);
+		return scoreMap;
 	}
 
 	@Override
@@ -56,6 +88,11 @@ public class UserGameScoreMapDAO extends GloonDAO implements UserGameScoreMapInt
 	public UserGameScoreMap findByUserAndGame(String username, String gameId) {
 		
 		return gloonDatastore.createQuery(UserGameScoreMap.class).filter("gameId", gameId).filter("username", username).get();
+	}
+
+	@Override
+	public UserGameScoreMap getById(String id) {		
+		return gloonDatastore.get(UserGameScoreMap.class, new ObjectId(id));
 	}
 
 }

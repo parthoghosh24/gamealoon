@@ -18,6 +18,8 @@ public class Comment {
 	private double spamScore;// calculated by counting spams.
 	private int isReply;
 	private String conversationId;
+	private String insertTime;
+	private Long timestamp;
 	
 	public static final int NO_REPLY=0;
 	public static final int REPLY=1;
@@ -104,5 +106,33 @@ public class Comment {
 	 */
 	public void setConversationId(String conversationId) {
 		this.conversationId = conversationId;
+	}
+
+	/**
+	 * @return the insertTime
+	 */
+	public String getInsertTime() {
+		return insertTime;
+	}
+
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(String insertTime) {
+		this.insertTime = insertTime;
+	}
+
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

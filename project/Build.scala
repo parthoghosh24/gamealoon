@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName         = "gamealoon"
-  val appVersion      = "1.0-SNAPSHOT"
+  val appVersion      = "1.1"
 
   val appDependencies = Seq(
     // Add your project dependencies here,
@@ -13,7 +13,8 @@ object ApplicationBuild extends Build {
     cache,
     javaCore,
     javaJdbc,
-    javaEbean
+    javaEbean,
+     "com.amazonaws" % "aws-java-sdk" % "1.6.3"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(

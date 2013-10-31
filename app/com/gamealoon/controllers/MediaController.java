@@ -1,5 +1,6 @@
 package com.gamealoon.controllers;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ public class MediaController extends Controller{
 		    return ok();
 	}*/
 	
-	public static Result uploadImage(String userName)
+	public static Result uploadImage(String userName, String mediaId, String mediaOwnerType)
 	{
 		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 	    response().setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
@@ -32,13 +33,19 @@ public class MediaController extends Controller{
 	    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!	
 	    MultipartFormData body = request().body().asMultipartFormData();				
 		FilePart imagePart = body.getFile("previewFile");
-		HashMap<String, String> response = uploadImageMap(userName,imagePart);
+		HashMap<String, String> response = createOrUpdateImage(mediaId, userName,imagePart,mediaOwnerType);
 		return ok(toJson(response));
 	}
 	
 	public static Result fetchImages(String userName,String timeStamp)
 	{
-		HashMap<String, ArrayList<HashMap<String, String>>> response = fetchImagesMap(userName,Long.parseLong(timeStamp));
+		HashMap<String, ArrayList<HashMap<String, String>>> response= new HashMap<>();
+		try {
+			response = fetchImagesMap(userName,Long.parseLong(timeStamp));
+		} catch (NumberFormatException | MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return ok(toJson(response));
 	}
 	/**
@@ -46,8 +53,9 @@ public class MediaController extends Controller{
 	 * 
 	 * @param userName
 	 * @return
+	 * @throws MalformedURLException 
 	 */
-	private static HashMap<String, ArrayList<HashMap<String, String>>> fetchImagesMap(String userName,Long timeStamp) {		
+	private static HashMap<String, ArrayList<HashMap<String, String>>> fetchImagesMap(String userName,Long timeStamp) throws MalformedURLException {		
 		return mediaDAOInstance.fetchImageForBrowser(userName,timeStamp);
 	}
 
@@ -58,8 +66,8 @@ public class MediaController extends Controller{
 	 * @param imagePart
 	 * @return
 	 */
-	private static HashMap<String, String> uploadImageMap(String userName, FilePart imagePart) {		
-		return mediaDAOInstance.uploadImage(userName, imagePart);
+	private static HashMap<String, String> createOrUpdateImage(String mediaId, String userName, FilePart imagePart, String mediaOwnerType) {		
+		return mediaDAOInstance.createOrUpdateMedia(mediaId, imagePart, userName, mediaOwnerType);
 	}
 	
 }

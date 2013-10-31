@@ -27,7 +27,11 @@ public class Platform{
 	private String title; //playstation, pc, xbox, browser...
 	private String shortTitle;
 	private String description;	
-	private String manufacturer; // Sony, Microsoft, Nintendo, Google, Apple
+	private String manufacturer;
+    private String developer;
+    private String insertTime;
+    private String updateTime;
+    private Long timestamp;
 	/**
 	 * @return the title
 	 */
@@ -90,6 +94,54 @@ public class Platform{
 	 */
 	public ObjectId getId() {
 		return id;
+	}
+	/**
+	 * @return the developer
+	 */
+	public String getDeveloper() {
+		return developer;
+	}
+	/**
+	 * @param developer the developer to set
+	 */
+	public void setDeveloper(String developer) {
+		this.developer = developer;
+	}
+	/**
+	 * @return the insertTime
+	 */
+	public String getInsertTime() {
+		return insertTime;
+	}
+	/**
+	 * @param insertTime the insertTime to set
+	 */
+	public void setInsertTime(String inserTime) {
+		this.insertTime = inserTime;
+	}
+	/**
+	 * @return the timestamp
+	 */
+	public Long getTimestamp() {
+		return timestamp;
+	}
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+	/**
+	 * @return the updateTime
+	 */
+	public String getUpdateTime() {
+		return updateTime;
+	}
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}	
 
 }

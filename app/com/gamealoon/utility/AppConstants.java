@@ -2,8 +2,6 @@ package com.gamealoon.utility;
 
 
 import java.io.IOException;
-
-import play.Application;
 import play.Logger;
 import play.api.Play;
 
@@ -48,12 +46,7 @@ public class AppConstants {
      public final static long ONE_DAY = ONE_HOUR * 24;
      public final static long ONE_MONTH = ONE_DAY*30;
      public final static long ONE_YEAR = ONE_MONTH*12;
-	
-	/**
-	 * Visibility
-	 */
-	public final static int PUBLIC=1;
-	public final static int PRIVATE=2;	
+		
 	
 	/**
      * Returns app canonical path

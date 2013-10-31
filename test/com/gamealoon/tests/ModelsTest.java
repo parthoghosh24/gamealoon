@@ -1,6 +1,7 @@
 package com.gamealoon.tests;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
@@ -32,9 +33,9 @@ import static play.test.Helpers.running;
  */
 public class ModelsTest {
 
-	/*final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
+	final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
 	final GameDAO gameDaoInstance = GameDAO.instantiateDAO();
-	final UserDAO userDaoInstance = UserDAO.instantiateDAO();	*/
+	final UserDAO userDaoInstance = UserDAO.instantiateDAO();	
 	/**
 	 * We are testing the db and various entites over here....
 	 * 
@@ -46,9 +47,13 @@ public class ModelsTest {
 			@Override
 			public void run() {
 				
-					System.out.println("Fetching data.............");
-				    findAllGames(); 
-				    findAllUsers();				    
+					System.out.println("Fetching data.............");				    
+				    try {
+						findAllUsers();
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}				    
 				    findAllRecentGames();
 				    findAllRecentReleasedGames();	
 				    testStringEncoder();
@@ -161,30 +166,9 @@ public class ModelsTest {
 
 
 
-
-			private void findAllGames()
-			{
-			 /* List<Game> games = gloonDatastore.find(Game.class).asList();
-			  
-			  if(games.size()>0)
-			  {
-				  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				  for(Game game: games)
-				  {
-					  if(game!=null)
-					  {
-						  System.out.println("Game name: "+game.getTitle());
-						  System.out.println("Game platforms: "+game.getPlatforms());
-						  System.out.println("Game score(Out of 10): "+game.getScore());
-						  System.out.println("Game genere: "+game.getGenere());
-						  System.out.println("--------------->><<----------------------");
-					  }
-				  }
-				  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-			  }*/
-			}
+		
 			
-			private void findAllUsers()
+			private void findAllUsers() throws MalformedURLException
 			{
 				UserDAO userInstance =UserDAO.instantiateDAO();
 				List<HashMap<String, Object>> sortedUsers = userInstance.getTopNUsers(-1);
@@ -210,8 +194,8 @@ public class ModelsTest {
 			
 			
 			private void findAllRecentGames()
-			{
-				/*List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(-1);
+			{				
+				List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(-1);
 				
 				System.out.println("Recent sorted games list size: "+ sortedGames.size());
 				
@@ -230,13 +214,13 @@ public class ModelsTest {
 						  }
 					  }
 					  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				}	*/
+				}	
 			}
 			
 			
 			private void findAllRecentReleasedGames()
 			{				
-				/*List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(5);
+				List<Game> sortedGames = gameDaoInstance.getRecentReleasedGames(5);
 				
 				System.out.println("Released sorted games list size: "+ sortedGames.size());
 				if(sortedGames.size()>0)
@@ -254,7 +238,7 @@ public class ModelsTest {
 						  }
 					  }
 					  System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				}*/	
+				}	
 			}
 			
 						

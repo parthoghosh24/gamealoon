@@ -1,8 +1,13 @@
 package com.gamealoon.controllers;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import com.gamealoon.database.daos.UserDAO;
 import static play.data.Form.*;
+import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
@@ -95,7 +100,7 @@ public class UserController extends Controller{
 		return ok(toJson(response));
 	}
 	
-	public static Result saveOrUpdateUserAvatar(String username)
+	public static Result saveOrUpdateUserAvatar(String username, String mediaId)
 	{
 		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 	    response().setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
@@ -103,7 +108,7 @@ public class UserController extends Controller{
 	    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!		
 		MultipartFormData body = request().body().asMultipartFormData();				
 		FilePart avatarPart = body.getFile("userAvatarFile");		
-		HashMap<String,String> response = saveOrUpdateUserAvatarMap(username,avatarPart);		
+		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);		
 		return ok(toJson(response));
 	}
 	
@@ -120,6 +125,18 @@ public class UserController extends Controller{
 		HashMap<String,String> response = validateUsernameMap(username);
 		return ok(toJson(response));
 	}
+	
+	public static Result getAllUsers()
+	{
+		List<HashMap<String, Object>> allTopUsers= new ArrayList<>();
+		try {
+			allTopUsers = getAllTopUsers();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ok(toJson(allTopUsers));
+	}
 
 	
 
@@ -130,8 +147,8 @@ public class UserController extends Controller{
 	 * @param requestData
 	 * @return
 	 */
-	private static HashMap<String, String> saveOrUpdateUserAvatarMap(String username, FilePart avatarPart) {				
-		return userDaoInstance.saveOrUpdateUserAvatar(username, avatarPart);
+	private static HashMap<String, String> saveOrUpdateUserAvatarMap(String mediaId, String username, FilePart avatarPart) {				
+		return userDaoInstance.saveOrUpdateUserAvatar(mediaId,username, avatarPart);
 	}
 
 	/**
@@ -214,7 +231,14 @@ public class UserController extends Controller{
 	 */
 	private static HashMap<String, Object> getUserMap(String usernameOrId, Integer mode, String username)
 	{
-		return userDaoInstance.getUser(usernameOrId, mode, username);
+		HashMap<String, Object> response = new HashMap<>();
+		try {
+			response= userDaoInstance.getUser(usernameOrId, mode, username);
+		} catch (MalformedURLException e) {
+			Logger.error("Some thing wrong happened while fetching user "+e.fillInStackTrace());
+			e.printStackTrace();
+		}
+		return response;
 	}		
 	
 	/**
@@ -226,7 +250,14 @@ public class UserController extends Controller{
 	 */
 	private static HashMap<String, Object> getLoggedInUserMap(String usernameOrEmail, String password)
 	{
-		return userDaoInstance.getLoggedInUser(usernameOrEmail, password);
+		HashMap<String, Object> response= new HashMap<>();
+		try {
+			response= userDaoInstance.getLoggedInUser(usernameOrEmail, password);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 	/**
@@ -262,6 +293,16 @@ public class UserController extends Controller{
 	private static HashMap<String, String> validateUsernameMap(String username) {
 		
 		return userDaoInstance.validateUsername(username);
+	}
+	
+	/**
+	 * This method returns all users ordered by score
+	 * 
+	 * @return
+	 * @throws MalformedURLException 
+	 */
+	private static List<HashMap<String, Object>> getAllTopUsers() throws MalformedURLException {
+		return userDaoInstance.getTopNUsers(0);
 	}
 
 }

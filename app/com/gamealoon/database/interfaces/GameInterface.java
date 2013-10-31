@@ -1,8 +1,12 @@
 package com.gamealoon.database.interfaces;
 
+import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import play.data.DynamicForm;
 
 import com.gamealoon.models.Game;
 
@@ -15,8 +19,14 @@ public interface GameInterface {
 	 * @param game
 	 */
 	public void save(Game game);
-	
 
+	/**
+	 *Create or update game
+	 * 
+	 * @return
+	 */
+	public HashMap<String, String> createOrUpdateGame(DynamicForm requestData)throws ParseException;
+	
 	/**
 	 * Fetch Top N Games
 	 * 
@@ -24,8 +34,7 @@ public interface GameInterface {
 	 * @param type
 	 * @return
 	 */
-	
-	public List<HashMap<String, Object>> getTopNGames(int limit, String platform);
+	public List<HashMap<String, Object>> getTopNGames(int limit, String platform) throws MalformedURLException;
 	
 	/**
 	 * Fetch recent N games
@@ -34,7 +43,7 @@ public interface GameInterface {
 	 * @param platform
 	 * @return
 	 */
-	public List<HashMap<String, Object>> getRecentNGames(int limit, String platform);
+	public List<HashMap<String, Object>> getRecentNGames(int limit, String platform)  throws MalformedURLException;
 	
 	/**
 	 * Find game by title
@@ -50,7 +59,7 @@ public interface GameInterface {
 	 * @param id
 	 * @return
 	 */
-	public HashMap<String, Object> findById(String urlOrid, String username);
+	public HashMap<String, Object> getById(String urlOrid, String username) throws MalformedURLException;
 	
 	/**
 	 * Find games for autocomplete
@@ -58,7 +67,7 @@ public interface GameInterface {
 	 * @param term
 	 * @return
 	 */
-	public ArrayList<HashMap<String, Object>> findAllByTerm(String term);
+	public ArrayList<HashMap<String, Object>> findAllByTerm(String term) throws MalformedURLException;
 	
 	/**
 	 * Find game by id
