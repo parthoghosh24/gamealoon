@@ -75,6 +75,18 @@ public class Utility {
 	}
 	
 	/**
+	 * Covert String into date into yyyy-MM-dd format
+	 * 
+	 * @param dateText
+	 * @return
+	 * @throws ParseException
+	 */
+	public static Date convertFromStringToDateFormat2(String dateText) throws ParseException
+	{
+		return new SimpleDateFormat("yyyy-MM-dd").parse(dateText);
+	}
+	
+	/**
 	 * Convert from yyyy-MM-dd HH:mm:ss to dd M, yyyy
 	 * 
 	 * @param dateText

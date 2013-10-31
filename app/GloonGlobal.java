@@ -180,7 +180,7 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3.setPlatforms(maxPayne3Platforms);			
 			maxPayne3.setRating(Game.MATURE);
 			maxPayne3.setReleaseDate("2012-05-15");
-			maxPayne3.setReleaseTimeStamp(Utility.convertFromStringToDate("2012-05-15").getTime());
+			maxPayne3.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2012-05-15").getTime());
 			maxPayne3.setGameReleaseStatus(Game.RELEASED);			
 			Media media = new Media();
 			media.setFileName("mp_cover.jpg");
@@ -211,7 +211,7 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3.setPlatforms(farCry3Platforms);
 			farCry3.setRating(Game.MATURE);
 			farCry3.setReleaseDate("2012-12-04");
-			farCry3.setReleaseTimeStamp(Utility.convertFromStringToDate("2012-12-04").getTime());
+			farCry3.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2012-12-04").getTime());
 			farCry3.setGameReleaseStatus(Game.RELEASED);
 			media = new Media();
 			media.setFileName("mp_cover.jpg");
@@ -243,7 +243,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamCity.setPlatforms(batmanArkhamCityPlatforms);
 			batmanArkhamCity.setRating(Game.TEEN);
 			batmanArkhamCity.setReleaseDate("2011-10-21");
-			batmanArkhamCity.setReleaseTimeStamp(Utility.convertFromStringToDate("2011-10-21").getTime());
+			batmanArkhamCity.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2011-10-21").getTime());
 			batmanArkhamCity.setGameReleaseStatus(Game.RELEASED);
 			media = new Media();
 			media.setFileName("bac_cover.jpg");
@@ -274,7 +274,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamOrigins.setRating(Game.TEEN);
 			batmanArkhamOrigins.setGameReleaseStatus(Game.RELEASED);
 			batmanArkhamOrigins.setReleaseDate("2013-10-25");	
-			batmanArkhamOrigins.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-10-25").getTime());
+			batmanArkhamOrigins.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-25").getTime());
 			media = new Media();
 			media.setFileName("bao_cover.jpg");
 			media.setImmediateOwner(Utility.shortenString(batmanArkhamOrigins.getTitle()));
@@ -305,7 +305,7 @@ public class GloonGlobal extends GlobalSettings {
 			gta5.setRating(Game.MATURE);
 			gta5.setGameReleaseStatus(Game.RELEASED);
 			gta5.setReleaseDate("2013-09-17");	
-			gta5.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-09-17").getTime());
+			gta5.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-09-17").getTime());
 			media = new Media();
 			media.setFileName("gta5_cover.jpg");
 			media.setImmediateOwner(Utility.shortenString(gta5.getTitle()));
@@ -336,7 +336,7 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRising.setRating(Game.MATURE);
 			mgsRising.setGameReleaseStatus(Game.RELEASED);
 			mgsRising.setReleaseDate("2013-02-19");		
-			mgsRising.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-02-19").getTime());
+			mgsRising.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-02-19").getTime());
 			media = new Media();
 			media.setFileName("mgsr_cover.jpg");
 			media.setImmediateOwner(Utility.shortenString(mgsRising.getTitle()));
@@ -367,7 +367,7 @@ public class GloonGlobal extends GlobalSettings {
 			evilWithin.setRating(Game.RATING_PENDING);
 			evilWithin.setGameReleaseStatus(Game.NOT_RELEASED);
 			evilWithin.setReleaseDate("2014-12-31");		
-			evilWithin.setReleaseTimeStamp(Utility.convertFromStringToDate("2014-12-31").getTime());
+			evilWithin.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2014-12-31").getTime());
 			media = new Media();
 			media.setFileName("tew_cover.jpg");
 			media.setImmediateOwner(Utility.shortenString(evilWithin.getTitle()));
@@ -398,7 +398,7 @@ public class GloonGlobal extends GlobalSettings {
 			battlefield4.setRating(Game.MATURE);
 			battlefield4.setGameReleaseStatus(Game.RELEASED);
 			battlefield4.setReleaseDate("2013-10-29");		
-			battlefield4.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-10-29").getTime());
+			battlefield4.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-29").getTime());
 			media = new Media();
 			media.setFileName("b4_cover.jpg");
 			media.setImmediateOwner(Utility.shortenString(battlefield4.getTitle()));
