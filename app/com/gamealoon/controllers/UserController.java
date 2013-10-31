@@ -8,6 +8,7 @@ import java.util.List;
 import com.gamealoon.database.daos.UserDAO;
 import static play.data.Form.*;
 import play.Logger;
+import play.Play;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
@@ -99,16 +100,40 @@ public class UserController extends Controller{
 		HashMap<String, String> response = addOrRemoveInterestedGamesMap(originalUsername, gameId, type);
 		return ok(toJson(response));
 	}
+	public static Result checkStatus(String userName, String mediaId)
+	{
+			String domain="";
+		    if(Play.isDev() || Play.isTest())
+		    {
+		    	domain="http://localhost:8080";
+		    }
+		    if(Play.isProd())
+		    {
+		    	domain="http://www.gamealoon.com";
+		    }
+		 	response().setHeader("Access-Control-Allow-Origin", domain);       // Need to add the correct domain in here!!
+		    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
+		    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
+		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
+		    return ok();
+	}
 	
 	public static Result saveOrUpdateUserAvatar(String username, String mediaId)
-	{
-		response().setHeader("Access-Control-Allow-Origin", "http://www.gamealoon.com");       // Need to add the correct domain in here!!
-	    response().setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
-	    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
-	    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!		
+	{	
+		String domain="";
+	    if(Play.isDev() || Play.isTest())
+	    {
+	    	domain="http://localhost:8080";
+	    }
+	    if(Play.isProd())
+	    {
+	    	domain="http://www.gamealoon.com";
+	    }
 		MultipartFormData body = request().body().asMultipartFormData();				
 		FilePart avatarPart = body.getFile("userAvatarFile");		
-		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);		
+		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
+		
+		response().setHeader("Access-Control-Allow-Origin", domain);       // Need to add the correct domain in here!!
 		return ok(toJson(response));
 	}
 	
