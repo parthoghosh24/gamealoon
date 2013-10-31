@@ -124,6 +124,14 @@ public class Utility {
 		return response;
 	}
 	
+	/**
+	 * Shorten the string by removing all special characters and whitespaces and converting to text into lower case
+	 * 
+	 * E.g Grand Theft Auto V = grandtheftautov
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static String shortenString(String text)
 	{
 		String response ="";

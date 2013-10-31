@@ -1,7 +1,10 @@
 package com.gamealoon.controllers;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import com.gamealoon.database.daos.UserDAO;
 import static play.data.Form.*;
 import play.Logger;
@@ -121,6 +124,18 @@ public class UserController extends Controller{
 	{
 		HashMap<String,String> response = validateUsernameMap(username);
 		return ok(toJson(response));
+	}
+	
+	public static Result getAllUsers()
+	{
+		List<HashMap<String, Object>> allTopUsers= new ArrayList<>();
+		try {
+			allTopUsers = getAllTopUsers();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ok(toJson(allTopUsers));
 	}
 
 	
@@ -278,6 +293,16 @@ public class UserController extends Controller{
 	private static HashMap<String, String> validateUsernameMap(String username) {
 		
 		return userDaoInstance.validateUsername(username);
+	}
+	
+	/**
+	 * This method returns all users ordered by score
+	 * 
+	 * @return
+	 * @throws MalformedURLException 
+	 */
+	private static List<HashMap<String, Object>> getAllTopUsers() throws MalformedURLException {
+		return userDaoInstance.getTopNUsers(0);
 	}
 
 }

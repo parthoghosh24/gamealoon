@@ -337,7 +337,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				gameMap.put("developer", game.getDeveloper());
 				gameMap.put("publisher", game.getPublisher());
 				gameMap.put("releaseDate", game.getReleaseDate());
-				gameMap.put("genre", game.getGenere());
+				gameMap.put("genre", game.getGenre());
 				gameMap.put("rating", game.getRating());				
 				gameMap.put("gameEncodedUrl",  Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
 				List<HashMap<String, Object>> platformList = new ArrayList<>();

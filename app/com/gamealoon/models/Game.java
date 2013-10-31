@@ -27,9 +27,11 @@ public class Game{
 	
 	private String title;
 	private String description; //a little description about the game
-	
-	 @Indexed(value=IndexDirection.ASC, name="game_rls_dt")
+		 
 	private String releaseDate;
+	
+	@Indexed(value=IndexDirection.ASC, name="game_rls_time_stmp")
+	private Long releaseTimeStamp; 
 	private String price; //keep it in dollars, can modify it in runtime when showing
 	private String rating; //mature, adults only, everyone, etc. This should ideally modify according to region. 
 	private String publisher;
@@ -192,7 +194,7 @@ public class Game{
 	/**
 	 * @return the genre
 	 */
-	public Genre getGenere() {
+	public Genre getGenre() {
 		return genre;
 	}
 
@@ -200,8 +202,8 @@ public class Game{
 	/**
 	 * @param genre the genre to set
 	 */
-	public void setGenere(Genre genere) {
-		this.genre = genere;
+	public void setGenre(Genre genre) {
+		this.genre = genre;
 	}
 
 
@@ -399,6 +401,22 @@ public class Game{
 	 */
 	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
+	}
+
+
+	/**
+	 * @return the releaseTimeStamp
+	 */
+	public Long getReleaseTimeStamp() {
+		return releaseTimeStamp;
+	}
+
+
+	/**
+	 * @param releaseTimeStamp the releaseTimeStamp to set
+	 */
+	public void setReleaseTimeStamp(Long releaseTimeStamp) {
+		this.releaseTimeStamp = releaseTimeStamp;
 	}
 	
 }

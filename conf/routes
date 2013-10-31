@@ -31,6 +31,7 @@ POST /user/interestedOrNotInGame			 							com.gamealoon.controllers.UserControl
 POST /user/saveOrUpdateUserAvatar/:userName/:mediaId		            com.gamealoon.controllers.UserController.saveOrUpdateUserAvatar(userName:String, mediaId:String)
 GET /user/validateEmail/:email				 							com.gamealoon.controllers.UserController.validateEmail(email:String)	
 GET /user/validateUsername/:username         							com.gamealoon.controllers.UserController.validateUsername(username:String)  
+GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
 
 # Media								
 #OPTIONS /media/uploadImage/:userName								 com.gamealoon.controllers.MediaController.checkStatus(userName:String)			
@@ -42,8 +43,9 @@ GET /media/images/:userName/:timeStamp      						 com.gamealoon.controllers.Med
 GET /search/:keywords             			com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
 
 # Game		
-GET /game/fetchGame/games/:term                             com.gamealoon.controllers.GameController.getGames(term:String) 
+GET /game/fetchGame/games/:term                             com.gamealoon.controllers.GameController.getGamesByTerm(term:String) 
 GET /game/:urlOrid/:username				com.gamealoon.controllers.GameController.getGame(urlOrid:String, username:String)
+GET /games                                   com.gamealoon.controllers.GameController.getAllGames() 
 
 
 # Conversation

@@ -1,34 +1,18 @@
-import java.io.File;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import com.gamealoon.algorithm.SecurePassword;
 import com.gamealoon.database.daos.AchievementDAO;
-import com.gamealoon.database.daos.ActivityDAO;
-import com.gamealoon.database.daos.ArticleDAO;
 import com.gamealoon.database.daos.GameDAO;
 import com.gamealoon.database.daos.MediaDAO;
 import com.gamealoon.database.daos.PlatformDAO;
-import com.gamealoon.database.daos.UserDAO;
-//import com.gamealoon.database.daos.UserGameScoreMapDAO;
 import com.gamealoon.models.Achievement;
-import com.gamealoon.models.Activity;
-//import com.gamealoon.models.Article;
-//import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.Genre;
 import com.gamealoon.models.Media;
 import com.gamealoon.models.Platform;
-import com.gamealoon.models.User;
-import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import play.Application;
 import play.GlobalSettings;
-import play.mvc.Http.MultipartFormData.FilePart;
+import play.Play;
 
 public class GloonGlobal extends GlobalSettings {
 
@@ -43,7 +27,12 @@ public class GloonGlobal extends GlobalSettings {
 				System.out.println("Data getting created.............");				
 				createAchievements();				
 				createPlatforms();					
-				createGames();							
+				try {
+					createGames();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}							
 				
 
 			}
@@ -175,18 +164,8 @@ public class GloonGlobal extends GlobalSettings {
 			
 		}
 		
-		private void createGames()
-		{
-		
-			Platform ps3 = platformDAOInstance.findByTitle("Playstation 3");
-			Platform x360 = platformDAOInstance.findByTitle("Xbox 360");
-			Platform pc = platformDAOInstance.findByTitle("PC");
-			Platform vita = platformDAOInstance.findByTitle("PS-VITA");			
-			
-			ArrayList<Platform> platforms = new ArrayList<>();
-			platforms.add(ps3);
-			platforms.add(x360);
-			platforms.add(pc);
+		private void createGames() throws ParseException
+		{					
 			
 			Date time = new Date();
 
@@ -195,278 +174,280 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3.setDescription("In Max Payne 3, the player controls Max Payne, a former NYPD detective who had became a vigilante after his wife and daughter were brutally murdered. Nine years after the events of the second game, Max meets Raul Passos, who gets him the job as a private security contractor in Brazil. He quickly finds himself constantly encountering difficult situations, which leads him on a search for the culprits of deaths and betrayals");
 			maxPayne3.setDeveloper("Rockstar Vancouver");
 			maxPayne3.setPublisher("Rockstar Games");
-			maxPayne3.setGenere(Genre.Action); 
+			maxPayne3.setGenre(Genre.Tps); 
 			maxPayne3.setPrice("");
 			String[] maxPayne3Platforms = {"ps3","xbox360","pc"};
 			maxPayne3.setPlatforms(maxPayne3Platforms);			
 			maxPayne3.setRating(Game.MATURE);
 			maxPayne3.setReleaseDate("2012-05-15");
+			maxPayne3.setReleaseTimeStamp(Utility.convertFromStringToDate("2012-05-15").getTime());
 			maxPayne3.setGameReleaseStatus(Game.RELEASED);			
 			Media media = new Media();
 			media.setFileName("mp_cover.jpg");
 			media.setImmediateOwner(Utility.shortenString(maxPayne3.getTitle()));
 			media.setOwner(Media.GAME);
-			media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/maxpayne3/uploads/mp_cover.jpg");
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/maxpayne3/uploads/mp_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/maxpayne3/uploads/mp_cover.jpg");
+			}
 			media.setInsertTime(Utility.convertDateToString(time));
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
 			maxPayne3.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(maxPayne3);			
 			
-			/*Game farCry3 = new Game();
+			Game farCry3 = new Game();
 			farCry3.setTitle("Far Cry 3");
-			farCry3.setDescription("With Far Cry 3, players step into the shoes of Jason Brody, a man alone at the edge of the world, stranded on a mysterious tropical island. In this savage paradise where lawlessness and violence are the only sure thing, players dictate how the story unfolds, from the battles they choose to fight to the allies or enemies they make along the way. As Jason Brody, players will slash, sneak, detonate and shoot their way across the island in a world that has lost all sense of right and wrong.");
+			farCry3.setDescription("Far Cry 3 is set on a tropical island between the Indian and Pacific Oceans.After a vacation goes awry, protagonist Jason Brody must save his friends, who have been kidnapped by pirates and escape from the island and its unhinged inhabitants.");
 			farCry3.setDeveloper("Ubisoft Montreal");
 			farCry3.setPublisher("Ubisoft");
-			farCry3.setGenere(Genre.Fps);
-			farCry3.setPrice("60$");
-			farCry3.setPlatforms(platforms);
+			farCry3.setGenre(Genre.Fps);
+			farCry3.setPrice("");
+			String[] farCry3Platforms = {"ps3","xbox360","pc"};
+			farCry3.setPlatforms(farCry3Platforms);
 			farCry3.setRating(Game.MATURE);
 			farCry3.setReleaseDate("2012-12-04");
+			farCry3.setReleaseTimeStamp(Utility.convertFromStringToDate("2012-12-04").getTime());
 			farCry3.setGameReleaseStatus(Game.RELEASED);
-//			farCry3.setScore(9.0);
-			farCry3.setGameBoxShotPath("fc3_cover.jpg");			
+			media = new Media();
+			media.setFileName("mp_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(farCry3.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/farcry3/uploads/fc3_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/farcry3/uploads/fc3_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			farCry3.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(farCry3);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(farCry3.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(farCry3);
 			
-			Game guacamelee = new Game();
-			guacamelee.setTitle("Guacamelee!");
-			guacamelee.setDescription("Guacamelee! is a Metroid-vania style action-platformer set in a magical Mexican inspired world. The game draws its inspiration from traditional Mexican culture and folklore, and features many interesting and unique characters.");
-			guacamelee.setDeveloper("Drinkbox Studios");
-			guacamelee.setPublisher("Drinkbox Studios");
-			guacamelee.setGenere("Action");
-			guacamelee.setPrice("12$");
-			ArrayList<Platform> guacameleePlatforms = new ArrayList<>();
-			guacameleePlatforms.add(ps3);
-			guacameleePlatforms.add(x360);
-			guacameleePlatforms.add(vita);
-			guacamelee.setPlatforms(guacameleePlatforms);
-			guacamelee.setRating(Game.EVERYONE);
-			guacamelee.setReleaseDate("2013-04-09");
-			guacamelee.setGameReleaseStatus(Game.RELEASED);
-//			guacamelee.setScore(9.1);
-			guacamelee.setGameBoxShotPath("gmelee_cover.jpg");			
-			gameDAOInstance.save(guacamelee);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(guacamelee.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(guacamelee);
-			
-			
-			Game bioshockInfinite = new Game();
-			bioshockInfinite.setTitle("Bioshock Infinite");
-			bioshockInfinite.setDescription("Originally conceived as a floating symbol of American ideals at a time when the United States was emerging as a world power, Columbia is dispatched to distant shores with great fanfare by a captivated public. What begins as a brand new endeavor of hope turns drastically wrong as the city soon disappears into the clouds to whereabouts unknown.");
-			bioshockInfinite.setDeveloper("Ubisoft Montreal");
-			bioshockInfinite.setPublisher("Ubisoft");
-			bioshockInfinite.setGenere("First Person Shooter");
-			bioshockInfinite.setPrice("60$");			
-			bioshockInfinite.setPlatforms(platforms);
-			bioshockInfinite.setRating(Game.MATURE);
-			bioshockInfinite.setReleaseDate("2013-03-26");
-			bioshockInfinite.setGameReleaseStatus(Game.RELEASED);
-//			bioshockInfinite.setScore(9.2);
-			bioshockInfinite.setGameBoxShotPath("bi_cover.jpg");			
-			gameDAOInstance.save(bioshockInfinite);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(bioshockInfinite.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(bioshockInfinite);
-			
-			
-			Game halo4 = new Game();
-			halo4.setTitle("Halo4");
-			halo4.setDescription("The Master Chief returns to battle an ancient evil bent on vengeance and annihilation. Shipwrecked on a mysterious world, faced with new enemies and deadly technology, the universe will never be the same. ");
-			halo4.setDeveloper("343 Industries");
-			halo4.setPublisher("Microsoft Game Studios");
-			halo4.setGenere("First Person Shooter");
-			halo4.setPrice("60$");
-			ArrayList<Platform> halo4Platforms = new ArrayList<>();
-			halo4Platforms.add(x360);
-			halo4.setPlatforms(halo4Platforms);
-			halo4.setRating(Game.MATURE);
-			halo4.setReleaseDate("2012-11-06");
-			halo4.setGameReleaseStatus(Game.RELEASED);
-//			halo4.setScore(8.8);
-			halo4.setGameBoxShotPath("h4_cover.jpg");			
-			gameDAOInstance.save(halo4);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(halo4.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(halo4);
-			
-			
-			Game defiance = new Game();
-			defiance.setTitle("Defiance");
-			defiance.setDescription("Defiance is the first multi-platform shooter MMO which, in a ground-breaking entertainment experience, interconnects with a global television program by Syfy, cable's premier imagination-based entertainment channel.");
-			defiance.setDeveloper("Trion Worlds");
-			defiance.setPublisher("Trion Worlds");
-			defiance.setGenere("MMO");
-			defiance.setPrice("60$");
-			defiance.setPlatforms(platforms);
-			defiance.setRating(Game.MATURE);
-			defiance.setReleaseDate("2013-04-02");
-			defiance.setGameReleaseStatus(Game.RELEASED);
-//			defiance.setScore(6.1);
-			defiance.setGameBoxShotPath("def_cover.jpg");		
-			gameDAOInstance.save(defiance);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(defiance.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(defiance);
-			
-			
-			Game terraria= new Game();
-			terraria.setTitle("Terraria");
-			terraria.setDescription("Terraria? What's that? Terraria is a land of adventure! A land of mystery! A land that's yours to shape, to defend and to enjoy. Your options in Terraria are limitless, are you an action gamer with an itchy trigger finger? A master builder? A collector? An explorer? There's something for everyone here. Dig, fight, explore, build! Nothing is impossible in this action-packed adventure game.");
-			terraria.setDeveloper("Re-Logic, Engine Software");
-			terraria.setPublisher("505 Games");
-			terraria.setGenere("Action");
-			terraria.setPrice("10$");
-			terraria.setPlatforms(platforms);
-			terraria.setRating(Game.TEEN);
-			terraria.setReleaseDate("2013-03-27");
-			terraria.setGameReleaseStatus(Game.RELEASED);
-//			terraria.setScore(9.0);
-			terraria.setGameBoxShotPath("ter_cover.jpg");			
-			gameDAOInstance.save(terraria);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(terraria.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(terraria);
 			
 			Game batmanArkhamCity = new Game();
-			batmanArkhamCity.setTitle("Batman Arkham City");
-			batmanArkhamCity.setDescription(" Set inside the heavily fortified walls of a sprawling district in the heart of Gotham City, this highly anticipated sequel introduces a brand-new story that draws together a new all-star cast of classic characters and murderous villains from the Batman universe, as well as a vast range of new and enhanced gameplay features to deliver the ultimate experience as the Dark Knight.");
+			batmanArkhamCity.setTitle("Batman: Arkham City");
+			batmanArkhamCity.setDescription("Written by veteran Batman writer Paul Dini with Paul Crocker and Sefton Hill, Arkham City is based on the franchise's long-running comic book mythos. In the game's main storyline, Batman is incarcerated in Arkham City, a massive new super-prison enclosing the decaying urban slums of fictional Gotham City. He must uncover the secret behind the sinister scheme, \"Protocol 10\", orchestrated by the facilities warden, Hugo Strange.");
 			batmanArkhamCity.setDeveloper("Warner Bros. Interactive, Eidos Interactive");
 			batmanArkhamCity.setPublisher(" Rocksteady Studios");
-			batmanArkhamCity.setGenere("Action");
-			batmanArkhamCity.setPrice("60$");
-			batmanArkhamCity.setPlatforms(platforms);
+			batmanArkhamCity.setGenre(Genre.ActionAdventure);
+			batmanArkhamCity.setPrice("");
+			String[] batmanArkhamCityPlatforms = {"ps3","xbox360","pc","wiiu"};
+			batmanArkhamCity.setPlatforms(batmanArkhamCityPlatforms);
 			batmanArkhamCity.setRating(Game.TEEN);
-			batmanArkhamCity.setReleaseDate("2012-09-07");
+			batmanArkhamCity.setReleaseDate("2011-10-21");
+			batmanArkhamCity.setReleaseTimeStamp(Utility.convertFromStringToDate("2011-10-21").getTime());
 			batmanArkhamCity.setGameReleaseStatus(Game.RELEASED);
-//			batmanArkhamCity.setScore(9.6);
-			batmanArkhamCity.setGameBoxShotPath("bac_cover.png");			
+			media = new Media();
+			media.setFileName("bac_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(batmanArkhamCity.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/batmanarkhamcity/uploads/bac_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/batmanarkhamcity/uploads/bac_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			batmanArkhamCity.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(batmanArkhamCity);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(batmanArkhamCity.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(batmanArkhamCity);
 			
-			Game motocrossMadness = new Game();
-			motocrossMadness.setTitle("Motocross Madness");
-			motocrossMadness.setDescription("Motocross Madness is back! Take your bike freeriding across massive environments, from the deserts of Egypt to the snows of Iceland. Drift, trick and turbo boost your way across 9 expansive offroad tracks in single player events, ghost challenges and 8-player multiplayer races.");
-			motocrossMadness.setDeveloper("Bongfish");
-			motocrossMadness.setPublisher("Microsoft Game Studios");
-			motocrossMadness.setGenere("Racing");
-			motocrossMadness.setPrice("11$");
-			ArrayList<Platform> motocrossMadnessPlatforms = new ArrayList<>();
-			motocrossMadnessPlatforms.add(x360);
-			motocrossMadness.setPlatforms(motocrossMadnessPlatforms);
-			motocrossMadness.setRating(Game.EVERYONE);
-			motocrossMadness.setReleaseDate("2013-04-10");
-			motocrossMadness.setGameReleaseStatus(Game.RELEASED);
-//			motocrossMadness.setScore(6.2);
-			motocrossMadness.setGameBoxShotPath("mm_cover.jpg");			
-			gameDAOInstance.save(motocrossMadness);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(motocrossMadness.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(motocrossMadness);
-			
-			Game ageOfWushu = new Game();
-			ageOfWushu.setTitle("Age of Wushu");
-			ageOfWushu.setDescription("Endorsed by martial artist legend and wushu champion Jet-Li, Age of Wushu is the world's first true Wuxia themed MMORPG, with cutting edge graphics and innovative gameplay. Players must journey to master the ancient Chinese art of Wushu, delving into their character's unique story and facing the consequences of every action without the crutch of MMO staples like levels and classes.");
-			ageOfWushu.setDeveloper("Suzhou Snail Electronics co. ltd");
-			ageOfWushu.setPublisher("Snail Games");
-			ageOfWushu.setGenere("MMO");
-			ageOfWushu.setPrice("60$");
-			ageOfWushu.setPlatforms(platforms);
-			ageOfWushu.setRating(Game.MATURE);
-			ageOfWushu.setReleaseDate("2013-04-10");
-			ageOfWushu.setGameReleaseStatus(Game.RELEASED);
-//			ageOfWushu.setScore(7.3);
-			ageOfWushu.setGameBoxShotPath("aow_cover.jpg");			
-			gameDAOInstance.save(ageOfWushu);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(ageOfWushu.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(ageOfWushu);
-			
-			Game splinterCellBlacklist = new Game();
-			splinterCellBlacklist.setTitle("Tom Clancy's Splinter Cell: Blacklist");
-			splinterCellBlacklist.setDescription("The United States has a military presence in two thirds of countries around the world. A group of rogue nations have had enough and initiate a terror ultimatum called the Blacklist - a deadly countdown of escalating terrorist attacks on U.S. interests. Sam Fisher is the leader of the newly formed 4th Echelon unit: a clandestine unit that answers solely to the President of the United States.");
-			splinterCellBlacklist.setDeveloper("Ubisoft Toronto");
-			splinterCellBlacklist.setPublisher("Ubisoft");
-			splinterCellBlacklist.setGenere("Action");
-			splinterCellBlacklist.setPrice("60$");
-			splinterCellBlacklist.setPlatforms(platforms);
-			splinterCellBlacklist.setRating(Game.MATURE);
-			splinterCellBlacklist.setGameReleaseStatus(Game.RELEASED);
-			splinterCellBlacklist.setReleaseDate("2013-08-20");	
-			splinterCellBlacklist.setGameBoxShotPath("tcscb_cover.png");			
-			gameDAOInstance.save(splinterCellBlacklist);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(splinterCellBlacklist.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(splinterCellBlacklist);
+			Game batmanArkhamOrigins = new Game();
+			batmanArkhamOrigins.setTitle("Batman: Arkham Origins");
+			batmanArkhamOrigins.setDescription("Arkham Origins moved development away from series creators Rocksteady Studios, and is written by Corey May and Dooma Wendschuh. The game's main storyline is set five years before that of 2009's Batman: Arkham Asylum and follows a younger and less refined Batman who has a bounty placed on his head by crime lord Black Mask, drawing eight of the world's greatest assassins to Gotham City on Christmas Eve.");
+			batmanArkhamOrigins.setDeveloper("WB Games Montreal");
+			batmanArkhamOrigins.setPublisher("Warner Bros. Interactive Entertainment");
+			batmanArkhamOrigins.setGenre(Genre.ActionAdventure);
+			batmanArkhamOrigins.setPrice("");			
+			batmanArkhamOrigins.setPlatforms(batmanArkhamCityPlatforms);
+			batmanArkhamOrigins.setRating(Game.TEEN);
+			batmanArkhamOrigins.setGameReleaseStatus(Game.RELEASED);
+			batmanArkhamOrigins.setReleaseDate("2013-10-25");	
+			batmanArkhamOrigins.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-10-25").getTime());
+			media = new Media();
+			media.setFileName("bao_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(batmanArkhamOrigins.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/batmanarkhamorigins/uploads/bao_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/batmanarkhamorigins/uploads/bao_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			batmanArkhamOrigins.setGameBoxShot(media.getId().toString());			
+			gameDAOInstance.save(batmanArkhamOrigins);
 			
 			Game gta5 = new Game();
 			gta5.setTitle("Grand Theft Auto V");
-			gta5.setDescription("Like GTA: San Andreas before it, GTA V will be set in and around the LA-inspired city of Los Santos.");
+			gta5.setDescription("Grand Theft Auto V is played from a third-person perspective in an open world environment, allowing the player to interact with the game world at their leisure. The game is set mainly within the fictional state of San Andreas (based on Southern California) and affords the player the ability to freely roam the world's countryside and the fictional city of Los Santos (based on Los Angeles). The single-player story is told through three player-controlled protagonists whom the player switches between, and it follows their efforts to plan and execute six large heists to accrue wealth for themselves.");
 			gta5.setDeveloper("Rockstar North");
 			gta5.setPublisher("Rockstar Games");
-			gta5.setGenere("Action");
-			gta5.setPrice("60$");
-			gta5.setPlatforms(platforms);
+			gta5.setGenre(Genre.ActionAdventure);
+			gta5.setPrice("");
+			String[] grandtheftautov = {"ps3","xbox360"};
+			gta5.setPlatforms(grandtheftautov);
 			gta5.setRating(Game.MATURE);
 			gta5.setGameReleaseStatus(Game.RELEASED);
 			gta5.setReleaseDate("2013-09-17");	
-			gta5.setGameBoxShotPath("gta5_cover.png");			
+			gta5.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-09-17").getTime());
+			media = new Media();
+			media.setFileName("gta5_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(gta5.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/grandtheftautov/uploads/gta5_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/grandtheftautov/uploads/gta5_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			gta5.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(gta5);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(gta5.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(gta5);
-			
-			Game batmanArkhamOrigins = new Game();
-			batmanArkhamOrigins.setTitle("Batman Arkham Origins");
-			batmanArkhamOrigins.setDescription("Taking place before the rise of Gotham City's most dangerous criminals, the game showcases a young and unrefined Batman as he faces a defining moment in his early career as a crime fighter that sets his path to becoming the Dark Knight.");
-			batmanArkhamOrigins.setDeveloper("WB Games Montreal");
-			batmanArkhamOrigins.setPublisher("Warner Bros. Interactive Entertainment");
-			batmanArkhamOrigins.setGenere("Action");
-			batmanArkhamOrigins.setPrice("60$");
-			batmanArkhamOrigins.setPlatforms(platforms);
-			batmanArkhamOrigins.setRating(Game.RATING_PENDING);
-			batmanArkhamOrigins.setGameReleaseStatus(Game.NOT_RELEASED);
-			batmanArkhamOrigins.setReleaseDate("2013-10-25");	
-			batmanArkhamOrigins.setGameBoxShotPath("bao_cover.jpg");			
-			gameDAOInstance.save(batmanArkhamOrigins);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(batmanArkhamOrigins.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(batmanArkhamOrigins);
 			
 			Game mgsRising = new Game();
 			mgsRising.setTitle("Metal Gear Rising: Revengence");
 			mgsRising.setDescription("METAL GEAR RISING: REVENGEANCE takes the renowned METAL GEAR franchise into exciting new territory by focusing on delivering an all-new action experience unlike anything that has come before. Combining world-class development teams at Kojima Productions and PlatinumGames, METAL GEAR RISING: REVENGEANCE brings two of the world's most respected teams together with a common goal of providing players with a fresh synergetic experience that combines the best elements of pure action and epic storytelling, all within the expansive MG universe");
 			mgsRising.setDeveloper("Platinum Games");
 			mgsRising.setPublisher("Kojima Productions");
-			mgsRising.setGenere("Action");
-			mgsRising.setPrice("60$");
-			mgsRising.setPlatforms(platforms);
-			mgsRising.setRating(Game.RATING_PENDING);
+			mgsRising.setGenre(Genre.Action);
+			mgsRising.setPrice("");
+			String[] mgsrPlatforms = {"ps3","xbox360","pc"};
+			mgsRising.setPlatforms(mgsrPlatforms);
+			mgsRising.setRating(Game.MATURE);
 			mgsRising.setGameReleaseStatus(Game.RELEASED);
 			mgsRising.setReleaseDate("2013-02-19");		
-			mgsRising.setGameBoxShotPath("mgsr_cover.jpg");			
+			mgsRising.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-02-19").getTime());
+			media = new Media();
+			media.setFileName("mgsr_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(mgsRising.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/metalgearrisingrevengence/uploads/mgsr_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/metalgearrisingrevengence/uploads/mgsr_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			mgsRising.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(mgsRising);
-			uptoGamename =AppConstants.APP_ABSOLUTE_IMAGE_GAME_PATH+Utility.shortenString(mgsRising.getTitle())+"\\uploads\\boxshot\\";
-			makeGamenameDir = new File(uptoGamename);
-			makeGamenameDir.mkdirs();
-			gameDAOInstance.save(mgsRising);*/
+			
+			Game evilWithin = new Game();
+			evilWithin.setTitle("The Evil Within");
+			evilWithin.setDescription("The Evil Within, known in Japan as Psychobreak, is an upcoming survival horror video game, being developed by Japanese studio Tango Gameworks and published by Bethesda Softworks.When Detective Sebastian Castellanos and his partner rush to the scene of a gruesome mass murder, a mysterious, powerful force is lying in wait for them.");
+			evilWithin.setDeveloper("Tango Gameworks");
+			evilWithin.setPublisher("Bethesda Softworks");
+			evilWithin.setGenre(Genre.Action);
+			evilWithin.setPrice("");
+			String[] evilWithinPlatforms = {"ps3","xbox360","pc","xboxOne","ps4"};
+			evilWithin.setPlatforms(evilWithinPlatforms);
+			evilWithin.setRating(Game.RATING_PENDING);
+			evilWithin.setGameReleaseStatus(Game.NOT_RELEASED);
+			evilWithin.setReleaseDate("2014-12-31");		
+			evilWithin.setReleaseTimeStamp(Utility.convertFromStringToDate("2014-12-31").getTime());
+			media = new Media();
+			media.setFileName("tew_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(evilWithin.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/theevilwithin/uploads/tew_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/theevilwithin/uploads/tew_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			evilWithin.setGameBoxShot(media.getId().toString());			
+			gameDAOInstance.save(evilWithin);
+			
+			Game battlefield4 = new Game();
+			battlefield4.setTitle("Battlefield 4");
+			battlefield4.setDescription("Battlefield 4's single-player Campaign takes place in 2020, six years after the events of its predecessor. Tensions between Russia and the United States are running at a record high, due to a conflict that has been running for the past six years. On top of all this, China is also on the brink of war as Admiral Cheng, plans to overthrow China's current government; and, if successful, the Russians will have full support from the Chinese, bringing China into a war with the United States");
+			battlefield4.setDeveloper("EA Digital Illusions CE");
+			battlefield4.setPublisher("Electronic Arts");
+			battlefield4.setGenre(Genre.Fps);
+			battlefield4.setPrice("");
+			String[] battlefield4Platforms = {"ps3","xbox360","pc","xboxOne","ps4"};
+			battlefield4.setPlatforms(battlefield4Platforms);
+			battlefield4.setRating(Game.MATURE);
+			battlefield4.setGameReleaseStatus(Game.RELEASED);
+			battlefield4.setReleaseDate("2013-10-29");		
+			battlefield4.setReleaseTimeStamp(Utility.convertFromStringToDate("2013-10-29").getTime());
+			media = new Media();
+			media.setFileName("b4_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(battlefield4.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/battlefield4/uploads/b4_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/battlefield4/uploads/b4_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			battlefield4.setGameBoxShot(media.getId().toString());			
+			gameDAOInstance.save(battlefield4);
+			
+			Game destiny = new Game();
+			destiny.setTitle("Destiny");
+			destiny.setDescription("Destiny is an upcoming action role-playing first-person shooter video game in a \"mythic science fiction\" open world setting. It is developed by Bungie and published by Activision as part of a ten-year publishing deal.Destiny is set seven hundred years into the future in a post-apocalyptic setting following a prosperous period of exploration, peace and technological advancement known as the Golden Age.");
+			destiny.setDeveloper("Bungie");
+			destiny.setPublisher("Activision");
+			destiny.setGenre(Genre.Fps);
+			destiny.setPrice("");
+			String[] destinyPlatforms = {"ps3","xbox360","xboxOne","ps4"};
+			destiny.setPlatforms(destinyPlatforms);
+			destiny.setRating(Game.RATING_PENDING);
+			destiny.setGameReleaseStatus(Game.NOT_RELEASED);
+			destiny.setReleaseDate("TBA");		
+			destiny.setReleaseTimeStamp(Long.MAX_VALUE);			
+			media = new Media();
+			media.setFileName("destiny_cover.jpg");
+			media.setImmediateOwner(Utility.shortenString(destiny.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/destiny/uploads/destiny_cover.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/destiny/uploads/destiny_cover.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			destiny.setGameBoxShot(media.getId().toString());			
+			gameDAOInstance.save(destiny);
+			
 			
 		}
 		
