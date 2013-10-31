@@ -241,7 +241,7 @@ public class GameDAO extends GloonDAO implements GameInterface{
 			gameMap.put("gameActivities", activityDAOinstance.getActivitiesForGame(game));
 			gameMap.put("gameCarousel", articleDAOinstance.getAllArticlesForGameCarousel(game.getId().toString()));
 			try {
-				if(Utility.date1BeforeDate2(Utility.convertFromStringToDate(game.getReleaseDate()), new Date()))
+				if(Utility.date1BeforeDate2(Utility.convertFromStringToDateFormat2(game.getReleaseDate()), new Date()))
 				{
 					game.setGameReleaseStatus(Game.RELEASED);
 				}
