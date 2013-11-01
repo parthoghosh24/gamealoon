@@ -121,6 +121,7 @@ public class UserController extends Controller{
 	
 	public static Result saveOrUpdateUserAvatar(String username, String mediaId)
 	{	
+		Logger.info("Save or updated called");
 		String domain="";
 	    if(Play.isDev() || Play.isTest())
 	    {
