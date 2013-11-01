@@ -184,6 +184,7 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3.setGameReleaseStatus(Game.RELEASED);			
 			Media media = new Media();
 			media.setFileName("mp_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(maxPayne3.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -214,7 +215,8 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2012-12-04").getTime());
 			farCry3.setGameReleaseStatus(Game.RELEASED);
 			media = new Media();
-			media.setFileName("mp_cover.jpg");
+			media.setFileName("fc3_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(farCry3.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -247,6 +249,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamCity.setGameReleaseStatus(Game.RELEASED);
 			media = new Media();
 			media.setFileName("bac_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(batmanArkhamCity.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -277,6 +280,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamOrigins.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-25").getTime());
 			media = new Media();
 			media.setFileName("bao_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(batmanArkhamOrigins.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -308,6 +312,7 @@ public class GloonGlobal extends GlobalSettings {
 			gta5.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-09-17").getTime());
 			media = new Media();
 			media.setFileName("gta5_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(gta5.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -339,6 +344,7 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRising.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-02-19").getTime());
 			media = new Media();
 			media.setFileName("mgsr_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(mgsRising.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -370,6 +376,7 @@ public class GloonGlobal extends GlobalSettings {
 			evilWithin.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2014-12-31").getTime());
 			media = new Media();
 			media.setFileName("tew_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(evilWithin.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -401,6 +408,7 @@ public class GloonGlobal extends GlobalSettings {
 			battlefield4.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-29").getTime());
 			media = new Media();
 			media.setFileName("b4_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(battlefield4.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())
@@ -432,6 +440,7 @@ public class GloonGlobal extends GlobalSettings {
 			destiny.setReleaseTimeStamp(Long.MAX_VALUE);			
 			media = new Media();
 			media.setFileName("destiny_cover.jpg");
+			media.setMediaType(Media.IMAGE);
 			media.setImmediateOwner(Utility.shortenString(destiny.getTitle()));
 			media.setOwner(Media.GAME);
 			if(Play.isDev() || Play.isTest())

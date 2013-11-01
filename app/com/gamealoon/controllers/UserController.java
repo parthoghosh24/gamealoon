@@ -111,10 +111,11 @@ public class UserController extends Controller{
 		    {
 		    	domain="http://www.gamealoon.com";
 		    }
-		 	response().setHeader("Access-Control-Allow-Origin", domain);       // Need to add the correct domain in here!!
+		 	response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 		    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
 		    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
-		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
+		    response().setHeader("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
+//		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
 		    return ok();
 	}
 	
@@ -133,7 +134,7 @@ public class UserController extends Controller{
 		FilePart avatarPart = body.getFile("userAvatarFile");		
 		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
 		
-		response().setHeader("Access-Control-Allow-Origin", domain);       // Need to add the correct domain in here!!
+		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 		return ok(toJson(response));
 	}
 	
