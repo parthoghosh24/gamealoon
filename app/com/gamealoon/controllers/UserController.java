@@ -115,7 +115,7 @@ public class UserController extends Controller{
 		FilePart avatarPart = body.getFile("userAvatarFile");		
 		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
 		
-//		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 		return ok(toJson(response));
 	}
 	
