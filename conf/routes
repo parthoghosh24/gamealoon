@@ -28,14 +28,14 @@ POST /user/password/change/:userName		 							com.gamealoon.controllers.UserCont
 POST /user/addOrRemoveBuddy                  							com.gamealoon.controllers.UserController.addOrRemoveBuddy()
 POST /user/blockOrUnblockBuddy               							com.gamealoon.controllers.UserController.blockOrUnblockBuddy()
 POST /user/interestedOrNotInGame			 							com.gamealoon.controllers.UserController.addOrRemoveInterestedGames()
-OPTIONS /user/saveOrUpdateUserAvatar/:userName/:mediaId		            com.gamealoon.controllers.UserController.checkStatus(userName:String, mediaId:String)
+OPTIONS /user/saveOrUpdateUserAvatar/:userName/:mediaId		            com.gamealoon.controllers.UserController.saveOrUpdateUserAvatar(userName:String, mediaId:String)
 POST /user/saveOrUpdateUserAvatar/:userName/:mediaId		            com.gamealoon.controllers.UserController.saveOrUpdateUserAvatar(userName:String, mediaId:String)
 GET /user/validateEmail/:email				 							com.gamealoon.controllers.UserController.validateEmail(email:String)	
 GET /user/validateUsername/:username         							com.gamealoon.controllers.UserController.validateUsername(username:String)  
 GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
 
 # Media								
-OPTIONS /media/uploadImage/:userName/:mediaId/:mediaOwnerType		 com.gamealoon.controllers.MediaController.checkStatus(userName:String, mediaId:String, mediaOwnerType:String)			
+OPTIONS /media/uploadImage/:userName/:mediaId/:mediaOwnerType		 com.gamealoon.controllers.MediaController.uploadImage(userName:String, mediaId:String, mediaOwnerType:String)			
 POST /media/uploadImage/:userName/:mediaId/:mediaOwnerType           com.gamealoon.controllers.MediaController.uploadImage(userName:String, mediaId:String, mediaOwnerType:String)
 GET /media/images/:userName/:timeStamp      						 com.gamealoon.controllers.MediaController.fetchImages(userName:String, timeStamp:String)
 

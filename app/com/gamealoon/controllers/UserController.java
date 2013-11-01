@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import com.gamealoon.cors.CorsComposition.Cors;
 import com.gamealoon.database.daos.UserDAO;
 import static play.data.Form.*;
 import play.Logger;
@@ -100,7 +100,7 @@ public class UserController extends Controller{
 		HashMap<String, String> response = addOrRemoveInterestedGamesMap(originalUsername, gameId, type);
 		return ok(toJson(response));
 	}
-	public static Result checkStatus(String userName, String mediaId)
+	/*public static Result checkStatus(String userName, String mediaId)
 	{
 			String domain="";
 		    if(Play.isDev() || Play.isTest())
@@ -117,8 +117,9 @@ public class UserController extends Controller{
 		    response().setHeader("Access-Control-Allow-Headers", "Accept, Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
 //		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
 		    return ok();
-	}
+	}*/
 	
+	@Cors
 	public static Result saveOrUpdateUserAvatar(String username, String mediaId)
 	{	
 		Logger.info("Save or updated called");
@@ -135,7 +136,7 @@ public class UserController extends Controller{
 		FilePart avatarPart = body.getFile("userAvatarFile");		
 		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
 		
-		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+//		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 		return ok(toJson(response));
 	}
 	

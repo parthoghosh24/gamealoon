@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.gamealoon.cors.CorsComposition.Cors;
 import com.gamealoon.database.daos.MediaDAO;
 
 import play.Play;
@@ -17,7 +18,7 @@ public class MediaController extends Controller{
 
 	private static final MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
 	
-	public static Result checkStatus(String userName, String mediaId, String mediaOwnerType)
+	/*public static Result checkStatus(String userName, String mediaId, String mediaOwnerType)
 	{
 		
 			String domain="";
@@ -35,8 +36,9 @@ public class MediaController extends Controller{
 		    response().setHeader("Access-Control-Allow-Headers", "Accept, Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
 //		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
 		    return ok();
-	}
+	}*/
 	
+	@Cors
 	public static Result uploadImage(String userName, String mediaId, String mediaOwnerType)
 	{			
 		String domain="";
