@@ -4,11 +4,9 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import com.gamealoon.cors.CorsComposition.Cors;
 import com.gamealoon.database.daos.UserDAO;
 import static play.data.Form.*;
 import play.Logger;
-import play.Play;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
@@ -100,38 +98,19 @@ public class UserController extends Controller{
 		HashMap<String, String> response = addOrRemoveInterestedGamesMap(originalUsername, gameId, type);
 		return ok(toJson(response));
 	}
-	/*public static Result checkStatus(String userName, String mediaId)
-	{
-			String domain="";
-		    if(Play.isDev() || Play.isTest())
-		    {
-		    	domain="http://localhost:8080";
-		    }
-		    if(Play.isProd())
-		    {
-		    	domain="http://www.gamealoon.com";
-		    }
+	public static Result checkStatus(String userName, String mediaId)
+	{		
 		 	response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
 		    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
 		    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
-		    response().setHeader("Access-Control-Allow-Headers", "Accept, Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
+		    response().setHeader("Access-Control-Allow-Headers", "accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");
 //		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
 		    return ok();
-	}*/
-	
-	@Cors
+	}
+		
 	public static Result saveOrUpdateUserAvatar(String username, String mediaId)
 	{	
-		Logger.info("Save or updated called");
-		String domain="";
-	    if(Play.isDev() || Play.isTest())
-	    {
-	    	domain="http://localhost:8080";
-	    }
-	    if(Play.isProd())
-	    {
-	    	domain="http://www.gamealoon.com";
-	    }
+		Logger.info("Save or updated called");		
 		MultipartFormData body = request().body().asMultipartFormData();				
 		FilePart avatarPart = body.getFile("userAvatarFile");		
 		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
