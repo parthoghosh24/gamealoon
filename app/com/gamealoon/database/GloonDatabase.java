@@ -33,9 +33,7 @@ public class GloonDatabase {
 			Morphia gloonMorphiaInstance = new Morphia();
 			Logger.debug("GLOON MORPHIA INSTANCE "+gloonMorphiaInstance);		
 			Logger.debug("DB NAME"+ConfigFactory.load().getString("gloon.database.name"));
- 			Logger.debug("DB "+ DB_NAME);
-			Logger.debug("username "+ DB_USERNAME);
-			Logger.debug("password "+ DB_PASSWORD);
+ 			Logger.debug("DB "+ DB_NAME);			
 			gloonDatastoreInstance = gloonMorphiaInstance.createDatastore(result, DB_NAME,DB_USERNAME,DB_PASSWORD.toCharArray());
 			Logger.debug("GLOON DATASTORE INSTANCE "+gloonDatastoreInstance);
 			

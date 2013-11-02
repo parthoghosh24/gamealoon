@@ -75,6 +75,8 @@ public class MediaDAO extends GloonDAO implements MediaInterface {
 		 */
 		private Media createOrUpdateMediaInstance(String mediaId, FilePart filePart, String username, String mediaOwnerType)
 		{
+			Logger.debug("MEDIA GETTING CREATED");
+			Logger.info("MEDIA GETTING CREATED");
 			Media media=null;
 			Date time = new Date();
 			if(mediaId.isEmpty() || "none".equalsIgnoreCase(mediaId))
