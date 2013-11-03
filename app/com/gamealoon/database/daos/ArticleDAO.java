@@ -318,11 +318,13 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			if(articleFeatureImage.isEmpty())
 			{
 				response.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
+				response.put("articleFeaturedImageId", "default");
 			}
 			else
 			{
 				Media media = mediaDaoInstance.getById(articleFeatureImage);
 				response.put("articleFeaturedImage", media.getUrl());
+				response.put("articleFeaturedImageId", media.getId().toString());
 			}
 			String gameId = article.getGame();						
 			if(gameId!=null)
