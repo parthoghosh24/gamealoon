@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.bson.types.ObjectId;
+
+import play.Logger;
+
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.ConversationInterface;
 import com.gamealoon.models.Activity;
@@ -144,34 +147,39 @@ public class ConversationDAO extends GloonDAO implements ConversationInterface{
 	@Override
 	public ArrayList<HashMap<String, Object>> getComments(String articleId) throws ParseException, MalformedURLException {
 		ArrayList<HashMap<String, Object>> commentMaps= new ArrayList<>();
-		List<Conversation> conversations = getCommentConversations(Conversation.COMMENT, articleId);		
-		for(Conversation conversation: conversations)
+		List<Conversation> conversations = getCommentConversations(Conversation.COMMENT, articleId);
+		Logger.debug("conversations size "+conversations.size());
+		if(conversations.size()>0)
 		{
-			if(conversation!= null)
+			for(Conversation conversation: conversations)
 			{
-				HashMap<String, Object> commentMap = new HashMap<>();
-				commentMap.put("conversationId", conversation.getId().toString());
-				commentMap.put("conversationType", Conversation.COMMENT);
-				commentMap.put("ownerName", conversation.getOwnerName());
-				commentMap.put("message", conversation.getMessage());
-				commentMap.put("conversationInsertTime", conversation.getInsertTime());
-				commentMap.put("converstationTimeFormatted", Utility.convertFromOneFormatToAnother(conversation.getInsertTime()));
-				commentMap.put("conversationTimeStamp", conversation.getTimeStamp());
-				commentMap.put("conversationComment",conversation.getComment());
-				User user = userDAOInstance.findByUsername(conversation.getOwnerName());
-				String ownerAvatarImage = user.getAvatar();
-				if(ownerAvatarImage.isEmpty())
+				if(conversation!= null)
 				{
-					commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+					HashMap<String, Object> commentMap = new HashMap<>();
+					commentMap.put("conversationId", conversation.getId().toString());
+					commentMap.put("conversationType", Conversation.COMMENT);
+					commentMap.put("ownerName", conversation.getOwnerName());
+					commentMap.put("message", conversation.getMessage());
+					commentMap.put("conversationInsertTime", conversation.getInsertTime());
+					commentMap.put("converstationTimeFormatted", Utility.convertFromOneFormatToAnother(conversation.getInsertTime()));
+					commentMap.put("conversationTimeStamp", conversation.getTimeStamp());
+					commentMap.put("conversationComment",conversation.getComment());
+					User user = userDAOInstance.findByUsername(conversation.getOwnerName());
+					String ownerAvatarImage = user.getAvatar();
+					if(ownerAvatarImage.isEmpty())
+					{
+						commentMap.put("ownerAvatarImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/avatar.png");
+					}
+					else
+					{
+						Media media=mediaDAOInstance.getById(ownerAvatarImage);
+						commentMap.put("ownerAvatarImage", media.getUrl());
+					}	
+					commentMaps.add(commentMap);
 				}
-				else
-				{
-					Media media=mediaDAOInstance.getById(ownerAvatarImage);
-					commentMap.put("ownerAvatarImage", media.getUrl());
-				}	
-				commentMaps.add(commentMap);
 			}
 		}
+		
 		return commentMaps;
 	}
 	
