@@ -613,7 +613,16 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			   articleMap.put("articleUpdateTime", article.getUpdateTime());
 			   articleMap.put("articlePublishDate", article.getPublishDate());
 			   try {
-				   articleMap.put("publishTimeFormatted", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
+				   String publishDate = article.getPublishDate();
+				   if(publishDate!=null)
+				   {
+					   articleMap.put("publishTimeFormatted", Utility.convertFromOneFormatToAnother(article.getPublishDate()));  
+				   }
+				   else
+				   {
+					   articleMap.put("publishTimeFormatted", "");
+				   }
+				   
 				} catch (ParseException e1) {
 					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
 					articleMap.put("articleTimeSpentFromPublish", "NaN");

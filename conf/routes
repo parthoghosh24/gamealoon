@@ -34,13 +34,14 @@ GET /user/validateEmail/:email				 							com.gamealoon.controllers.UserControll
 GET /user/validateUsername/:username         							com.gamealoon.controllers.UserController.validateUsername(username:String)  
 GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
 
+
 # Media								
 OPTIONS /media/uploadImage/:userName/:mediaId/:mediaOwnerType		 com.gamealoon.controllers.MediaController.checkStatus(userName:String, mediaId:String, mediaOwnerType:String)			
 POST /media/uploadImage/:userName/:mediaId/:mediaOwnerType           com.gamealoon.controllers.MediaController.uploadImage(userName:String, mediaId:String, mediaOwnerType:String)
 GET /media/images/:userName/:timeStamp      						 com.gamealoon.controllers.MediaController.fetchImages(userName:String, timeStamp:String)
 
-# Search
 
+# Search
 GET /search/:keywords             			com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
 
 # Game		
