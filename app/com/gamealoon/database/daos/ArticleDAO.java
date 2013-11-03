@@ -260,8 +260,16 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			response.put("articleBody", article.getBody());			
 			response.put("articleCategory", article.getCategory().toString());
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle())+"-"+article.getId().toString());
+			String publishDate=article.getPublishDate();
 			try {
-				response.put("articlePublishDate", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
+				if(publishDate!=null)
+				{
+					response.put("articlePublishDate", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
+				}
+				else
+				{
+					response.put("articlePublishDate", "");
+				}
 			} catch (ParseException e) {
 				response.put("articlePublishDate", article.getPublishDate());
 				e.printStackTrace();
