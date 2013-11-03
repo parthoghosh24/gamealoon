@@ -264,7 +264,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			try {
 				if(publishDate!=null)
 				{
-					response.put("articlePublishDate", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
+					response.put("articlePublishDate", Utility.convertFromOneFormatToAnother(publishDate));
 				}
 				else
 				{
