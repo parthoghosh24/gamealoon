@@ -114,8 +114,10 @@ public class UserController extends Controller{
 		MultipartFormData body = request().body().asMultipartFormData();				
 		FilePart avatarPart = body.getFile("userAvatarFile");		
 		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
-		
 		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+	    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
+	    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
+	    response().setHeader("Access-Control-Allow-Headers", "accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");		
 		return ok(toJson(response));
 	}
 	

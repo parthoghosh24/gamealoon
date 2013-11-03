@@ -19,7 +19,7 @@ public class MediaController extends Controller{
 		
 			
 		 	response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
-		    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
+		    response().setHeader("Access-Control-Allow-Methods", "POST"); 
 		    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
 		    response().setHeader("Access-Control-Allow-Headers", "accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");
 //		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
@@ -32,6 +32,9 @@ public class MediaController extends Controller{
 		FilePart imagePart = body.getFile("previewFile");
 		HashMap<String, String> response = createOrUpdateImage(mediaId, userName,imagePart,mediaOwnerType);
 		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+	    response().setHeader("Access-Control-Allow-Methods", "POST,OPTIONS"); 
+	    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
+	    response().setHeader("Access-Control-Allow-Headers", "accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");
 		return ok(toJson(response));
 	}
 	
