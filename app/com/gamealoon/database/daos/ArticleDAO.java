@@ -612,19 +612,23 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			   articleMap.put("articleInsertTime", article.getInsertTime());
 			   articleMap.put("articleUpdateTime", article.getUpdateTime());
 			   articleMap.put("articlePublishDate", article.getPublishDate());
+			   String publishDate = article.getPublishDate();
 			   try {
-				   String publishDate = article.getPublishDate();
+				   
 				   if(publishDate!=null)
 				   {
-					   articleMap.put("publishTimeFormatted", Utility.convertFromOneFormatToAnother(article.getPublishDate()));  
-				   }
+					   articleMap.put("publishTimeFormatted", Utility.convertFromOneFormatToAnother(publishDate));  
+					   articleMap.put("articleTimeSpentFromPublish", Utility.convertFromOneFormatToAnother(publishDate));
+				   }				   
 				   else
 				   {
 					   articleMap.put("publishTimeFormatted", "");
+					   articleMap.put("articleTimeSpentFromPublish", "");
 				   }
 				   
 				} catch (ParseException e1) {
 					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
+					articleMap.put("articleTimeSpentFromPublish", "NaN");
 					articleMap.put("articleTimeSpentFromPublish", "NaN");
 				}
 			   try {
@@ -649,13 +653,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			   } catch (MalformedURLException e) {
 				   Logger.error("Malformed Error in ArticleDAO getArticleListForUser",e.fillInStackTrace());
 				
-			}
-			   try {
-				   articleMap.put("articleTimeSpentFromPublish", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
-				} catch (ParseException e1) {
-					Logger.error("Error in ArticleDAO ",e1.fillInStackTrace());						
-					articleMap.put("articleTimeSpentFromPublish", "NaN");
-				}			   
+			}			   
 			   articleMap.put("articlePlatforms", article.getPlatforms());			   
 			   articleMapList.add(articleMap);
 			   
