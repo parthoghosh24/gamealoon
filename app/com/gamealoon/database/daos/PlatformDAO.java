@@ -1,7 +1,10 @@
 package com.gamealoon.database.daos;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import play.data.DynamicForm;
 import com.gamealoon.database.GloonDAO;
@@ -61,6 +64,36 @@ public class PlatformDAO extends GloonDAO implements PlatformInterface{
 		return response;
 	}
 	
+	@Override
+	public Platform getById(String id) {		
+		return gloonDatastore.get(Platform.class,new ObjectId(id));
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getNPlatforms(int limit, long timeStamp) {
+		List<HashMap<String, Object>> platformMaps = new ArrayList<>();
+		List<Platform> platforms = getPlatforms(limit, timeStamp);
+		for(Platform platform: platforms)
+		{
+			HashMap<String, Object> platformMap = new HashMap<>();
+			platformMap.put("id", platform.getId().toString());
+			platformMap.put("title", platform.getTitle());
+			platformMap.put("description", platform.getDescription());
+			platformMap.put("developer", platform.getDeveloper());
+			platformMap.put("manufacturer", platform.getManufacturer());
+			platformMap.put("shortTitle", platform.getShortTitle());
+			platformMap.put("insertTime", platform.getInsertTime());
+			platformMap.put("updateTime", platform.getUpdateTime());
+			platformMap.put("timestamp", platform.getTimestamp());
+		    platformMaps.add(platformMap);
+		}
+		return platformMaps;
+	}
+	
+	private List<Platform> getPlatforms(int limit, long timeStamp)
+	{
+		return gloonDatastore.createQuery(Platform.class).limit(limit).filter("timestamp <", timeStamp).order("-timestamp").asList();
+	}
 	/**
 	 * Create or update a platform instance
 	 * 
@@ -96,9 +129,6 @@ public class PlatformDAO extends GloonDAO implements PlatformInterface{
 		return platform;
 	}
 
-	@Override
-	public Platform getById(String id) {		
-		return gloonDatastore.get(Platform.class,new ObjectId(id));
-	}
+	
 
 }

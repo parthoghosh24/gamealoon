@@ -1,6 +1,7 @@
 package com.gamealoon.database.interfaces;
 
 import java.util.HashMap;
+import java.util.List;
 
 import play.data.DynamicForm;
 
@@ -44,4 +45,13 @@ public interface PlatformInterface {
 	 * @return
 	 */
 	public Platform getById(String id);
+	
+	/**
+	 * Get N Platforms
+	 * 
+	 * @param limit
+	 * @param timeStamp
+	 * @return
+	 */
+	public List<HashMap<String, Object>> getNPlatforms(int limit, long timeStamp);
 }

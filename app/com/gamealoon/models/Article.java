@@ -47,12 +47,20 @@ public class Article {
 	private int state; //1: draft, 2:publish
 	private String author;
 	private String game;
+	private int isPublished;
 	
 	/**
 	 * Article states
 	 */
 	public final static int DRAFT=1; 
 	public final static int PUBLISH=2;
+	
+	/**
+	 * Article is published states
+	 * 
+	 */
+	public final static int PUBLISHED=0; 
+	public final static int NOT_PUBLISHED=1;
 	
 	/**
 	 * Article List extractor modes
@@ -425,6 +433,20 @@ public class Article {
     	return mediaIds;
     	
     }
+
+	/**
+	 * @return the isPublished
+	 */
+	public int getIsPublished() {
+		return isPublished;
+	}
+
+	/**
+	 * @param isPublished the isPublished to set
+	 */
+	public void setIsPublished(int isPublished) {
+		this.isPublished = isPublished;
+	}
 
 
 

@@ -1,6 +1,7 @@
 package com.gamealoon.database.interfaces;
 
 import java.util.HashMap;
+import java.util.List;
 
 import play.data.DynamicForm;
 
@@ -36,4 +37,20 @@ public interface AchievementInterface {
 	 * @return
 	 */
 	public Achievement getById(String id);
+	
+	/**
+	 * Get N achievements
+	 * 
+	 * @param limit
+	 * @param timestamp
+	 * @return
+	 */
+	public List<HashMap<String, Object>> getNAchievements(int limit, long timestamp);
+	
+	/**
+	 * Get games
+	 * 
+	 * @return
+	 */
+	public List<Achievement> getAchievements();
 }

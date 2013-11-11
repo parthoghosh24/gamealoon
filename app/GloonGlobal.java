@@ -1,5 +1,7 @@
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
+
 import com.gamealoon.database.daos.AchievementDAO;
 import com.gamealoon.database.daos.GameDAO;
 import com.gamealoon.database.daos.MediaDAO;
@@ -23,6 +25,25 @@ public class GloonGlobal extends GlobalSettings {
 	
 	 @Override
 	public void onStart(Application app) {
+		 
+		 //temp
+		 List<Game> games = gameDAOInstance.getGamesForAdmin();
+		 for(Game game: games)
+		 {
+			 Date time = new Date();
+			 game.setInsertTime(Utility.convertDateToString(time));
+			 game.setTimestamp(time.getTime());
+			 gameDAOInstance.save(game);
+		 }
+		 
+		 List<Achievement> achievements = achievementDAOInstance.getAchievements();
+		 for(Achievement achievement: achievements)
+		 {
+			 Date time = new Date();
+			 achievement.setInsertTime(Utility.convertDateToString(time));
+			 achievement.setTimestamp(time.getTime());
+			 achievementDAOInstance.save(achievement);
+		 }
 		 if (Achievement.getAllAchievementCount()==0) {
 				System.out.println("Data getting created.............");				
 				createAchievements();				
@@ -45,11 +66,14 @@ public class GloonGlobal extends GlobalSettings {
 			 * Temporary way to save achievement...
 			 * 
 			 */
+				Date time = new Date();
 		   			
 				Achievement newGloonie = new Achievement();
 				newGloonie.setTitle("New Gloonie!");
 				newGloonie.setDescription("Welcome to gamealoon!!!");
 				newGloonie.setAchievementImage("");
+				newGloonie.setInsertTime(Utility.convertDateToString(time));
+				newGloonie.setTimestamp(time.getTime());
 			
 			achievementDAOInstance.save(newGloonie);			
 		}
@@ -179,6 +203,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] maxPayne3Platforms = {"ps3","xbox360","pc"};
 			maxPayne3.setPlatforms(maxPayne3Platforms);			
 			maxPayne3.setRating(Game.MATURE);
+			maxPayne3.setInsertTime(Utility.convertDateToString(time));
+			maxPayne3.setTimestamp(time.getTime());
+			maxPayne3.setUpdateTime(Utility.convertDateToString(time));
 			maxPayne3.setReleaseDate("2012-05-15");
 			maxPayne3.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2012-05-15").getTime());
 			maxPayne3.setGameReleaseStatus(Game.RELEASED);			
@@ -201,6 +228,7 @@ public class GloonGlobal extends GlobalSettings {
 			maxPayne3.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(maxPayne3);			
 			
+			time = new Date();
 			Game farCry3 = new Game();
 			farCry3.setTitle("Far Cry 3");
 			farCry3.setDescription("Far Cry 3 is set on a tropical island between the Indian and Pacific Oceans.After a vacation goes awry, protagonist Jason Brody must save his friends, who have been kidnapped by pirates and escape from the island and its unhinged inhabitants.");
@@ -211,6 +239,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] farCry3Platforms = {"ps3","xbox360","pc"};
 			farCry3.setPlatforms(farCry3Platforms);
 			farCry3.setRating(Game.MATURE);
+			farCry3.setInsertTime(Utility.convertDateToString(time));
+			farCry3.setTimestamp(time.getTime());
+			farCry3.setUpdateTime(Utility.convertDateToString(time));
 			farCry3.setReleaseDate("2012-12-04");
 			farCry3.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2012-12-04").getTime());
 			farCry3.setGameReleaseStatus(Game.RELEASED);
@@ -233,7 +264,7 @@ public class GloonGlobal extends GlobalSettings {
 			farCry3.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(farCry3);
 			
-			
+			time = new Date();
 			Game batmanArkhamCity = new Game();
 			batmanArkhamCity.setTitle("Batman: Arkham City");
 			batmanArkhamCity.setDescription("Written by veteran Batman writer Paul Dini with Paul Crocker and Sefton Hill, Arkham City is based on the franchise's long-running comic book mythos. In the game's main storyline, Batman is incarcerated in Arkham City, a massive new super-prison enclosing the decaying urban slums of fictional Gotham City. He must uncover the secret behind the sinister scheme, \"Protocol 10\", orchestrated by the facilities warden, Hugo Strange.");
@@ -244,6 +275,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] batmanArkhamCityPlatforms = {"ps3","xbox360","pc","wiiu"};
 			batmanArkhamCity.setPlatforms(batmanArkhamCityPlatforms);
 			batmanArkhamCity.setRating(Game.TEEN);
+			batmanArkhamCity.setInsertTime(Utility.convertDateToString(time));
+			batmanArkhamCity.setTimestamp(time.getTime());
+			batmanArkhamCity.setUpdateTime(Utility.convertDateToString(time));
 			batmanArkhamCity.setReleaseDate("2011-10-21");
 			batmanArkhamCity.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2011-10-21").getTime());
 			batmanArkhamCity.setGameReleaseStatus(Game.RELEASED);
@@ -266,6 +300,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamCity.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(batmanArkhamCity);
 			
+			time = new Date();
 			Game batmanArkhamOrigins = new Game();
 			batmanArkhamOrigins.setTitle("Batman: Arkham Origins");
 			batmanArkhamOrigins.setDescription("Arkham Origins moved development away from series creators Rocksteady Studios, and is written by Corey May and Dooma Wendschuh. The game's main storyline is set five years before that of 2009's Batman: Arkham Asylum and follows a younger and less refined Batman who has a bounty placed on his head by crime lord Black Mask, drawing eight of the world's greatest assassins to Gotham City on Christmas Eve.");
@@ -275,6 +310,9 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamOrigins.setPrice("");			
 			batmanArkhamOrigins.setPlatforms(batmanArkhamCityPlatforms);
 			batmanArkhamOrigins.setRating(Game.TEEN);
+			batmanArkhamOrigins.setInsertTime(Utility.convertDateToString(time));
+			batmanArkhamOrigins.setTimestamp(time.getTime());
+			batmanArkhamOrigins.setUpdateTime(Utility.convertDateToString(time));
 			batmanArkhamOrigins.setGameReleaseStatus(Game.RELEASED);
 			batmanArkhamOrigins.setReleaseDate("2013-10-25");	
 			batmanArkhamOrigins.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-25").getTime());
@@ -297,6 +335,7 @@ public class GloonGlobal extends GlobalSettings {
 			batmanArkhamOrigins.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(batmanArkhamOrigins);
 			
+			time = new Date();
 			Game gta5 = new Game();
 			gta5.setTitle("Grand Theft Auto V");
 			gta5.setDescription("Grand Theft Auto V is played from a third-person perspective in an open world environment, allowing the player to interact with the game world at their leisure. The game is set mainly within the fictional state of San Andreas (based on Southern California) and affords the player the ability to freely roam the world's countryside and the fictional city of Los Santos (based on Los Angeles). The single-player story is told through three player-controlled protagonists whom the player switches between, and it follows their efforts to plan and execute six large heists to accrue wealth for themselves.");
@@ -307,6 +346,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] grandtheftautov = {"ps3","xbox360"};
 			gta5.setPlatforms(grandtheftautov);
 			gta5.setRating(Game.MATURE);
+			gta5.setInsertTime(Utility.convertDateToString(time));
+			gta5.setTimestamp(time.getTime());
+			gta5.setUpdateTime(Utility.convertDateToString(time));
 			gta5.setGameReleaseStatus(Game.RELEASED);
 			gta5.setReleaseDate("2013-09-17");	
 			gta5.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-09-17").getTime());
@@ -329,6 +371,7 @@ public class GloonGlobal extends GlobalSettings {
 			gta5.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(gta5);
 			
+			time = new Date();
 			Game mgsRising = new Game();
 			mgsRising.setTitle("Metal Gear Rising: Revengence");
 			mgsRising.setDescription("METAL GEAR RISING: REVENGEANCE takes the renowned METAL GEAR franchise into exciting new territory by focusing on delivering an all-new action experience unlike anything that has come before. Combining world-class development teams at Kojima Productions and PlatinumGames, METAL GEAR RISING: REVENGEANCE brings two of the world's most respected teams together with a common goal of providing players with a fresh synergetic experience that combines the best elements of pure action and epic storytelling, all within the expansive MG universe");
@@ -339,6 +382,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] mgsrPlatforms = {"ps3","xbox360","pc"};
 			mgsRising.setPlatforms(mgsrPlatforms);
 			mgsRising.setRating(Game.MATURE);
+			mgsRising.setInsertTime(Utility.convertDateToString(time));
+			mgsRising.setTimestamp(time.getTime());
+			mgsRising.setUpdateTime(Utility.convertDateToString(time));
 			mgsRising.setGameReleaseStatus(Game.RELEASED);
 			mgsRising.setReleaseDate("2013-02-19");		
 			mgsRising.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-02-19").getTime());
@@ -361,6 +407,7 @@ public class GloonGlobal extends GlobalSettings {
 			mgsRising.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(mgsRising);
 			
+			time = new Date();
 			Game evilWithin = new Game();
 			evilWithin.setTitle("The Evil Within");
 			evilWithin.setDescription("The Evil Within, known in Japan as Psychobreak, is an upcoming survival horror video game, being developed by Japanese studio Tango Gameworks and published by Bethesda Softworks.When Detective Sebastian Castellanos and his partner rush to the scene of a gruesome mass murder, a mysterious, powerful force is lying in wait for them.");
@@ -371,6 +418,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] evilWithinPlatforms = {"ps3","xbox360","pc","xboxOne","ps4"};
 			evilWithin.setPlatforms(evilWithinPlatforms);
 			evilWithin.setRating(Game.RATING_PENDING);
+			evilWithin.setInsertTime(Utility.convertDateToString(time));
+			evilWithin.setTimestamp(time.getTime());
+			evilWithin.setUpdateTime(Utility.convertDateToString(time));
 			evilWithin.setGameReleaseStatus(Game.NOT_RELEASED);
 			evilWithin.setReleaseDate("2014-12-31");		
 			evilWithin.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2014-12-31").getTime());
@@ -393,6 +443,7 @@ public class GloonGlobal extends GlobalSettings {
 			evilWithin.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(evilWithin);
 			
+			time = new Date();
 			Game battlefield4 = new Game();
 			battlefield4.setTitle("Battlefield 4");
 			battlefield4.setDescription("Battlefield 4's single-player Campaign takes place in 2020, six years after the events of its predecessor. Tensions between Russia and the United States are running at a record high, due to a conflict that has been running for the past six years. On top of all this, China is also on the brink of war as Admiral Cheng, plans to overthrow China's current government; and, if successful, the Russians will have full support from the Chinese, bringing China into a war with the United States");
@@ -403,6 +454,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] battlefield4Platforms = {"ps3","xbox360","pc","xboxOne","ps4"};
 			battlefield4.setPlatforms(battlefield4Platforms);
 			battlefield4.setRating(Game.MATURE);
+			battlefield4.setInsertTime(Utility.convertDateToString(time));
+			battlefield4.setTimestamp(time.getTime());
+			battlefield4.setUpdateTime(Utility.convertDateToString(time));
 			battlefield4.setGameReleaseStatus(Game.RELEASED);
 			battlefield4.setReleaseDate("2013-10-29");		
 			battlefield4.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-29").getTime());
@@ -425,6 +479,7 @@ public class GloonGlobal extends GlobalSettings {
 			battlefield4.setGameBoxShot(media.getId().toString());			
 			gameDAOInstance.save(battlefield4);
 			
+			time = new Date();
 			Game destiny = new Game();
 			destiny.setTitle("Destiny");
 			destiny.setDescription("Destiny is an upcoming action role-playing first-person shooter video game in a \"mythic science fiction\" open world setting. It is developed by Bungie and published by Activision as part of a ten-year publishing deal.Destiny is set seven hundred years into the future in a post-apocalyptic setting following a prosperous period of exploration, peace and technological advancement known as the Golden Age.");
@@ -435,6 +490,9 @@ public class GloonGlobal extends GlobalSettings {
 			String[] destinyPlatforms = {"ps3","xbox360","xboxOne","ps4"};
 			destiny.setPlatforms(destinyPlatforms);
 			destiny.setRating(Game.RATING_PENDING);
+			destiny.setInsertTime(Utility.convertDateToString(time));
+			destiny.setTimestamp(time.getTime());
+			destiny.setUpdateTime(Utility.convertDateToString(time));
 			destiny.setGameReleaseStatus(Game.NOT_RELEASED);
 			destiny.setReleaseDate("TBA");		
 			destiny.setReleaseTimeStamp(Long.MAX_VALUE);			

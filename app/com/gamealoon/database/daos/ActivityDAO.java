@@ -114,12 +114,12 @@ public class ActivityDAO extends GloonDAO implements ActivityInterface {
 			allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername()).order("-insertTime").asList();
 			Set<Buddy> allUsersInCurrentUserCircle = new HashSet<>();			
 			allUsersInCurrentUserCircle.addAll(user.getFollowedBy());
-			allUsersInCurrentUserCircle.addAll(user.getFollowing());
-			
+			allUsersInCurrentUserCircle.addAll(user.getFollowing());			
 			for(Buddy setUser: allUsersInCurrentUserCircle)
 			{
-				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class).filter("username", setUser.getUserName()).filter("visibility", Activity.PUBLIC).order("-insertTime").asList();
-				allActivites.addAll(circleUserActivites);
+				Logger.debug("Set User: "+setUser.getUserName());
+				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class).filter("username", setUser.getUserName()).filter("visibility", Activity.PUBLIC).order("-insertTime").asList();				
+				allActivites.addAll(circleUserActivites);				
 			}		
 			
 			Collections.sort(allActivites, new Comparator<Activity>() {

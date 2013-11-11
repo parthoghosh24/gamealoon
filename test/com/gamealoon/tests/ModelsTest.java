@@ -152,6 +152,7 @@ public class ModelsTest {
 				System.out.println("Genre Enum: "+ Genre.Action);
 				System.out.println("Category Review: "+Category.Review);				
 				System.out.println(Category.valueOf("Review"));
+				System.out.println("TPS:   "+Genre.Tps.toString());
 			}
 
 

@@ -8,12 +8,15 @@ import java.util.List;
 //import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.daos.ArticleDAO;
 import com.gamealoon.database.daos.GameDAO;
+import com.gamealoon.database.daos.PlatformDAO;
 import com.gamealoon.database.daos.UserDAO;
 import com.gamealoon.models.Article;
 import com.gamealoon.utility.AppConstants;
 
+import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
+import static play.data.Form.form;
 import static play.libs.Json.toJson;
 
 /**
@@ -27,7 +30,8 @@ public class PlatformController extends Controller {
 
 	private static final ArticleDAO articleDaoInstance = ArticleDAO.instantiateDAO();
 	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();
-	private static final GameDAO gameDaoInstance = GameDAO.instantiateDAO();	
+	private static final GameDAO gameDaoInstance = GameDAO.instantiateDAO();
+	private static final PlatformDAO platformDaoInstance = PlatformDAO.instantiateDAO();
 	  
 	public static Result getPlatformData(String platform, String category) {
 
@@ -57,6 +61,19 @@ public class PlatformController extends Controller {
 		System.out.println( AppConstants.APP_BASE_URL);
 		platformDataMap.put("baseUrl", AppConstants.APP_BASE_URL); // a hack to determine the base url to set resources in HTML
 		return ok(toJson(platformDataMap));
+	}
+	
+	public static Result getNPlatforms(String timestamp)
+	{
+		List<HashMap<String, Object>> platforms = platformDaoInstance.getNPlatforms(10, Long.valueOf(timestamp));
+		return ok(toJson(platforms));
+	}
+	
+	public static Result createOrUpdatePlatform()
+	{
+		DynamicForm requestData = form().bindFromRequest();
+		HashMap<String, String> response = platformDaoInstance.createOrUpdatePlatform(requestData);
+		return ok(toJson(response));
 	}
 
 	/**

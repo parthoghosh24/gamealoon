@@ -1,7 +1,10 @@
 package com.gamealoon.database.daos;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import play.data.DynamicForm;
 import com.gamealoon.database.GloonDAO;
@@ -59,6 +62,42 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 		return gloonDatastore.get(Achievement.class, new ObjectId(id));
 	}
 	
+	@Override
+	public List<HashMap<String, Object>> getNAchievements(int limit,long timestamp) {
+		List<HashMap<String, Object>> achievementMaps = new ArrayList<>();
+		List<Achievement> achievements = getAchievements(limit, timestamp);
+		for(Achievement achievement: achievements)
+		{
+			HashMap<String, Object> achievementMap = new HashMap<>();
+			achievementMap.put("id", achievement.getId().toString());
+			achievementMap.put("title", achievement.getTitle());
+			achievementMap.put("description", achievement.getDescription());
+			achievementMap.put("achievementImage", achievement.getAchievementImage());
+			achievementMap.put("insertTime", achievement.getInsertTime());
+			achievementMap.put("updateTime", achievement.getUpdateTime());
+			achievementMap.put("timestamp", achievement.getTimestamp());
+			achievementMaps.add(achievementMap);
+		}
+ 		return achievementMaps;
+	}
+	
+	@Override
+	public List<Achievement> getAchievements() {
+		
+		return gloonDatastore.createQuery(Achievement.class).asList();
+	}
+	
+	/**
+	 * Fetch achievements
+	 * 
+	 * @param limit
+	 * @param timestamp
+	 * @return
+	 */
+	private List<Achievement> getAchievements(int limit, long timestamp) {		
+		return gloonDatastore.createQuery(Achievement.class).limit(limit).filter("timestamp <", timestamp).order("-timestamp").asList();
+	}
+
 	/**
 	 * Create or update achievement
 	 * 
@@ -76,8 +115,7 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 		{
 			achievement = new Achievement();
 			achievement.setInsertTime(Utility.convertDateToString(time));
-			achievement.setTimestamp(time.getTime());
-			achievement.setAchievementImage(achievementImage);
+			achievement.setTimestamp(time.getTime());			
 		}
 		else
 		{
@@ -100,6 +138,10 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 		return gloonDatastore.createQuery(Achievement.class).countAll();
 				
 	}
+
+	
+
+	
 
 	
 

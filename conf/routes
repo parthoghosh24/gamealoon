@@ -2,10 +2,19 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-
 # Platforms
 
-GET  /platform/:platform/:category					com.gamealoon.controllers.PlatformController.getPlatformData(platform:String, category:String)
+GET  /platform/:platform/:category								com.gamealoon.controllers.PlatformController.getPlatformData(platform:String, category:String)
+
+# Admin
+
+GET  /admin/                                   					com.gamealoon.controllers.AdminController.getAdminData()
+POST /admin/game/save											com.gamealoon.controllers.GameController.createOrUpdateGame()
+GET /admin/games/:timestamp                                   	com.gamealoon.controllers.GameController.getNGames(timestamp:String)
+POST /admin/achievement/save									com.gamealoon.controllers.AchievementController.createOrUpdateAchievement()
+GET /admin/achievements/:timestamp                        		com.gamealoon.controllers.AchievementController.getNAchievements(timestamp:String)
+POST /admin/platform/save										com.gamealoon.controllers.PlatformController.createOrUpdatePlatform()
+GET /admin/platforms/:timestamp                        			com.gamealoon.controllers.PlatformController.getNPlatforms(timestamp:String)
 
 
 # Articles
@@ -48,6 +57,7 @@ GET /search/:keywords             			com.gamealoon.controllers.SearchController.
 GET /game/fetchGame/games/:term                             com.gamealoon.controllers.GameController.getGamesByTerm(term:String) 
 GET /game/:urlOrid/:username				com.gamealoon.controllers.GameController.getGame(urlOrid:String, username:String)
 GET /games                                   com.gamealoon.controllers.GameController.getAllGames() 
+	
 
 
 # Conversation

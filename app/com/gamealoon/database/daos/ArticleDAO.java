@@ -285,6 +285,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			userMap.put("articleAuthorTotalAchievements", author.getAchievements().size());
 			userMap.put("articleAuthorTotalFollowers", author.getFollowedBy().size());
 			userMap.put("articleAuthorTotalFollowing", author.getFollowing().size());
+			userMap.put("articleTotalArticlesPublished", Article.allPublishedArticleCount(author));
 			String authorAvatar = author.getAvatar();			
 			if(authorAvatar.isEmpty())
 			{
@@ -315,7 +316,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				Logger.error("Error in ArticleDAO getArticle", parseEx.fillInStackTrace());				
 			}
 			String articleFeatureImage=article.getFeaturedImage();
-			if(articleFeatureImage.isEmpty())
+			if(articleFeatureImage.isEmpty() || "default".equalsIgnoreCase(articleFeatureImage))
 			{
 				response.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 				response.put("articleFeaturedImageId", "default");
@@ -470,7 +471,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					}
 					response.put("articlePlatforms", platformList);		
 					String featuredImage =article.getFeaturedImage(); 
-					if(featuredImage.isEmpty())
+					if(featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage))
 					{
 						response.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 					}
@@ -508,9 +509,9 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		    	 article = createOrUpdateArticleInstance(requestData);
 		    	 Logger.debug("ARTICLE     "+article);
 		    	 save(article);
-		    	 if(article.getState() == Article.PUBLISH)
+		    	 if(Article.PUBLISH==article.getState()  && Article.NOT_PUBLISHED==article.getIsPublished())
 		         {
-		         	Logger.debug("HERE ");
+		    		article.setIsPublished(Article.PUBLISHED); 		         	
 		         	User author = userDaoInstance.findByUsername(article.getAuthor());
 		         	Logger.debug("User  "+author);
 		         	List<Article> allAuthorArticles=findAllPublishedArticlesByUser(author.getUsername());
@@ -818,6 +819,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		String articlePlatforms = requestData.get("articlePlatforms");		
 		String[] platformList = articlePlatforms.split(",");
 		String featuredImage = requestData.get("articleFeaturedImage");		
+		String gameId= requestData.get("articleGameId");
 		
 		Logger.debug("Featured image: "+featuredImage);				
 		if(!id.isEmpty())
@@ -834,7 +836,8 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
 					
 					
-				}				
+				}		
+				article.setIsPublished(Article.PUBLISHED);
 				
 			}			
 		}
@@ -843,10 +846,11 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			article = new Article(); 			
 			article.setInsertTime(dateTime);
 	        article.setUpdateTime(dateTime);	        
+	        article.setIsPublished(Article.NOT_PUBLISHED);
 	        if(state == Article.PUBLISH)
 	        {
 	        	article.setPublishDate(dateTime);
-	        	article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
+	        	article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());	        	
 	        	
 	        }
 		}		
@@ -857,7 +861,16 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
         article.setAuthor(username);                        
         article.setPlatforms(platformList);        
         article.setFeaturedImage(featuredImage);               
-        article.setState(state);        
+        article.setState(state);                		
+     	if(!gameId.isEmpty())
+        {
+        	Game fetchedGame =gloonDatastore.get(Game.class, new ObjectId(gameId));
+        	if(fetchedGame!=null)
+        	{         		
+        		article.setGame(gameId);        		
+        		save(article);
+        	}
+        }
         
 		return article;
 	}
@@ -922,7 +935,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 						articleMap.put("articleAuthor", article.getAuthor());						
 						articleMap.put("articlepublishDate", article.getPublishDate());
 						String featuredImage=article.getFeaturedImage(); 
-						if(featuredImage.isEmpty())
+						if(featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage))
 						{
 							articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 						}
@@ -994,7 +1007,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				articleMap.put("articleAuthor", article.getAuthor());												
 				articleMap.put("articlepublishDate", article.getPublishDate());
 				String featuredImage=article.getFeaturedImage(); 
-				if(featuredImage.isEmpty())
+				if(featuredImage.isEmpty()|| "default".equalsIgnoreCase(featuredImage))
 				{
 					articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 				}
@@ -1120,7 +1133,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			articleMap.put("articleAuthor", article.getAuthor());												
 			articleMap.put("articlepublishDate", article.getPublishDate());
 			String featuredImage=article.getFeaturedImage(); 
-			if(featuredImage.isEmpty())
+			if(featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage))
 			{
 				articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 			}
@@ -1165,7 +1178,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			articleMap.put("articleAuthor", article.getAuthor());												
 			articleMap.put("articlepublishDate", article.getPublishDate());
 			String featuredImage=article.getFeaturedImage(); 
-			if(featuredImage.isEmpty())
+			if(featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage))
 			{
 				articleMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/featuredBg.png");
 			}

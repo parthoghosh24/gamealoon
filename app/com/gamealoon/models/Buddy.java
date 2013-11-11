@@ -87,5 +87,13 @@ public class Buddy {
 		this.timestamp = timestamp;
 	}
     
+    @Override
+    public boolean equals(Object obj) {    	    	    	
+    	return obj instanceof Buddy && this.getUserName().equalsIgnoreCase(((Buddy) obj).getUserName());
+    }
     
+    @Override
+    public int hashCode() {    	
+    	return getUserName().hashCode();
+    }
 }

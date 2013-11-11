@@ -79,7 +79,7 @@ public class GameDAO extends GloonDAO implements GameInterface{
 					Media media = mediaDAOinstance.getById(gameBoxShot);
 					gameMap.put("gameBoxShot", media.getUrl());
 				}
-				gameMap.put("gameGenere", game.getGenre());
+				gameMap.put("gameGenere", game.getGenre().toString().toString());
 				gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
 				topGameMaps.add(gameMap);
 			  }  
@@ -110,82 +110,14 @@ public class GameDAO extends GloonDAO implements GameInterface{
 					Media media = mediaDAOinstance.getById(gameBoxShot);
 					gameMap.put("gameBoxShot", media.getUrl());
 				}
-				gameMap.put("gameGenere", game.getGenre());
+				gameMap.put("gameGenere", game.getGenre().toString());
 				gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
 				recentGameMaps.add(gameMap);
 			  }  
 		  }
 		return recentGameMaps;
 	}
-	/**
-	 * Get N recent games
-	 * 
-	 * @param gloonDatastore
-	 * @return
-	 */	
-	private List<Game> getRecentGames(int limit, String platform)	
-	{
-		if(limit >0)
-		{
-			if("all".equalsIgnoreCase(platform))
-			{
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-releaseTimeStamp").asList();
-			}
-			else
-			{
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-releaseTimeStamp").filter("platforms", platform).asList();
-			}
-			
-		}
-		else
-		{
-			if("all".equalsIgnoreCase(platform))
-			{
-				return gloonDatastore.createQuery(Game.class).order("-releaseTimeStamp").asList();
-			}
-			else
-			{
-				return gloonDatastore.createQuery(Game.class).order("-releaseTimeStamp").filter("platforms", platform).asList();
-			}
-			
-		}
-		
-	}
 	
-	/**
-	 * Get N top games
-	 * 
-	 * @param gloonDatastore
-	 * @return
-	 */	
-	private List<Game> getTopGames(int limit, String platform)	
-	{
-		if(limit >0)
-		{
-			if("all".equalsIgnoreCase(platform))
-			{
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-totalScore").asList();
-			}
-			else
-			{
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-totalScore").filter("platforms", platform).asList();
-			}
-			
-		}
-		else
-		{
-			if("all".equalsIgnoreCase(platform))
-			{
-				return gloonDatastore.createQuery(Game.class).order("-totalScore").asList();
-			}
-			else
-			{
-				return gloonDatastore.createQuery(Game.class).order("-totalScore").filter("platforms", platform).asList();
-			}
-			
-		}
-		
-	}
 	
 	@Override
 	public void save(Game game) {
@@ -222,7 +154,7 @@ public class GameDAO extends GloonDAO implements GameInterface{
 				gameMap.put("gameBoxShot", media.getUrl());
 			}
 			
-			gameMap.put("gameGenere", game.getGenre());
+			gameMap.put("gameGenere", game.getGenre().toString());
 			gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
 			Double gameScore = 0.0;
 			if(gloonDatastore.getCount(UserGameScoreMap.class)>0)
@@ -376,7 +308,7 @@ public class GameDAO extends GloonDAO implements GameInterface{
 				gameMap.put("gameId",game.getId().toString());
 				gameMap.put("gameTitle",game.getTitle());
 				gameMap.put("value",game.getTitle());
-				gameMap.put("gameGenre",game.getGenre());
+				gameMap.put("gameGenre",game.getGenre().toString());
 				String gameBoxShot = game.getGameBoxShot();
 				if(gameBoxShot.isEmpty())
 				{
@@ -445,6 +377,149 @@ public class GameDAO extends GloonDAO implements GameInterface{
 		return response;
 	}
 	
+	@Override
+	public List<HashMap<String, Object>> getNGames(int limit, long timeStamp,String platform) throws MalformedURLException {
+		List <HashMap<String, Object>> nGameMaps = new ArrayList<>();
+		 List <Game> recentGames = getNGames(limit, platform, timeStamp);
+		  if(recentGames.size()>0)
+		  {
+			  for(Game game: recentGames)
+			  {
+				HashMap<String, Object> gameMap = new HashMap<String, Object>();
+				gameMap.put("gameId", game.getId().toString());
+				gameMap.put("gameTitle", game.getTitle());
+				gameMap.put("gameDescription", game.getDescription());
+				gameMap.put("gameReleaseDate", game.getReleaseDate());
+				gameMap.put("gameReleaseTimestamp", game.getReleaseTimeStamp());
+				gameMap.put("gameInsertDate", game.getInsertTime());
+				gameMap.put("gameInsertTimestamp", game.getTimestamp());
+				gameMap.put("gameUpdateDate", game.getUpdateTime());
+				gameMap.put("gamePublisher", game.getPublisher());
+				gameMap.put("gameDeveloper", game.getDeveloper());
+				String gameBoxShot = game.getGameBoxShot();
+				if(gameBoxShot.isEmpty())
+				{
+					gameMap.put("gameBoxShot",AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/boxShot.png");
+				}
+				else
+				{
+					Media media = mediaDAOinstance.getById(gameBoxShot);
+					gameMap.put("gameBoxShot", media.getUrl());
+					gameMap.put("gameBoxShotId", media.getId().toString());
+				}
+				gameMap.put("gameRating", game.getRating());
+				gameMap.put("gameGenre", game.getGenre().toString());
+				gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle())+"-"+game.getId().toString());
+				gameMap.put("gamePlatforms", game.getPlatforms());
+				nGameMaps.add(gameMap);
+			  }  
+		  }
+		return nGameMaps;
+	}
+	
+	@Override
+	public List<Game> getGamesForAdmin() {		
+		return gloonDatastore.createQuery(Game.class).asList();
+	}
+	
+	/**
+	 * Get N recent games
+	 * 
+	 * @param gloonDatastore
+	 * @return
+	 */	
+	private List<Game> getRecentGames(int limit, String platform)	
+	{
+		if(limit >0)
+		{
+			if("all".equalsIgnoreCase(platform))
+			{
+				return gloonDatastore.createQuery(Game.class).limit(limit).order("-releaseTimeStamp").asList();
+			}
+			else
+			{
+				return gloonDatastore.createQuery(Game.class).limit(limit).order("-releaseTimeStamp").filter("platforms", platform).asList();
+			}
+			
+		}
+		else
+		{
+			if("all".equalsIgnoreCase(platform))
+			{
+				return gloonDatastore.createQuery(Game.class).order("-releaseTimeStamp").asList();
+			}
+			else
+			{
+				return gloonDatastore.createQuery(Game.class).order("-releaseTimeStamp").filter("platforms", platform).asList();
+			}
+			
+		}
+		
+	}
+	
+	private List<Game> getNGames(int limit, String platform, long timestamp)	
+	{
+		if(limit >0)
+		{
+			if("all".equalsIgnoreCase(platform))
+			{
+				return gloonDatastore.createQuery(Game.class).limit(limit).filter("timestamp <",timestamp).order("-timestamp").asList();
+			}
+			else
+			{
+				return gloonDatastore.createQuery(Game.class).limit(limit).filter("timestamp <",timestamp).order("-timestamp").filter("platforms", platform).asList();
+			}
+			
+		}
+		else
+		{
+			if("all".equalsIgnoreCase(platform))
+			{
+				return gloonDatastore.createQuery(Game.class).filter("timestamp <",timestamp).order("-timestamp").asList();
+			}
+			else
+			{
+				return gloonDatastore.createQuery(Game.class).filter("timestamp <",timestamp).order("-timestamp").filter("platforms", platform).asList();
+			}
+			
+		}
+		
+	}
+	
+	/**
+	 * Get N top games
+	 * 
+	 * @param gloonDatastore
+	 * @return
+	 */	
+	private List<Game> getTopGames(int limit, String platform)	
+	{
+		if(limit >0)
+		{
+			if("all".equalsIgnoreCase(platform))
+			{
+				return gloonDatastore.createQuery(Game.class).limit(limit).order("-totalScore").asList();
+			}
+			else
+			{
+				return gloonDatastore.createQuery(Game.class).limit(limit).order("-totalScore").filter("platforms", platform).asList();
+			}
+			
+		}
+		else
+		{
+			if("all".equalsIgnoreCase(platform))
+			{
+				return gloonDatastore.createQuery(Game.class).order("-totalScore").asList();
+			}
+			else
+			{
+				return gloonDatastore.createQuery(Game.class).order("-totalScore").filter("platforms", platform).asList();
+			}
+			
+		}
+		
+	}
 	/**
 	 * Create or update game data and return game instance
 	 * 
@@ -458,13 +533,13 @@ public class GameDAO extends GloonDAO implements GameInterface{
 		String id = requestData.get("id");
 		String title = requestData.get("title");
 		String description = requestData.get("description");
-		String releaseDate = requestData.get("releaseDate");
-		String price = requestData.get("price");
+		String releaseDate = requestData.get("releaseDate");		
 		String publisher = requestData.get("publisher");
 		String developer = requestData.get("developer");
 		String gameBoxShot = requestData.get("gameBoxShot");
 		String genre = requestData.get("genre");
 		String platforms = requestData.get("platforms");
+		String rating = requestData.get("rating");
 		Date time = new Date();
 		
 		if(id.isEmpty())
@@ -491,13 +566,12 @@ public class GameDAO extends GloonDAO implements GameInterface{
 		{
 			game.setReleaseDate(releaseDate);
 			game.setReleaseTimeStamp(Utility.convertFromStringToDate(releaseDate).getTime());
-		}
-		
-		game.setPrice(price);
+		}			
 		game.setPublisher(publisher);
 		game.setDeveloper(developer);
 		game.setGameBoxShot(gameBoxShot);
 		game.setGenre(Genre.valueOf(genre));
+		game.setRating(rating);
 		if(Utility.date1BeforeDate2(Utility.convertFromStringToDate(game.getReleaseDate()), new Date()))
 		{
 			game.setGameReleaseStatus(Game.RELEASED);
@@ -554,6 +628,10 @@ public class GameDAO extends GloonDAO implements GameInterface{
 		
 		return response;
 	}
+
+	
+
+	
 
 	
 

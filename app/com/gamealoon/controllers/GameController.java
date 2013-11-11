@@ -4,11 +4,12 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import com.gamealoon.database.daos.GameDAO;
-
+import play.Logger;
+import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
+import static play.data.Form.form;
 import static play.libs.Json.toJson;
 
 public class GameController extends Controller{
@@ -33,6 +34,31 @@ public class GameController extends Controller{
 		return ok(toJson(gameMaps));
 	}
 	
+	public static Result getNGames(String timeStamp)
+	{
+		List<HashMap<String, Object>> gameMaps = new ArrayList<>();
+		try {
+			gameMaps= gameDaoInstance.getNGames(10, Long.valueOf(timeStamp), "all");
+		} catch (MalformedURLException e) {
+			Logger.error("Error in Game controller getAdminData: ",e.fillInStackTrace());
+			e.printStackTrace();
+		}
+		return ok(toJson(gameMaps));
+	}
+	
+	public static Result createOrUpdateGame()
+	{
+		DynamicForm requestData = form().bindFromRequest();
+		HashMap<String, String> response = gameDaoInstance.createOrUpdateGame(requestData);
+		return ok(toJson(response));
+	}
+	
+	/**
+	 * Get Game Maps based on term
+	 * 
+	 * @param term
+	 * @return
+	 */
 	private static ArrayList<HashMap<String, Object>> getGameMaps(String term) {		
 		ArrayList<HashMap<String, Object>> response = new ArrayList<>();
 		try {

@@ -45,6 +45,25 @@ public interface GameInterface {
 	 */
 	public List<HashMap<String, Object>> getRecentNGames(int limit, String platform)  throws MalformedURLException;
 	
+	
+	/**
+	 * Get Games for admin
+	 * 
+	 * @param limit
+	 * @param timeStamp
+	 * @param platform
+	 * @return
+	 * @throws MalformedURLException
+	 */
+	public List<HashMap<String, Object>> getNGames(int limit, long timeStamp, String platform) throws MalformedURLException; 
+	
+	/**
+	 * Get Games for Admin
+	 * 
+	 * @return
+	 */
+	public List<Game> getGamesForAdmin();
+	
 	/**
 	 * Find game by title
 	 * 
