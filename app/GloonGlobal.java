@@ -14,7 +14,6 @@ import com.gamealoon.models.Platform;
 import com.gamealoon.utility.Utility;
 import play.Application;
 import play.GlobalSettings;
-import play.Logger;
 import play.Play;
 
 public class GloonGlobal extends GlobalSettings {
@@ -27,63 +26,7 @@ public class GloonGlobal extends GlobalSettings {
 	 @Override
 	public void onStart(Application app) {
 		 
-		 //temp
-		/* List<Game> games = gameDAOInstance.getGamesForAdmin();
-		 for(Game game: games)
-		 {
-			 Date time = new Date();
-			 game.setInsertTime(Utility.convertDateToString(time));
-			 game.setTimestamp(time.getTime());
-			 gameDAOInstance.save(game);
-		 }
 		 
-		 List<Achievement> achievements = achievementDAOInstance.getAchievements();
-		 for(Achievement achievement: achievements)
-		 {
-			 Date time = new Date();
-			 achievement.setInsertTime(Utility.convertDateToString(time));
-			 achievement.setTimestamp(time.getTime());
-			 achievementDAOInstance.save(achievement);
-		 }*/
-		Logger.debug("Start getting called..............................."); 
-		Date time = new Date(); 
-		Game wwe2k14 = new Game();
-		wwe2k14.setTitle("WWE 2K14");
-		wwe2k14.setDescription("WWE 2K14 is a professional wrestling video game developed by Yuke's & Visual Concepts and published by 2K Sports for the PlayStation 3 and Xbox 360. It improves WWE'13 and includes modes like 30 years of Wrestlemania, Streak and many more.");
-		wwe2k14.setDeveloper("Yukes Visual Concepts");
-		wwe2k14.setPublisher("2K Sports");
-		wwe2k14.setGenre(Genre.Fighting);
-		wwe2k14.setPrice("");
-		String[] wwe2k14Platforms = { "ps3", "xbox360"};
-		wwe2k14.setPlatforms(wwe2k14Platforms);
-		wwe2k14.setRating(Game.TEEN);
-		wwe2k14.setInsertTime(Utility.convertDateToString(time));
-		wwe2k14.setTimestamp(time.getTime());
-		wwe2k14.setUpdateTime(Utility.convertDateToString(time));
-		wwe2k14.setReleaseDate("2013-10-29");
-		try {
-			wwe2k14.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-10-29").getTime());
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		wwe2k14.setGameReleaseStatus(Game.RELEASED);
-		Media media = new Media();
-		media.setFileName("wwe_2k14_cover.jpg");
-		media.setMediaType(Media.IMAGE);
-		media.setImmediateOwner(Utility.shortenString(wwe2k14.getTitle()));
-		media.setOwner(Media.GAME);
-		if (Play.isDev() || Play.isTest()) {
-			media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/wwe2k14/uploads/wwe_2k14_cover.jpg");
-		}
-		if (Play.isProd()) {
-			media.setUrl("https://s3.amazonaws.com/gloonuploads/game/wwe2k14/uploads/wwe_2k14_cover.jpg");
-		}
-		media.setInsertTime(Utility.convertDateToString(time));
-		media.setTimestamp(time.getTime());
-		mediaDAOInstance.save(media);
-		wwe2k14.setGameBoxShot(media.getId().toString());
-		gameDAOInstance.save(wwe2k14);
 			
 		 if (Achievement.getAllAchievementCount()==0) {
 				System.out.println("Data getting created.............");				
