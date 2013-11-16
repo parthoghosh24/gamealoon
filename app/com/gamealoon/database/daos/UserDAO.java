@@ -282,7 +282,7 @@ private Datastore gloonDatastore=null;
 					   
 				   });
 				   
-				   ArrayList<Buddy> selectedBuddyList = new ArrayList<>();
+				   List<Buddy> selectedBuddyList = new ArrayList<>();
 				   selectedBuddyList=followedBy;
 				   if(followedBy.size()>5)
 				   {
@@ -343,7 +343,7 @@ private Datastore gloonDatastore=null;
 					   
 				   });
 				   
-				   ArrayList<Buddy> selectedBuddyList = new ArrayList<>();
+				   List<Buddy> selectedBuddyList = new ArrayList<>();
 				   selectedBuddyList=followings;
 				   if(followings.size()>5)
 				   {

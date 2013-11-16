@@ -1121,7 +1121,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 	private List<HashMap<String, Object>> getCarouselArticlesForUserMap(String username, String category) throws ParseException, MalformedURLException
 	{
 		List<HashMap<String, Object>> carouselArticlesForUser = new ArrayList<>();
-		List<Article> carouselArticles= getCarouselArticlesForUser(username, category);
+		List<Article> carouselArticles= getCarouselArticlesForUser(username, category);		
 		for(Article article: carouselArticles)
 		{
 			HashMap<String, Object> articleMap = new HashMap<String, Object>();
