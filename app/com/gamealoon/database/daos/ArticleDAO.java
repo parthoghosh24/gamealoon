@@ -918,11 +918,11 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					Article article=null;
 					if("all".equalsIgnoreCase(type))
 					{
-						article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("game", game.getId().toString()).filter("category", Category.Review).filter("state", Article.PUBLISH).get();
+						article = gloonDatastore.createQuery(Article.class).order("-publishDate").filter("author", user.getUsername()).filter("game", game.getId().toString()).filter("category", Category.Review).filter("state", Article.PUBLISH).get();
 					}
 					else
 					{
-						article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("game", game.getId().toString()).filter("platforms",type).filter("category", Category.Review).filter("state", Article.PUBLISH).get();
+						article = gloonDatastore.createQuery(Article.class).order("-publishDate").filter("author", user.getUsername()).filter("game", game.getId().toString()).filter("platforms",type).filter("category", Category.Review).filter("state", Article.PUBLISH).get();
 					}							
 					if(article!=null)
 					{
@@ -990,11 +990,11 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			Article article=null;
 			if("all".equalsIgnoreCase(type))
 			{
-				article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("category", category).filter("state", Article.PUBLISH).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).order("-publishDate").filter("category", category).filter("state", Article.PUBLISH).get();
 			}
 			else
 			{
-				article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).filter("platforms",type).filter("category", category).filter("state", Article.PUBLISH).get();
+				article = gloonDatastore.createQuery(Article.class).filter("author", user.getUsername()).order("-publishDate").filter("platforms",type).filter("category", category).filter("state", Article.PUBLISH).get();
 			}												
 			if(article!=null)
 			{
