@@ -286,11 +286,11 @@ private Datastore gloonDatastore=null;
 				   selectedBuddyList=followedBy;
 				   if(followedBy.size()>5)
 				   {
-					   selectedBuddyList=(ArrayList<Buddy>) followedBy.subList(0, 5);					   
+					   selectedBuddyList=followedBy.subList(0, 5);					   
 				   }
 				   else if(followedBy.size()>10)
 				   {					   					   
-					   selectedBuddyList=(ArrayList<Buddy>) followedBy.subList(0, 10);					   
+					   selectedBuddyList=followedBy.subList(0, 10);					   
 				   }
 				   
 				   ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
@@ -347,11 +347,11 @@ private Datastore gloonDatastore=null;
 				   selectedBuddyList=followings;
 				   if(followings.size()>5)
 				   {
-					   selectedBuddyList=(ArrayList<Buddy>) followings.subList(0, 5);					   
+					   selectedBuddyList= followings.subList(0, 5);					   
 				   }
 				   else if(followings.size()>10)
 				   {					   					   
-					   selectedBuddyList=(ArrayList<Buddy>) followings.subList(0, 10);					   
+					   selectedBuddyList=followings.subList(0, 10);					   
 				   }
 				   
 				   ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
