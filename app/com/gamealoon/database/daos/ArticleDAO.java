@@ -859,6 +859,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		String username = requestData.get("articleUsername");
 		Logger.debug("USERNAME:   "+username);
 		String articlePlatforms = requestData.get("articlePlatforms");		
+		Logger.debug("PLATFORMS recieved: "+articlePlatforms);
 		String[] platformList = articlePlatforms.split(",");
 		String featuredImage = requestData.get("articleFeaturedImage");		
 		String gameId= requestData.get("articleGameId");
