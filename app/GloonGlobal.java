@@ -1,24 +1,15 @@
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
-//import java.util.List;
-
-import com.gamealoon.algorithm.RankAlgorithm;
-import com.gamealoon.database.GloonDatabase;
 import com.gamealoon.database.daos.AchievementDAO;
 import com.gamealoon.database.daos.GameDAO;
 import com.gamealoon.database.daos.MediaDAO;
 import com.gamealoon.database.daos.PlatformDAO;
-import com.gamealoon.database.daos.UserDAO;
 import com.gamealoon.models.Achievement;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.Genre;
 import com.gamealoon.models.Media;
 import com.gamealoon.models.Platform;
-import com.gamealoon.models.User;
 import com.gamealoon.utility.Utility;
-import com.mongodb.Mongo;
-
 import play.Application;
 import play.GlobalSettings;
 import play.Play;
@@ -32,21 +23,7 @@ public class GloonGlobal extends GlobalSettings {
 	
 	 @Override
 	public void onStart(Application app) {
-		 
-		 //temp update
-		 UserDAO userDAOInstance = UserDAO.instantiateDAO();
-		List<User> users = userDAOInstance.getTopUsers(0);
-		Mongo instance = GloonDatabase.instantiate().getMongoInstance();
-		for(User user: users)
-		{
-			Double userFollowedByScore = user.getFollowedBy().size()/(userDAOInstance.count()*1.0);				
-			user.setUserFollowScore(userFollowedByScore);
-			Double articlePublishRateRatio=RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(), instance);		
-			Double articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(), instance);		
-			Double userTotalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowedByScore, articleScoreRatio);
-			user.setTotalScore(userTotalScore);
-			userDAOInstance.save(user);
-		}
+		 	
 		 if (Achievement.getAllAchievementCount()==0) {
 				System.out.println("Data getting created.............");				
 				createAchievements();				
