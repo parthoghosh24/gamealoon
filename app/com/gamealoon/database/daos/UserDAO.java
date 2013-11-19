@@ -1061,6 +1061,7 @@ private Datastore gloonDatastore=null;
 	 */
 	private Boolean registerTheUser(String username, String password, String email,String firstName, String lastName)
 	{
+		Mongo instance = getDatabaseInstance().getMongoInstance();
 		Boolean response=false;
 		Date time = new Date();
 		try
@@ -1107,7 +1108,23 @@ private Datastore gloonDatastore=null;
 			newUser.setUserTotalCoolScore(0.0);
 			newUser.setInsertTime(Utility.convertDateToString(time));
 			newUser.setTimestamp(time.getTime());
-			save(newUser);								
+			save(newUser);						
+			
+			//Reactively update all user scores as no of users increased
+			for(User user: getTopUsers(0))
+			{
+				if(!newUser.getUsername().equalsIgnoreCase(user.getUsername()))
+				{
+					Double userFollowedByScore = user.getFollowedBy().size()/(count()*1.0);				
+					user.setUserFollowScore(userFollowedByScore);
+					Double articlePublishRateRatio=RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(), instance);		
+					Double articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(), instance);		
+					Double userTotalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowedByScore, articleScoreRatio);
+					user.setTotalScore(userTotalScore);
+					save(user);
+				}
+				
+			}
 			HashMap<String, String> activityMap = new HashMap<>();
 			activityMap.put("id", "");
          	activityMap.put("username", newUser.getUsername());

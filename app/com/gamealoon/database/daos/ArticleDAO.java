@@ -526,7 +526,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		         	Double articlePublishRateRatio=RankAlgorithm.calculateUserArticlePublishRateRatio(articlePublishRate, instance);		         	
 		         	Double userFollowScore = author.getUserFollowScore();
 		         	Double articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(author.getUserArticleScore(), instance);		         	
-		         	Double totalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowScore, articleScoreRatio);
+		         	Double totalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowScore, articleScoreRatio);		         	
 		         	author.setTotalScore(totalScore);
 		         	Logger.debug("UserGameScoreMapDao count "+gloonDatastore.getCount(UserGameScoreMapDAO.class));
 		         	if(gloonDatastore.getCount(UserGameScoreMap.class)>0)
@@ -537,6 +537,17 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 						gloonDatastore.update(updateQuery, operations);
 		         	}		         	
 		         	userDaoInstance.save(author);
+		         	
+		         	for(User user: userDaoInstance.getTopUsers(0))
+		         	{
+		         		if(!author.getUsername().equalsIgnoreCase(user.getUsername()))
+		         		{
+		         			Double userArticlePublishRateRatio=RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(), instance);		   		         			
+				         	Double userArticleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(), instance);		         	
+				         	Double userTotalScore = RankAlgorithm.calculateUserScore(userArticlePublishRateRatio, user.getUserFollowScore(), userArticleScoreRatio);		         	
+				         	user.setTotalScore(userTotalScore);
+		         		}
+		         	}
 		         	String gameId= requestData.get("articleGameId");
 		    		Integer articleGameScore = Integer.parseInt(requestData.get("gameScore"));
 		         	if(!gameId.isEmpty())
@@ -731,6 +742,21 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 				gloonDatastore.update(updateQuery, operations);
 			}			
 			userDaoInstance.save(author);
+			//Reactively update all other user article scores because total article score is impacted
+			for(User user: userDaoInstance.getTopUsers(0))
+			{
+				if(!author.getUsername().equalsIgnoreCase(user.getUsername()))
+				{
+					double fetchedUserArticleScore = RankAlgorithm.calculateUserArticleScore(instance, user.getUsername());
+					user.setUserArticleScore(fetchedUserArticleScore);
+					double fetchedUserArticleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(fetchedUserArticleScore, instance);
+					double fetchedUserArticlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(), instance);
+					double fetchedUserTotalScore =RankAlgorithm.calculateUserScore(fetchedUserArticlePublishRateRatio, user.getUserFollowScore(), fetchedUserArticleScoreRatio); 
+					user.setTotalScore(fetchedUserTotalScore);
+					userDaoInstance.save(user);
+				}
+				
+			}
 			response.put("status", "success");
 		}
 		return response;
@@ -780,6 +806,22 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 			}
 			
 			userDaoInstance.save(author);
+			
+			//Reactively update all other user article scores because total article score is impacted
+			for(User user: userDaoInstance.getTopUsers(0))
+			{
+				if(!author.getUsername().equalsIgnoreCase(user.getUsername()))
+				{
+					double fetchedUserArticleScore = RankAlgorithm.calculateUserArticleScore(instance, user.getUsername());
+					user.setUserArticleScore(fetchedUserArticleScore);
+					double fetchedUserArticleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(fetchedUserArticleScore, instance);
+					double fetchedUserArticlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(), instance);
+					double fetchedUserTotalScore =RankAlgorithm.calculateUserScore(fetchedUserArticlePublishRateRatio, user.getUserFollowScore(), fetchedUserArticleScoreRatio); 
+					user.setTotalScore(fetchedUserTotalScore);
+					userDaoInstance.save(user);
+				}
+				
+			}
 			response.put("status", "success");
 		}
 		return response;
