@@ -1093,7 +1093,7 @@ private Datastore gloonDatastore=null;
 			newUser.setYear(now.get(Calendar.YEAR));
 			newUser.setGameBio("I love gaming.");
 			newUser.setCountry("India");
-			newUser.setBirthdayVisibility(User.PUBLIC);
+			newUser.setBirthdayVisibility(User.PRIVATE);
 			newUser.setAvatar(""); 			
 			newUser.setArticlePublishRate(0.0);			
 			newUser.setFollowedBy(new ArrayList<Buddy>());
