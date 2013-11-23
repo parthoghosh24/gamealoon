@@ -508,6 +508,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		     {
 		    	 article = createOrUpdateArticleInstance(requestData);
 		    	 Logger.debug("ARTICLE     "+article);
+		    	 Logger.debug("ARTICLE STATE "+article.getState());
 		    	 save(article);
 		    	 if(Article.PUBLISH==article.getState()  && Article.NOT_PUBLISHED==article.getIsPublished())
 		         {
@@ -550,6 +551,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 		         	}
 		         	String gameId= requestData.get("articleGameId");
 		    		Integer articleGameScore = Integer.parseInt(requestData.get("gameScore"));
+		    		Logger.debug("GAME SCORE: "+articleGameScore);
 		         	if(!gameId.isEmpty())
 		            {
 		            	Game fetchedGame =gloonDatastore.get(Game.class, new ObjectId(gameId));
@@ -879,8 +881,7 @@ public class ArticleDAO extends GloonDAO implements ArticleInterface{
 					article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
 					
 					
-				}		
-				article.setIsPublished(Article.PUBLISHED);
+				}						
 				
 			}			
 		}
