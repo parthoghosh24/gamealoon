@@ -48,7 +48,8 @@ public class Article {
 	private String author;
 	private String game;
 	private int isPublished;
-	
+	private ArrayList<String> likes = new ArrayList<>(); //In case of Review
+	private ArrayList<String> unLikes = new ArrayList<>();//In case of Review
 	/**
 	 * Article states
 	 */
@@ -446,6 +447,34 @@ public class Article {
 	 */
 	public void setIsPublished(int isPublished) {
 		this.isPublished = isPublished;
+	}
+
+	/**
+	 * @return the likes
+	 */
+	public ArrayList<String> getLikes() {
+		return likes;
+	}
+
+	/**
+	 * @param likes the likes to set
+	 */
+	public void setLikes(ArrayList<String> likes) {
+		this.likes = likes;
+	}
+
+	/**
+	 * @return the unLikes
+	 */
+	public ArrayList<String> getUnLikes() {
+		return unLikes;
+	}
+
+	/**
+	 * @param unLikes the unLikes to set
+	 */
+	public void setUnLikes(ArrayList<String> unLikes) {
+		this.unLikes = unLikes;
 	}
 
 
