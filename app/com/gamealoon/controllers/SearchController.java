@@ -7,13 +7,15 @@ import java.util.HashMap;
 //import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.daos.SearchDAO;
 import com.gamealoon.utility.Utility;
+
+import play.data.DynamicForm;
 import play.mvc.Result;
 import play.mvc.Controller;
+import static play.data.Form.form;
 import static play.libs.Json.toJson;
 
 public class SearchController extends Controller{
 	
-//	private static final GloonDAO gloonDAOInstance = GloonDAO.instantiateDAO();
 	private static final SearchDAO searchDAOInstance = SearchDAO.instantiateDAO();
 	
 	public static Result searchResponse(String query)
@@ -35,6 +37,13 @@ public class SearchController extends Controller{
 		}
 		
 		return ok(toJson(queryResponse));
+	}
+	
+	public static Result scrapePage()
+	{
+		DynamicForm request = form().bindFromRequest();
+		String link = request.get("link");
+		return ok(toJson(searchDAOInstance.getScrapedPage(link)));
 	}
 
 }

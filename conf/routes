@@ -52,6 +52,7 @@ GET /media/images/:userName/:timeStamp      						 com.gamealoon.controllers.Med
 
 # Search
 GET /search/:keywords             			com.gamealoon.controllers.SearchController.searchResponse(keywords:String)
+POST /search/pageScraper             		com.gamealoon.controllers.SearchController.scrapePage()
 
 # Game		
 GET /game/fetchGame/games/:term                             com.gamealoon.controllers.GameController.getGamesByTerm(term:String) 

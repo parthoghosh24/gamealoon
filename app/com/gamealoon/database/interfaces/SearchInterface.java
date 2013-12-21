@@ -17,5 +17,13 @@ public interface SearchInterface {
 	 */
 	
 	public HashMap<String, Object> getSearchResponse(ArrayList<String> keywordList) throws IllegalAccessException, MalformedURLException, IOException;
+	
+	/**
+	 * Scrapes page to fetch title, domain url, description and display image using open graph protocol to fetch information
+	 * 
+	 * @param link
+	 * @return
+	 */
+	public HashMap<String, String> getScrapedPage(String link);
 
 }

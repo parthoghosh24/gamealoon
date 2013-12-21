@@ -43,4 +43,10 @@ public class SearchDAO extends GloonDAO implements SearchInterface{
 		response.put("queryResponse", responseUrlList);
 		return response;
 	}
+
+	@Override
+	public HashMap<String, String> getScrapedPage(String link) {
+		
+		return Search.scrapePage(link);
+	}
 }

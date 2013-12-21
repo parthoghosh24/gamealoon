@@ -26,7 +26,7 @@ public class Article {
 	private ObjectId id;	
 	private String title;	
 	private String subtitle;
-	private String body;
+	private String body; //snippet Text
 	private String publishDate;
 	private String insertTime;
 	private String updateTime;
@@ -48,6 +48,8 @@ public class Article {
 	private String author;
 	private String game;
 	private int isPublished;
+	private String sourceUrl; //for news
+	private String videoUrl; //for video
 	private ArrayList<String> likes = new ArrayList<>(); //In case of Review
 	private ArrayList<String> unLikes = new ArrayList<>();//In case of Review
 	/**
@@ -475,6 +477,34 @@ public class Article {
 	 */
 	public void setUnLikes(ArrayList<String> unLikes) {
 		this.unLikes = unLikes;
+	}
+
+	/**
+	 * @return the sourceUrl
+	 */
+	public String getSourceUrl() {
+		return sourceUrl;
+	}
+
+	/**
+	 * @param sourceUrl the sourceUrl to set
+	 */
+	public void setSourceUrl(String sourceUrl) {
+		this.sourceUrl = sourceUrl;
+	}
+
+	/**
+	 * @return the videoUrl
+	 */
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	/**
+	 * @param videoUrl the videoUrl to set
+	 */
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
 	}
 
 

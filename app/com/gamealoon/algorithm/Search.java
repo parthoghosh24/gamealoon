@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
+import play.Logger;
+
 /**
  * 
  * @author Partho
@@ -174,6 +176,86 @@ public class Search {
 		return links;
 	}
 	
+	/**
+	 * This method is actually scraping the html to fetch important information for news. Open Graph really helped well and eased out the operation.
+	 * 
+	 * @param link
+	 * @return
+	 */
+	public static HashMap<String, String> scrapePage(String link)
+	{
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		String page="";
+		try {
+			page = getPageForScraping(link);		
+			int urlStartIndex=link.indexOf("://");
+			String domainUrl=link.substring(urlStartIndex+3, link.indexOf("/",urlStartIndex+3));
+			response.put("domainUrl", domainUrl);
+			int titleStartIndex=page.indexOf("<meta property=\"og:title\" content=\"");			
+			String title="";
+			if(titleStartIndex>-1)
+			{
+				title = page.substring(titleStartIndex+35, page.indexOf("\"",titleStartIndex+35));
+			}
+			else
+			{
+				titleStartIndex=page.indexOf("<title>");
+				title = page.substring(titleStartIndex+7, page.indexOf("<",titleStartIndex+7));
+			}
+			
+			Logger.debug("title: "+title);			
+			response.put("title", title);
+			int metaDescStartIndex = page.indexOf("<meta property=\"og:description\" content=\"");						
+			String description ="";
+			if(metaDescStartIndex>-1)
+			{
+				description = page.substring(metaDescStartIndex+41, page.indexOf("\"",metaDescStartIndex+41));
+			}
+			else
+			{
+				description=title;
+			}
+			
+			Logger.debug("description: "+description);			
+			response.put("description", description);
+			
+			int imageStartIndex=page.indexOf("<meta property=\"og:image\" content=\"");
+			String image="";
+			if(imageStartIndex>-1)
+			{
+				image=page.substring(imageStartIndex+35, page.indexOf("\"",imageStartIndex+35));
+			}			
+			Logger.debug("image: "+image);			
+			response.put("image", image);
+			response.put("status", "success");
+			Logger.debug("Map "+response);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Logger.error("Error in scraping the page ", e.fillInStackTrace());
+			e.printStackTrace();			
+		}		
+		
+		return response;
+	}		
+	
+	private static String getPageForScraping(String link) throws MalformedURLException,IOException
+	{
+		String output="";		
+		URL url = new URL(link);		
+		HttpURLConnection  urlConn = (HttpURLConnection) url.openConnection();
+		BufferedReader read = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+		String line="";
+			
+		while(((line=read.readLine())!=null)){
+				output+=line;
+				output+="\n";
+		}				
+		return output;
+				
+	}
+	
 	public static String getPage(String link) throws MalformedURLException,IOException
 	{
 		String output="";		
@@ -192,7 +274,7 @@ public class Search {
 	}
 	
 	public static void main(String[] args)
-	{
+	{		
 		/*Search search = new Search();
 		try
 		{			
