@@ -41,13 +41,26 @@ public class User {
 	private String insertTime;
 	private Long timestamp;
 	private String updateTime;
-	private String gameBio; //This is a game related bio for user, which will be shown on article page           	
+	private String gameBio;
+	private String status;
 	private Double articlePublishRate; //sum(Ai-Ai+1)/N-1
 	private Double userFollowScore;
 	private Double userArticleScore;		
     @Indexed(value=IndexDirection.ASC, name="usr_scr")
     private Double totalScore;
     private Double userTotalCoolScore;
+    
+    /**
+     * XP is used to ca
+     * 
+     */
+    private Long experiencePoints;
+    /**
+     * Redeemable points. Users can use GP to redeem xp or gifts.
+     * 
+     */
+    private Long gamealoonPoints;
+    private Long level;
     
     //Chat states
     public static final int INVITE=0;
@@ -487,5 +500,61 @@ public class User {
 	 */
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	/**
+	 * @return the experiencePoints
+	 */
+	public Long getExperiencePoints() {
+		return experiencePoints;
+	}
+
+	/**
+	 * @param experiencePoints the experiencePoints to set
+	 */
+	public void setExperiencePoints(Long experiencePoints) {
+		this.experiencePoints = experiencePoints;
+	}
+
+	/**
+	 * @return the gamealoonPoints
+	 */
+	public Long getGamealoonPoints() {
+		return gamealoonPoints;
+	}
+
+	/**
+	 * @param gamealoonPoints the gamealoonPoints to set
+	 */
+	public void setGamealoonPoints(Long gamealoonPoints) {
+		this.gamealoonPoints = gamealoonPoints;
+	}
+
+	/**
+	 * @return the level
+	 */
+	public Long getLevel() {
+		return level;
+	}
+
+	/**
+	 * @param level the level to set
+	 */
+	public void setLevel(Long level) {
+		this.level = level;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
