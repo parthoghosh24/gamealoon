@@ -51,7 +51,7 @@ public class User {
     private Double userTotalCoolScore;
     
     /**
-     * XP is used to ca
+     * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
      * 
      */
     private Long experiencePoints;
@@ -60,6 +60,10 @@ public class User {
      * 
      */
     private Long gamealoonPoints;
+    
+    /**
+     * Levels depict the progress of users.
+     */
     private Long level;
     
     //Chat states
