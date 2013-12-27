@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
 import play.api.Play;
+
+import com.gamealoon.algorithm.Gamification;
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.algorithm.SecurePassword;
 import com.gamealoon.database.daos.ArticleDAO;
@@ -67,9 +69,26 @@ public class ModelsTest {
 				    testWilson();				 
 				    testShortenString();				    				   				   
 				    testSomeConversion();
+				    testLevelCalculator();
+				    testGPCalculator();
 				
 			}
 			
+
+
+
+			private void testGPCalculator() {
+				System.out.println("GP is: "+ Gamification.calculateGP(600, 4));				
+			}
+
+
+
+
+			private void testLevelCalculator() {
+				System.out.println("Level is: "+ Gamification.calculateLevel(400, 2));
+				
+			}
+
 
 
 
