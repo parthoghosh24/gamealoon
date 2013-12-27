@@ -14,140 +14,126 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
 
-public class UserController extends Controller{
+public class UserController extends Controller {
 
-	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();	
-	
-	public static Result getUser(String usernameOrId, Integer mode, String username)
-	{
-		HashMap<String, Object> userMap= getUserMap(usernameOrId, mode, username);		
+	private static final UserDAO userDaoInstance = UserDAO.instantiateDAO();
+
+	public static Result getUser(final String usernameOrId, final Integer mode, final String username) {
+		final HashMap<String, Object> userMap = getUserMap(usernameOrId, mode, username);
 		return ok(toJson(userMap));
-	}		
-	
-	public static Result getLoggedInUser()
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		String usernameOrEmail=requestData.get("usernameOrEmail");
-		String password=requestData.get("password");
-		HashMap<String, Object> userObject=getLoggedInUserMap(usernameOrEmail, password) ;
+	}
+
+	public static Result getLoggedInUser() {
+		final DynamicForm requestData = form().bindFromRequest();
+		final String usernameOrEmail = requestData.get("usernameOrEmail");
+		final String password = requestData.get("password");
+		final HashMap<String, Object> userObject = getLoggedInUserMap(usernameOrEmail, password);
 		return ok(toJson(userObject));
 	}
-	
-	public static Result registerUser()
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		String firstName = requestData.get("firstName");
-		String lastName = requestData.get("lastName");
-		String username=requestData.get("username");		
-		String password = requestData.get("password");
-		String email = requestData.get("email");
-		HashMap<String, Object> registeredUser=registerUserMap(username, password, email, firstName, lastName) ;
-		return ok(toJson(registeredUser));
-		
-	} 
-	
-	public static Result saveOrUpdateUserInterest(String userName)
-	{
-		DynamicForm requestData = form().bindFromRequest();
-	    Integer type = Integer.parseInt(requestData.get("type"));
-	    String content =requestData.get("content");
-	    HashMap<String, Object> response = saveOrUpdateUserInterestMap(userName, type, content);
-	    return ok(toJson(response));
-	}
-	
-	public static Result saveOrUpdateUser(String userName)	
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		HashMap<String, Object> response = saveOrUpdateUserMap(userName, requestData);
-		return ok(toJson(response));
-	}
-	
-	public static Result resetPassword(String username)
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		HashMap<String, Object> response = resetPasswordMap(username, requestData);
-		return ok(toJson(response));
-	}
-	
-	public static Result addOrRemoveBuddy()
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		String originalUsername = requestData.get("originalUser");
-		String buddyUsername = requestData.get("buddyUser");
-		String type=requestData.get("type");
-		HashMap<String, String> response = addOrRemoveBuddyMap(originalUsername, buddyUsername, type);
-		return ok(toJson(response));
-	}
-	
-	public static Result blockOrUnblockBuddy()
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		String originalUsername = requestData.get("originalUser");
-		String buddyUsername = requestData.get("buddyUser");
-		String type=requestData.get("type");
-		HashMap<String,String> response = blockOrUnblockBuddyMap(originalUsername, buddyUsername, type);
-		return ok(toJson(response));
-	}
-	
-	public static Result addOrRemoveInterestedGames()
-	{
-		DynamicForm requestData = form().bindFromRequest();
-		String originalUsername = requestData.get("originalUser");
-		String gameId = requestData.get("gameId");
-		String type=requestData.get("type");
-		HashMap<String, String> response = addOrRemoveInterestedGamesMap(originalUsername, gameId, type);
-		return ok(toJson(response));
-	}
-	public static Result checkStatus(String userName, String mediaId)
-	{		
-		 	response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
-		    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
-		    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
-		    response().setHeader("Access-Control-Allow-Headers", "accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");
-//		    response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");         // Ensure this header is also allowed!  
-		    return ok();
-	}
-		
-	public static Result saveOrUpdateUserAvatar(String username, String mediaId)
-	{	
-		Logger.info("Save or updated called");		
-		MultipartFormData body = request().body().asMultipartFormData();				
-		FilePart avatarPart = body.getFile("userAvatarFile");		
-		HashMap<String,String> response = saveOrUpdateUserAvatarMap(mediaId,username,avatarPart);
-		response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
-	    response().setHeader("Access-Control-Allow-Methods", "POST");   // Only allow POST
-	    response().setHeader("Access-Control-Max-Age", "300");          // Cache response for 5 minutes
-	    response().setHeader("Access-Control-Allow-Headers", "accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");		
-		return ok(toJson(response));
-	}
-	
-	public static Result validateEmail(String email)
-	{
-		HashMap<String,String> response = validateEmailMap(email);
-		return ok(toJson(response));
-	}
-	
-	
 
-	public static Result validateUsername(String username)
-	{
-		HashMap<String,String> response = validateUsernameMap(username);
+	public static Result registerUser() {
+		final DynamicForm requestData = form().bindFromRequest();
+		final String firstName = requestData.get("firstName");
+		final String lastName = requestData.get("lastName");
+		final String username = requestData.get("username");
+		final String password = requestData.get("password");
+		final String email = requestData.get("email");
+		final HashMap<String, Object> registeredUser = registerUserMap(username, password, email, firstName, lastName);
+		return ok(toJson(registeredUser));
+
+	}
+
+	public static Result saveOrUpdateUserInterest(final String userName) {
+		final DynamicForm requestData = form().bindFromRequest();
+		final Integer type = Integer.parseInt(requestData.get("type"));
+		final String content = requestData.get("content");
+		final HashMap<String, Object> response = saveOrUpdateUserInterestMap(userName, type, content);
 		return ok(toJson(response));
 	}
-	
-	public static Result getAllUsers()
-	{
-		List<HashMap<String, Object>> allTopUsers= new ArrayList<>();
+
+	public static Result saveOrUpdateUser(final String userName) {
+		final DynamicForm requestData = form().bindFromRequest();
+		final HashMap<String, Object> response = saveOrUpdateUserMap(userName, requestData);
+		return ok(toJson(response));
+	}
+
+	public static Result resetPassword(final String username) {
+		final DynamicForm requestData = form().bindFromRequest();
+		final HashMap<String, Object> response = resetPasswordMap(username, requestData);
+		return ok(toJson(response));
+	}
+
+	public static Result addOrRemoveBuddy() {
+		final DynamicForm requestData = form().bindFromRequest();
+		final String originalUsername = requestData.get("originalUser");
+		final String buddyUsername = requestData.get("buddyUser");
+		final String type = requestData.get("type");
+		final HashMap<String, String> response = addOrRemoveBuddyMap(originalUsername, buddyUsername, type);
+		return ok(toJson(response));
+	}
+
+	public static Result blockOrUnblockBuddy() {
+		final DynamicForm requestData = form().bindFromRequest();
+		final String originalUsername = requestData.get("originalUser");
+		final String buddyUsername = requestData.get("buddyUser");
+		final String type = requestData.get("type");
+		final HashMap<String, String> response = blockOrUnblockBuddyMap(originalUsername, buddyUsername, type);
+		return ok(toJson(response));
+	}
+
+	public static Result addOrRemoveInterestedGames() {
+		final DynamicForm requestData = form().bindFromRequest();
+		final String originalUsername = requestData.get("originalUser");
+		final String gameId = requestData.get("gameId");
+		final String type = requestData.get("type");
+		final HashMap<String, String> response = addOrRemoveInterestedGamesMap(originalUsername, gameId, type);
+		return ok(toJson(response));
+	}
+
+	public static Result checkStatus(final String userName, final String mediaId) {
+		response().setHeader("Access-Control-Allow-Origin", "*"); // Need to add the correct domain in here!!
+		response().setHeader("Access-Control-Allow-Methods", "POST"); // Only allow POST
+		response().setHeader("Access-Control-Max-Age", "300"); // Cache response for 5 minutes
+		response().setHeader("Access-Control-Allow-Headers",
+				"accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");
+		// response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); // Ensure this
+		// header is also allowed!
+		return ok();
+	}
+
+	public static Result saveOrUpdateUserAvatar(final String username, final String mediaId) {
+		Logger.info("Save or updated called");
+		final MultipartFormData body = request().body().asMultipartFormData();
+		final FilePart avatarPart = body.getFile("userAvatarFile");
+		final HashMap<String, String> response = saveOrUpdateUserAvatarMap(mediaId, username, avatarPart);
+		response().setHeader("Access-Control-Allow-Origin", "*"); // Need to add the correct domain in here!!
+		response().setHeader("Access-Control-Allow-Methods", "POST"); // Only allow POST
+		response().setHeader("Access-Control-Max-Age", "300"); // Cache response for 5 minutes
+		response().setHeader("Access-Control-Allow-Headers",
+				"accept, origin, Content-type, x-json, x-prototype-version, x-requested-with");
+		return ok(toJson(response));
+	}
+
+	public static Result validateEmail(final String email) {
+		final HashMap<String, String> response = validateEmailMap(email);
+		return ok(toJson(response));
+	}
+
+	public static Result validateUsername(final String username) {
+		final HashMap<String, String> response = validateUsernameMap(username);
+		return ok(toJson(response));
+	}
+
+	public static Result getAllUsers() {
+		List<HashMap<String, Object>> allTopUsers = new ArrayList<>();
 		try {
 			allTopUsers = getAllTopUsers();
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ok(toJson(allTopUsers));
 	}
-
-	
 
 	/**
 	 * Save or update user avatar image
@@ -156,35 +142,36 @@ public class UserController extends Controller{
 	 * @param requestData
 	 * @return
 	 */
-	private static HashMap<String, String> saveOrUpdateUserAvatarMap(String mediaId, String username, FilePart avatarPart) {				
-		return userDaoInstance.saveOrUpdateUserAvatar(mediaId,username, avatarPart);
+	private static HashMap<String, String> saveOrUpdateUserAvatarMap(final String mediaId, final String username,
+			final FilePart avatarPart) {
+		return userDaoInstance.saveOrUpdateUserAvatar(mediaId, username, avatarPart);
 	}
 
 	/**
-	 *	Block or unblock an user
+	 * Block or unblock an user
 	 * 
 	 * @param originalUsername
 	 * @param buddyUsername
 	 * @param type
 	 * @return
 	 */
-	private static HashMap<String, String> blockOrUnblockBuddyMap(String originalUsername, String buddyUsername, String type)
-	{
+	private static HashMap<String, String> blockOrUnblockBuddyMap(final String originalUsername, final String buddyUsername,
+			final String type) {
 		return userDaoInstance.blockOrUnblockBuddy(originalUsername, buddyUsername, Integer.parseInt(type));
 	}
-	
+
 	/**
-	 * Add or remove buddy for an user
+	 * Add or remove buddy for an user.
 	 * 
 	 * @param originalUsername
 	 * @param buddyUsername
 	 * @return
 	 */
-	private static HashMap<String, String> addOrRemoveBuddyMap(String originalUsername, String buddyUsername, String type)
-	{
+	private static HashMap<String, String> addOrRemoveBuddyMap(final String originalUsername, final String buddyUsername,
+			final String type) {
 		return userDaoInstance.addOrRemoveBuddy(originalUsername, buddyUsername, Integer.parseInt(type));
 	}
-	
+
 	/**
 	 * Add or remove interested game for an user
 	 * 
@@ -192,10 +179,11 @@ public class UserController extends Controller{
 	 * @param buddyUsername
 	 * @return
 	 */
-	private static HashMap<String, String> addOrRemoveInterestedGamesMap(String originalUsername, String gameId, String type)
-	{
+	private static HashMap<String, String> addOrRemoveInterestedGamesMap(final String originalUsername, final String gameId,
+			final String type) {
 		return userDaoInstance.addOrRemoveInterestedGames(originalUsername, gameId, Integer.parseInt(type));
 	}
+
 	/**
 	 * Reset user for a particular user
 	 * 
@@ -203,7 +191,7 @@ public class UserController extends Controller{
 	 * @param requestData
 	 * @return
 	 */
-	private static HashMap<String, Object> resetPasswordMap(String username,DynamicForm requestData) {		
+	private static HashMap<String, Object> resetPasswordMap(final String username, final DynamicForm requestData) {
 		return userDaoInstance.resetPassword(username, requestData);
 	}
 
@@ -214,7 +202,7 @@ public class UserController extends Controller{
 	 * @param requestData
 	 * @return
 	 */
-	private static HashMap<String, Object> saveOrUpdateUserMap(String userName,DynamicForm requestData) {		
+	private static HashMap<String, Object> saveOrUpdateUserMap(final String userName, final DynamicForm requestData) {
 		return userDaoInstance.saveOrUpdateUser(userName, requestData);
 	}
 
@@ -226,8 +214,8 @@ public class UserController extends Controller{
 	 * @param content
 	 * @return
 	 */
-	private static HashMap<String, Object> saveOrUpdateUserInterestMap(String userName, Integer type, String content) {
-		
+	private static HashMap<String, Object> saveOrUpdateUserInterestMap(final String userName, final Integer type, final String content) {
+
 		return userDaoInstance.saveOrUpdateUserInterest(userName, type, content.split(","));
 	}
 
@@ -238,18 +226,17 @@ public class UserController extends Controller{
 	 * @param username
 	 * @return
 	 */
-	private static HashMap<String, Object> getUserMap(String usernameOrId, Integer mode, String username)
-	{
+	private static HashMap<String, Object> getUserMap(final String usernameOrId, final Integer mode, final String username) {
 		HashMap<String, Object> response = new HashMap<>();
 		try {
-			response= userDaoInstance.getUser(usernameOrId, mode, username);
-		} catch (MalformedURLException e) {
-			Logger.error("Some thing wrong happened while fetching user "+e.fillInStackTrace());
+			response = userDaoInstance.getUser(usernameOrId, mode, username);
+		} catch (final MalformedURLException e) {
+			Logger.error("Some thing wrong happened while fetching user " + e.fillInStackTrace());
 			e.printStackTrace();
 		}
 		return response;
-	}		
-	
+	}
+
 	/**
 	 * Check user exist or not. If yes, login the user else send false
 	 * 
@@ -257,18 +244,17 @@ public class UserController extends Controller{
 	 * @param password
 	 * @return
 	 */
-	private static HashMap<String, Object> getLoggedInUserMap(String usernameOrEmail, String password)
-	{
-		HashMap<String, Object> response= new HashMap<>();
+	private static HashMap<String, Object> getLoggedInUserMap(final String usernameOrEmail, final String password) {
+		HashMap<String, Object> response = new HashMap<>();
 		try {
-			response= userDaoInstance.getLoggedInUser(usernameOrEmail, password);
-		} catch (MalformedURLException e) {
+			response = userDaoInstance.getLoggedInUser(usernameOrEmail, password);
+		} catch (final MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return response;
 	}
-	
+
 	/**
 	 * Register user
 	 * 
@@ -278,41 +264,41 @@ public class UserController extends Controller{
 	 * @param email
 	 * @return
 	 */
-	private static HashMap<String, Object> registerUserMap(String username, String password, String email, String firstName, String lastName) {		
+	private static HashMap<String, Object> registerUserMap(final String username, final String password, final String email,
+			final String firstName, final String lastName) {
 		return userDaoInstance.registerUser(username, password, email, firstName, lastName);
 	}
-	
+
 	/**
 	 * Validate whether email exists or not
 	 * 
 	 * @param email
 	 * @return
 	 */
-	private static HashMap<String, String> validateEmailMap(String email) {
-		
+	private static HashMap<String, String> validateEmailMap(final String email) {
+
 		return userDaoInstance.validateEmail(email);
 	}
-	
+
 	/**
 	 * Validate whether username exists or not
 	 * 
 	 * @param username
 	 * @return
 	 */
-	private static HashMap<String, String> validateUsernameMap(String username) {
-		
+	private static HashMap<String, String> validateUsernameMap(final String username) {
+
 		return userDaoInstance.validateUsername(username);
 	}
-	
+
 	/**
 	 * This method returns all users ordered by score
 	 * 
 	 * @return
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	private static List<HashMap<String, Object>> getAllTopUsers() throws MalformedURLException {
 		return userDaoInstance.getTopNUsers(0);
 	}
 
 }
-

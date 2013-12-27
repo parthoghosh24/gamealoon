@@ -1,6 +1,5 @@
 package com.gamealoon.models;
 
-
 import java.util.ArrayList;
 import org.bson.types.ObjectId;
 import com.google.code.morphia.annotations.Embedded;
@@ -10,93 +9,88 @@ import com.google.code.morphia.annotations.Indexed;
 import com.google.code.morphia.utils.IndexDirection;
 
 /**
- * Another major entity in Gamealoon framework is User. An user is an entity who registers with the system and then can
- * affect the system in many ways. Following are some of the ways:
- * -> Can be followed by other users and follow other users.
- * -> Will earn reputation.
- * -> Can create, modify and publish articles.
+ * Another major entity in Gamealoon framework is User. An user is an entity who registers with the system and then can affect the
+ * system in many ways. Following are some of the ways: -> Can be followed by other users and follow other users. -> Will earn
+ * reputation. -> Can create, modify and publish articles.
  * 
  * @author partho
- *
+ * 
  */
 
 @Entity
 public class User {
 
-    @Id
+	@Id
 	private ObjectId id;
 	private String username;
-	private String email; //should be a way to find out whether email is valid or not
+	private String email; // should be a way to find out whether email is valid or not
 	private int birthdayVisibility;
 	private String passwordHash;
 	private String passwordSalt;
-	private String firstName;	
+	private String firstName;
 	private String lastName;
 	private String country;
 	private int emailConfirmed;
 	private int day;
 	private int month;
 	private int year;
-	private String avatar; //path to avatar image file for user	
+	private String avatar; // path to avatar image file for user
 	private String insertTime;
 	private Long timestamp;
 	private String updateTime;
 	private String gameBio;
 	private String status;
-	private Double articlePublishRate; //sum(Ai-Ai+1)/N-1
+	private Double articlePublishRate; // sum(Ai-Ai+1)/N-1
 	private Double userFollowScore;
-	private Double userArticleScore;		
-    @Indexed(value=IndexDirection.ASC, name="usr_scr")
-    private Double totalScore;
-    private Double userTotalCoolScore;
-    
-    /**
-     * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
-     * 
-     */
-    private Long experiencePoints;
-    /**
-     * Redeemable points. Users can use GP to redeem xp or gifts.
-     * 
-     */
-    private Long gamealoonPoints;
-    
-    /**
-     * Levels depict the progress of users.
-     */
-    private Long level;
-    
-    //Chat states
-    public static final int INVITE=0;
-    public static final int PENDING=1;
-    public static final int BLOCK=2;
-    
-    //For birthday visibility
-    public static final int PRIVATE=1;
-    public static final int PUBLIC=2;
-    
-    //User interests
-    public static final int PLATFORM_INTEREST=1;
-    public static final int GENRE_INTEREST=2;
-        
-    
-    @Embedded
-    private ArrayList<Achievement> achievements = new ArrayList<>(); //Achievements earned    
-	
-    
+	private Double userArticleScore;
+	@Indexed(value = IndexDirection.ASC, name = "usr_scr")
+	private Double totalScore;
+	private Double userTotalCoolScore;
+
+	/**
+	 * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
+	 */
+	private Long experiencePoints;
+
+	/**
+	 * Redeemable points. Users can use GP to redeem xp or gifts.
+	 */
+	private Long gamealoonPoints;
+
+	/**
+	 * Levels depict the progress of users.
+	 */
+	private Long level;
+
+	// Chat states
+	public static final int INVITE = 0;
+	public static final int PENDING = 1;
+	public static final int BLOCK = 2;
+
+	// For birthday visibility
+	public static final int PRIVATE = 1;
+	public static final int PUBLIC = 2;
+
+	// User interests
+	public static final int PLATFORM_INTEREST = 1;
+	public static final int GENRE_INTEREST = 2;
+
 	@Embedded
-	//User followed by many users- eyed by
+	private ArrayList<Achievement> achievements = new ArrayList<>(); // Achievements earned
+
+	@Embedded
+	// User followed by many users- eyed by
 	private ArrayList<Buddy> followedBy = new ArrayList<>();
-	
+
 	@Embedded
 	private ArrayList<Buddy> following = new ArrayList<>();
-		
+
 	private ArrayList<InterestedGame> followingGames = new ArrayList<>();
-		
-    private ArrayList<Genre> interestedGenres = new ArrayList<>();
-    
-    private String[] interestedPlatforms = {};
-       
+
+	private ArrayList<Genre> interestedGenres = new ArrayList<>();
+
+	private String[] interestedPlatforms = {};
+
 	/**
 	 * @return the username
 	 */
@@ -194,15 +188,13 @@ public class User {
 	public void setFollowedBy(ArrayList<Buddy> followedBy) {
 		this.followedBy = followedBy;
 	}
-	
+
 	/**
 	 * Username is returned as String
 	 */
-	public String toString()
-	{
+	public String toString() {
 		return this.username;
 	}
-	
 
 	/**
 	 * @return the insertTime
@@ -245,7 +237,6 @@ public class User {
 	public void setGameBio(String gameBio) {
 		this.gameBio = gameBio;
 	}
-
 
 	/**
 	 * @return the achievements
@@ -364,7 +355,7 @@ public class User {
 	 */
 	public void setFollowingGames(ArrayList<InterestedGame> followingGames) {
 		this.followingGames = followingGames;
-	}	
+	}
 
 	/**
 	 * @return the interestedGenres

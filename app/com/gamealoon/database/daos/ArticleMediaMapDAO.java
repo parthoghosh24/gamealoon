@@ -10,84 +10,79 @@ import com.gamealoon.models.ArticleMediaMap;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
-public class ArticleMediaMapDAO extends GloonDAO implements ArticleMediaMapInterface {
+public class ArticleMediaMapDAO extends GloonDAO<ArticleMediaMap> implements ArticleMediaMapInterface {
 
-	private static final ArticleMediaMapDAO DATA_ACCESS_LAYER=new ArticleMediaMapDAO();		
-	private Datastore gloonDatastore=null;
-		private ArticleMediaMapDAO()
-		{
-			super();
-			gloonDatastore=initDatastore();		
-		}
-		
-		/**
-		 * Singleton way to instantiate Gloon DAO
-		 * @return
-		 */
-		public static ArticleMediaMapDAO instantiateDAO()
-		{								
-			return DATA_ACCESS_LAYER;
-		}
+	private static final ArticleMediaMapDAO DATA_ACCESS_LAYER = new ArticleMediaMapDAO();
+	private Datastore gloonDatastore = null;
 
-		@Override
-		public void save(ArticleMediaMap articleMediaMap) {
-			gloonDatastore.save(articleMediaMap);			
-		}
+	private ArticleMediaMapDAO() {
+		super();
+		gloonDatastore = initDatastore();
+	}
 
-		@Override
-		public HashMap<String, String> createOrUpdateArticleMediaMap(String id, String articleId, String mediaId) 
-		{
-			HashMap<String, String> response = new HashMap<>();
-			response.put("status", "fail");
-			ArticleMediaMap articleMediaMap = createOrUpdateArticleMediaMapInstance(id, articleId, mediaId);
-			if(articleMediaMap!=null)
-			{
-				save(articleMediaMap);
-				response.put("status", "success");
-			}
-			return response;			
-		}
+	/**
+	 * Singleton way to instantiate Gloon DAO
+	 * 
+	 * @return
+	 */
+	public static ArticleMediaMapDAO instantiateDAO() {
+		return DATA_ACCESS_LAYER;
+	}
 
-		/**
-		 * Create or update an ArticleMediaMap instance
-		 * 
-		 * @param articleId
-		 * @param mediaId
-		 * @return
-		 */
-		private ArticleMediaMap createOrUpdateArticleMediaMapInstance(String id, String articleId, String mediaId) {
-			ArticleMediaMap articleMediaMap = null;
-			Date time = new Date();
-			if(id.isEmpty())
-			{
-				articleMediaMap = new ArticleMediaMap();
-				articleMediaMap.setInsertTime(Utility.convertDateToString(time));
-				articleMediaMap.setTimestamp(time.getTime());				
-			}
-			else
-			{
-				articleMediaMap = getById(id);
-				articleMediaMap.setUpdateTime(Utility.convertDateToString(time));
-			}
-			articleMediaMap.setArticleId(articleId);
-			articleMediaMap.setMediaId(mediaId);			
-			return articleMediaMap;
-			
-		}
+	@Override
+	public void save(ArticleMediaMap articleMediaMap) {
+		gloonDatastore.save(articleMediaMap);
+	}
 
-		@Override
-		public List<ArticleMediaMap> findAllMediaByArticle(String articleId) {			
-			return gloonDatastore.createQuery(ArticleMediaMap.class).filter("articleId", articleId).asList();
+	@Override
+	public HashMap<String, String> createOrUpdateArticleMediaMap(String id, String articleId, String mediaId) {
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		ArticleMediaMap articleMediaMap = createOrUpdateArticleMediaMapInstance(id, articleId, mediaId);
+		if (articleMediaMap != null) {
+			save(articleMediaMap);
+			response.put("status", "success");
 		}
+		return response;
+	}
 
-		@Override
-		public ArticleMediaMap getById(String id) {			
-			return gloonDatastore.get(ArticleMediaMap.class, new ObjectId(id));
+	/**
+	 * Create or update an ArticleMediaMap instance
+	 * 
+	 * @param articleId
+	 * @param mediaId
+	 * @return
+	 */
+	private ArticleMediaMap createOrUpdateArticleMediaMapInstance(String id, String articleId, String mediaId) {
+		ArticleMediaMap articleMediaMap = null;
+		Date time = new Date();
+		if (id.isEmpty()) {
+			articleMediaMap = new ArticleMediaMap();
+			articleMediaMap.setInsertTime(Utility.convertDateToString(time));
+			articleMediaMap.setTimestamp(time.getTime());
+		} else {
+			articleMediaMap = getById(id);
+			articleMediaMap.setUpdateTime(Utility.convertDateToString(time));
 		}
+		articleMediaMap.setArticleId(articleId);
+		articleMediaMap.setMediaId(mediaId);
+		return articleMediaMap;
 
-		@Override
-		public ArticleMediaMap findByArticleAndMedia(String articleId,String mediaId) {
-			
-			return gloonDatastore.createQuery(ArticleMediaMap.class).filter("articleId", articleId).filter("mediaId", mediaId).get() ;
-		}
+	}
+
+	@Override
+	public List<ArticleMediaMap> findAllMediaByArticle(String articleId) {
+		return gloonDatastore.createQuery(ArticleMediaMap.class).filter("articleId", articleId).asList();
+	}
+
+	@Override
+	public ArticleMediaMap getById(String id) {
+		return gloonDatastore.get(ArticleMediaMap.class, new ObjectId(id));
+	}
+
+	@Override
+	public ArticleMediaMap findByArticleAndMedia(String articleId, String mediaId) {
+
+		return gloonDatastore.createQuery(ArticleMediaMap.class).filter("articleId", articleId).filter("mediaId", mediaId).get();
+	}
 }

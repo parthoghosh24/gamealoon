@@ -5,69 +5,61 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import play.data.DynamicForm;
+
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.AchievementInterface;
 import com.gamealoon.models.Achievement;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
-public class AchievementDAO extends GloonDAO implements AchievementInterface {
+public class AchievementDAO extends GloonDAO<Achievement> implements AchievementInterface {
 
-	
-	private static final AchievementDAO DATA_ACCESS_LAYER=new AchievementDAO();	
-	private Datastore gloonDatastore=null;	
-	private AchievementDAO()
-	{
-		super();		
-		gloonDatastore=initDatastore();		
+	private static final AchievementDAO DATA_ACCESS_LAYER = new AchievementDAO();
+	private Datastore gloonDatastore = null;
+
+	private AchievementDAO() {
+		super();
+		gloonDatastore = initDatastore();
 	}
-	
+
 	/**
 	 * Singleton way to instantiate Gloon DAO
+	 * 
 	 * @return
 	 */
-	public static AchievementDAO instantiateDAO()
-	{								
+	public static AchievementDAO instantiateDAO() {
 		return DATA_ACCESS_LAYER;
 	}
-	
+
 	@Override
 	public void save(Achievement achievement) {
 		gloonDatastore.save(achievement);
-		
+
 	}
 
 	@Override
-	public Achievement findByTitle(String title) {		
+	public Achievement findByTitle(String title) {
 		return gloonDatastore.find(Achievement.class, "title", title).get();
 	}
-	
+
 	@Override
 	public HashMap<String, String> createOrUpdateAchievement(DynamicForm requestData) {
 		HashMap<String, String> response = new HashMap<>();
 		response.put("status", "fail");
 		Achievement achievement = createOrUpdateAchievementInstance(requestData);
-		if(achievement!=null)
-		{
+		if (achievement != null) {
 			save(achievement);
 			response.put("status", "success");
 		}
 		return response;
 	}
-	
+
 	@Override
-	public Achievement getById(String id) {		
-		return gloonDatastore.get(Achievement.class, new ObjectId(id));
-	}
-	
-	@Override
-	public List<HashMap<String, Object>> getNAchievements(int limit,long timestamp) {
+	public List<HashMap<String, Object>> getNAchievements(int limit, long timestamp) {
 		List<HashMap<String, Object>> achievementMaps = new ArrayList<>();
 		List<Achievement> achievements = getAchievements(limit, timestamp);
-		for(Achievement achievement: achievements)
-		{
+		for (Achievement achievement : achievements) {
 			HashMap<String, Object> achievementMap = new HashMap<>();
 			achievementMap.put("id", achievement.getId().toString());
 			achievementMap.put("title", achievement.getTitle());
@@ -78,15 +70,14 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 			achievementMap.put("timestamp", achievement.getTimestamp());
 			achievementMaps.add(achievementMap);
 		}
- 		return achievementMaps;
+		return achievementMaps;
 	}
-	
+
 	@Override
 	public List<Achievement> getAchievements() {
-		
 		return gloonDatastore.createQuery(Achievement.class).asList();
 	}
-	
+
 	/**
 	 * Fetch achievements
 	 * 
@@ -94,8 +85,9 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 	 * @param timestamp
 	 * @return
 	 */
-	private List<Achievement> getAchievements(int limit, long timestamp) {		
-		return gloonDatastore.createQuery(Achievement.class).limit(limit).filter("timestamp <", timestamp).order("-timestamp").asList();
+	private List<Achievement> getAchievements(int limit, long timestamp) {
+		return gloonDatastore.createQuery(Achievement.class).limit(limit).filter("timestamp <", timestamp).order("-timestamp")
+				.asList();
 	}
 
 	/**
@@ -107,18 +99,15 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 	private Achievement createOrUpdateAchievementInstance(DynamicForm requestData) {
 		String id = requestData.get("id");
 		String title = requestData.get("title");
-		String description=requestData.get("description");
+		String description = requestData.get("description");
 		String achievementImage = requestData.get("achievementImage");
 		Achievement achievement = null;
 		Date time = new Date();
-		if(id.isEmpty())
-		{
+		if (id.isEmpty()) {
 			achievement = new Achievement();
 			achievement.setInsertTime(Utility.convertDateToString(time));
-			achievement.setTimestamp(time.getTime());			
-		}
-		else
-		{
+			achievement.setTimestamp(time.getTime());
+		} else {
 			achievement = getById(id);
 			achievement.setUpdateTime(Utility.convertDateToString(time));
 		}
@@ -133,18 +122,8 @@ public class AchievementDAO extends GloonDAO implements AchievementInterface {
 	 * 
 	 * @return
 	 */
-	public Long allAchievementCount()
-	{		
+	public Long allAchievementCount() {
 		return gloonDatastore.createQuery(Achievement.class).countAll();
-				
 	}
-
-	
-
-	
-
-	
-
-	
 
 }

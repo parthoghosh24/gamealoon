@@ -2,19 +2,14 @@ package com.gamealoon.database.interfaces;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.gamealoon.database.mongo.api.MongoDao;
 import com.gamealoon.models.Activity;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.User;
 
-public interface ActivityInterface {
+public interface ActivityInterface extends MongoDao<Activity> {
 
-	/**
-	 * Save an Activity
-	 * 
-	 * @param activity
-	 */
-	public void save(Activity activity);
-	
 	/**
 	 * Create and save new activity
 	 * 
@@ -25,15 +20,7 @@ public interface ActivityInterface {
 	 * @param insertTime
 	 */
 	public HashMap<String, String> createOrUpdateActivity(HashMap<String, String> activityMap);
-	
-	/**
-	 * Get activity by Id
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public Activity getById(String id);
-	
+
 	/**
 	 * Get Activities for one single User. We can fetch the recent activities also if no userId available.
 	 * 
@@ -41,8 +28,7 @@ public interface ActivityInterface {
 	 * @return
 	 */
 	public ArrayList<HashMap<String, Object>> getActivities(User user);
-	
-	
+
 	/**
 	 * Get User's personal public activities
 	 * 
@@ -50,7 +36,7 @@ public interface ActivityInterface {
 	 * @return
 	 */
 	public ArrayList<HashMap<String, Object>> getPublicActivitiesForUser(User user);
-	
+
 	/**
 	 * Get Game's public activities
 	 * 

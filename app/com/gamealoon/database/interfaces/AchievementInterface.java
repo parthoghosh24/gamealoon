@@ -5,17 +5,11 @@ import java.util.List;
 
 import play.data.DynamicForm;
 
+import com.gamealoon.database.mongo.api.MongoDao;
 import com.gamealoon.models.Achievement;
 
-public interface AchievementInterface {
+public interface AchievementInterface extends MongoDao<Achievement> {
 
-	/**
-	 * Save Achievement instance
-	 * 
-	 * @param achievement
-	 */
-	public void save(Achievement achievement);
-	
 	/**
 	 * Create or update achievement data
 	 * 
@@ -23,21 +17,14 @@ public interface AchievementInterface {
 	 * @return
 	 */
 	public HashMap<String, String> createOrUpdateAchievement(DynamicForm requestData);
+
 	/**
 	 * Find Achievement by Title
 	 * 
 	 * @return
 	 */
 	public Achievement findByTitle(String title);
-	
-	/**
-	 * Fetch achievement by id
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public Achievement getById(String id);
-	
+
 	/**
 	 * Get N achievements
 	 * 
@@ -46,7 +33,7 @@ public interface AchievementInterface {
 	 * @return
 	 */
 	public List<HashMap<String, Object>> getNAchievements(int limit, long timestamp);
-	
+
 	/**
 	 * Get games
 	 * 
