@@ -35,6 +35,7 @@ public class User {
 	private int month;
 	private int year;
 	private String avatar; // path to avatar image file for user
+	private String coverImage; //path to user cover image
 	private String insertTime;
 	private Long timestamp;
 	private String updateTime;
@@ -551,5 +552,19 @@ public class User {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	/**
+	 * @return the coverImage
+	 */
+	public String getCoverImage() {
+		return coverImage;
+	}
+
+	/**
+	 * @param coverImage the coverImage to set
+	 */
+	public void setCoverImage(String coverImage) {
+		this.coverImage = coverImage;
 	}
 }

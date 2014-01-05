@@ -42,6 +42,9 @@ public class Activity {
 	public final static int ACTIVITY_UNFOLLOW_GAME=12;
 	public final static int ACTIVITY_PUBLISH_FOR_GAME=13;
 	public final static int ACTIVITY_POST_NOT_COOL=14;
+	public final static int ACTIVITY_USER_LEVEL_UP=15;
+	public final static int ACTIVITY_USER_RANK_UP=16;
+	public final static int ACTIVITY_ARTICLE_HEAT_LEVEL_UP=17;
 	
 	
 	/**

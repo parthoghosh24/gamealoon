@@ -40,7 +40,8 @@ public class Game{
 	private String insertTime;
 	private String updateTime;
 	private Long timestamp;
-	private String gameBoxShot;
+	private String gameBoxShot; //path to game box shot
+	private String coverImage; //path to game cover Image
 	private int gameReleaseStatus;
 	private double totalScore;
 	
@@ -417,6 +418,22 @@ public class Game{
 	 */
 	public void setReleaseTimeStamp(Long releaseTimeStamp) {
 		this.releaseTimeStamp = releaseTimeStamp;
+	}
+
+
+	/**
+	 * @return the coverImage
+	 */
+	public String getCoverImage() {
+		return coverImage;
+	}
+
+
+	/**
+	 * @param coverImage the coverImage to set
+	 */
+	public void setCoverImage(String coverImage) {
+		this.coverImage = coverImage;
 	}
 	
 }

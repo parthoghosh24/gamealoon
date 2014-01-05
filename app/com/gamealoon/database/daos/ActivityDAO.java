@@ -43,10 +43,10 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 	}
 
 	@Override
-	public HashMap<String, String> createOrUpdateActivity(HashMap<String, String> activityMap) {
-		HashMap<String, String> response = new HashMap<>();
+	public HashMap<String, String> createOrUpdateActivity(final HashMap<String, String> activityMap) {
+		final HashMap<String, String> response = new HashMap<>();
 		response.put("status", "fail");
-		Activity activity = createOrUpdateActivityInstance(activityMap);
+		final Activity activity = createOrUpdateActivityInstance(activityMap);
 		if (activity != null) {
 			save(activity);
 			response.put("status", "success");
@@ -61,31 +61,55 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 	 * @param activityMap
 	 * @return
 	 */
-	private Activity createOrUpdateActivityInstance(HashMap<String, String> activityMap) {
-		String id = activityMap.get("id");
-		String username = activityMap.get("username");
-		String entityId = activityMap.get("entityId");
-		Integer type = Integer.parseInt(activityMap.get("type"));
-		Integer visbility = Integer.parseInt(activityMap.get("visibility"));
-		Date time = new Date();
+	private Activity createOrUpdateActivityInstance(final HashMap<String, String> activityMap) {		
+		final String username = activityMap.get("username");
+		final String entityId = activityMap.get("entityId");
+		final int type = Integer.parseInt(activityMap.get("type"));
+		final int visbility = Integer.parseInt(activityMap.get("visibility"));
+		final Date time = new Date();
 		Activity activity = null;
-		if (id.isEmpty()) {
-			activity = new Activity();
-			activity.setInsertTime(Utility.convertDateToString(time));
-			activity.setTimestamp(time.getTime());
-		} else {
-			activity = getById(id);
-			activity.setUpdateTime(Utility.convertDateToString(time));
+		if(Activity.ACTIVITY_FOLLOW_GAME == type || Activity.ACTIVITY_UNFOLLOW_GAME == type 
+		   || Activity.ACTIVITY_USER_FOLLOWS == type || Activity.ACTIVITY_USER_UNFOLLOWS == type
+		   || Activity.ACTIVITY_POST_COOL == type || Activity.ACTIVITY_POST_NOT_COOL == type)
+		{
+			activity = getActivityByUserNameAndEntityIdAndType(username, entityId, type);
+			if(activity!=null)
+			{			
+				activity.setUpdateTime(Utility.convertDateToString(time));
+			}
+			else
+			{
+				activity = new Activity();				
+			}
+			
 		}
+		else 
+		{
+			activity = new Activity();			
+		}
+		activity.setTimestamp(time.getTime());
+		activity.setInsertTime(Utility.convertDateToString(time));
 		activity.setType(type);
 		activity.setUsername(username);
 		activity.setEntityId(entityId);
 		activity.setVisibility(visbility);
 		return activity;
 	}
+	
+	/**
+	 * Fetch activity by Username, EntityId and Type
+	 * 
+	 * @return
+	 */
+	private Activity getActivityByUserNameAndEntityIdAndType(final String username, final String entityId, final int type)
+	{
+		Activity activity=null;
+		activity=gloonDatastore.createQuery(Activity.class).filter("username", username).filter("entityId", entityId).filter("type", type).get();
+		return activity;
+	}
 
 	@Override
-	public ArrayList<HashMap<String, Object>> getActivities(User user) {
+	public ArrayList<HashMap<String, Object>> getActivities(final User user) {
 		ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
 		List<Activity> allActivites = new ArrayList<>();
 		String userName = "";
@@ -96,12 +120,12 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 			userName = user.getUsername();
 			allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername()).order("-insertTime")
 					.asList();
-			Set<Buddy> allUsersInCurrentUserCircle = new HashSet<>();
+			final Set<Buddy> allUsersInCurrentUserCircle = new HashSet<>();
 			allUsersInCurrentUserCircle.addAll(user.getFollowedBy());
 			allUsersInCurrentUserCircle.addAll(user.getFollowing());
-			for (Buddy setUser : allUsersInCurrentUserCircle) {
+			for (final Buddy setUser : allUsersInCurrentUserCircle) {
 				Logger.debug("Set User: " + setUser.getUserName());
-				List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class)
+				final List<Activity> circleUserActivites = gloonDatastore.createQuery(Activity.class)
 						.filter("username", setUser.getUserName()).filter("visibility", Activity.PUBLIC).order("-insertTime").asList();
 				allActivites.addAll(circleUserActivites);
 			}
@@ -109,7 +133,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 			Collections.sort(allActivites, new Comparator<Activity>() {
 
 				@Override
-				public int compare(Activity o1, Activity o2) {
+				public int compare(final Activity o1, final Activity o2) {
 					// TODO Auto-generated method stub
 					return o2.getTimestamp().compareTo(o1.getTimestamp());
 				}
@@ -120,24 +144,24 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 	}
 
 	@Override
-	public ArrayList<HashMap<String, Object>> getPublicActivitiesForUser(User user) {
+	public ArrayList<HashMap<String, Object>> getPublicActivitiesForUser(final User user) {
 		ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
-		List<Activity> allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername())
+		final List<Activity> allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername())
 				.filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
 		activites = getActivityMaps(allActivites, user.getUsername());
 		return activites;
 	}
 
 	@Override
-	public ArrayList<HashMap<String, Object>> getActivitiesForGame(Game game) {
+	public ArrayList<HashMap<String, Object>> getActivitiesForGame(final Game game) {
 		ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
-		List<Article> allGameArticles = articleDAO.findAllPublishedArticlesByGame(game.getId().toString(), "all");
+		final List<Article> allGameArticles = articleDAO.findAllPublishedArticlesByGame(game.getId().toString(), "all");
 		Logger.debug("ALL ARTICLES size: " + allGameArticles.size());
-		List<Activity> allActivites = new ArrayList<>();
+		final List<Activity> allActivites = new ArrayList<>();
 		Logger.debug("GAME ID " + game.getId().toString());
-		for (Article article : allGameArticles) {
+		for (final Article article : allGameArticles) {
 			Logger.debug("ARTICLE ID: " + article.getId().toString());
-			List<Activity> tempActivities = gloonDatastore.createQuery(Activity.class).filter("entityId", article.getId().toString())
+			final List<Activity> tempActivities = gloonDatastore.createQuery(Activity.class).filter("entityId", article.getId().toString())
 					.filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
 			Logger.debug("Temp activities size   " + tempActivities.size());
 			if (tempActivities.size() > 0) {
@@ -145,7 +169,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 			}
 		}
 		Logger.debug(allActivites.toString());
-		List<Activity> gameActivities = gloonDatastore.createQuery(Activity.class).filter("entityId", game.getId().toString())
+		final List<Activity> gameActivities = gloonDatastore.createQuery(Activity.class).filter("entityId", game.getId().toString())
 				.filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
 		Logger.debug("All activities size: " + allActivites.size());
 		if (gameActivities.size() > 0) {
@@ -156,7 +180,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 	}
 
 	@Override
-	public Activity getById(String id) {
+	public Activity getById(final String id) {
 		return gloonDatastore.get(Activity.class, new ObjectId(id));
 	}
 
@@ -167,15 +191,15 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 	 * @param userName
 	 * @return
 	 */
-	private ArrayList<HashMap<String, Object>> getActivityMaps(List<Activity> activityList, String userName) {
-		ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
-		for (Activity activity : activityList) {
-			HashMap<String, Object> activityMap = new HashMap<>();
-			int activityType = activity.getType();
-			User activityUser = gloonDatastore.createQuery(User.class).filter("username", activity.getUsername()).get();
+	private ArrayList<HashMap<String, Object>> getActivityMaps(final List<Activity> activityList, final String userName) {
+		final ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
+		for (final Activity activity : activityList) {
+			final HashMap<String, Object> activityMap = new HashMap<>();
+			final int activityType = activity.getType();
+			final User activityUser = gloonDatastore.createQuery(User.class).filter("username", activity.getUsername()).get();
 			switch (activityType) {
 				case Activity.ACTIVITY_POST_PUBLISH:
-					Article article = gloonDatastore.createQuery(Article.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final Article article = gloonDatastore.createQuery(Article.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("message", " published a new " + article.getCategory() + ", ");
 					activityMap.put("activityOwnerUserName", userName);
@@ -189,7 +213,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " now following ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					User userFollowing = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final User userFollowing = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("followingUserName", userFollowing.getUsername());
 					activityMap.put("activityType", activityType);
@@ -199,7 +223,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " found article yeah ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					Article coolArticle = gloonDatastore.get(Article.class, new ObjectId(activity.getEntityId()));
+					final Article coolArticle = gloonDatastore.get(Article.class, new ObjectId(activity.getEntityId()));
 					activityMap.put("articleTitle", coolArticle.getTitle());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(coolArticle.getTitle()) + "-"
 							+ coolArticle.getId().toString());
@@ -211,15 +235,15 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
 					activityMap.put("activityType", activityType);
-					Conversation conversation = gloonDatastore.get(Conversation.class, new ObjectId(activity.getEntityId()));
-					String commentMessage = conversation.getMessage();
+					final Conversation conversation = gloonDatastore.get(Conversation.class, new ObjectId(activity.getEntityId()));
+					final String commentMessage = conversation.getMessage();
 					if (commentMessage.length() > 10) {
 						activityMap.put("activityComment", commentMessage.substring(0, 10));
 					} else {
 						activityMap.put("activityComment", commentMessage);
 					}
 
-					Article commentArticle = gloonDatastore.get(Article.class, new ObjectId(conversation.getComment().getArticleId()));
+					final Article commentArticle = gloonDatastore.get(Article.class, new ObjectId(conversation.getComment().getArticleId()));
 					activityMap.put("articleTitle", commentArticle.getTitle());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(commentArticle.getTitle()) + "-"
 							+ commentArticle.getId().toString());
@@ -244,7 +268,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " earned new achievement ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					Achievement achievement = gloonDatastore.createQuery(Achievement.class)
+					final Achievement achievement = gloonDatastore.createQuery(Achievement.class)
 							.filter("_id", new ObjectId(activity.getEntityId())).get();
 					activityMap.put("achievementTitle", achievement.getTitle());
 					activityMap.put("activityType", activityType);
@@ -254,7 +278,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " no more following ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					User userNotFollowing = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final User userNotFollowing = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("notFollowingUserName", userNotFollowing.getUsername());
 					activityMap.put("activityType", activityType);
@@ -264,7 +288,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " successfully blocked ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					User blockedUser = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final User blockedUser = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("notFollowingUserName", blockedUser.getUsername());
 					activityMap.put("activityType", activityType);
@@ -274,7 +298,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", "successfully unblocked ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					User unblockedUser = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final User unblockedUser = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("notFollowingUserName", unblockedUser.getUsername());
 					activityMap.put("activityType", activityType);
@@ -284,7 +308,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " interested in ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					Game followedGame = gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final Game followedGame = gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("followingGame", followedGame.getTitle());
 					activityMap.put("activityType", activityType);
@@ -296,7 +320,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " no more interested in ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					Game unfollowedGame = gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId()))
+					final Game unfollowedGame = gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("notFollowingGame", unfollowedGame.getTitle());
 					activityMap.put("activityType", activityType);
@@ -307,7 +331,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("message", " found article meh ");
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
-					Article notCoolArticle = gloonDatastore.createQuery(Article.class)
+					final Article notCoolArticle = gloonDatastore.createQuery(Article.class)
 							.filter("_id", new ObjectId(activity.getEntityId())).get();
 					activityMap.put("articleTitle", notCoolArticle.getTitle());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(notCoolArticle.getTitle()) + "-"
@@ -320,13 +344,13 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 		return activites;
 	}
 
-	private ArrayList<HashMap<String, Object>> getGameActivityMaps(List<Activity> activityList, Game game) {
-		ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
-		for (Activity activity : activityList) {
-			HashMap<String, Object> gameActivityMap = new HashMap<>();
-			int activityType = activity.getType();
-			User activityUser = gloonDatastore.createQuery(User.class).filter("username", activity.getUsername()).get();
-			Article article = gloonDatastore.createQuery(Article.class).filter("_id", new ObjectId(activity.getEntityId())).get();
+	private ArrayList<HashMap<String, Object>> getGameActivityMaps(final List<Activity> activityList, final Game game) {
+		final ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
+		for (final Activity activity : activityList) {
+			final HashMap<String, Object> gameActivityMap = new HashMap<>();
+			final int activityType = activity.getType();
+			final User activityUser = gloonDatastore.createQuery(User.class).filter("username", activity.getUsername()).get();
+			final Article article = gloonDatastore.createQuery(Article.class).filter("_id", new ObjectId(activity.getEntityId())).get();
 			switch (activityType) {
 
 				case Activity.ACTIVITY_FOLLOW_GAME:
@@ -350,7 +374,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 				case Activity.ACTIVITY_POST_COOL:
 					gameActivityMap.put("message", " found article yeah ");
 					gameActivityMap.put("activityUserName", activityUser.getUsername());
-					Article coolArticle = gloonDatastore.createQuery(Article.class)
+					final Article coolArticle = gloonDatastore.createQuery(Article.class)
 							.filter("_id", new ObjectId(activity.getEntityId())).get();
 					gameActivityMap.put("articleTitle", coolArticle.getTitle());
 					gameActivityMap.put("articleEncodedUrl", Utility.encodeForUrl(coolArticle.getTitle()) + "-"
