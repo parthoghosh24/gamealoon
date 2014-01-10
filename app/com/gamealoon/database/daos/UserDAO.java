@@ -3,6 +3,7 @@ package com.gamealoon.database.daos;
 import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -31,7 +32,6 @@ import com.gamealoon.models.Genre;
 import com.gamealoon.models.InterestedGame;
 import com.gamealoon.models.InterestedUser;
 import com.gamealoon.models.Media;
-import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
 import com.gamealoon.models.UserGameScoreMap;
 import com.gamealoon.utility.AppConstants;
@@ -155,187 +155,22 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				userMap.put("userAvatarUrl", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
 				userMap.put("userAvatarId", "none");
 			}
-			userMap.put("userAchievementCount", user.getAchievements().size());
-			userMap.put("userFollowersCount", user.getFollowedBy().size());
-			userMap.put("userFollowingCount", user.getFollowing().size());
+			double followedRatio = ((double) user.getFollowedBy().size() / (count() - 1)) * 100;
+			double followingRatio = ((double) user.getFollowing().size() / (count() - 1)) * 100;
+			userMap.put("userFollowersRatio", new DecimalFormat("###.#").format(followedRatio));
+			userMap.put("userFollowingRatio", new DecimalFormat("###.#").format(followingRatio));
 			userMap.put("userGameBio", user.getGameBio());
-			userMap.put("userTotalCount", count() - 1); // N-1 users. You don't wanna count yourself duh!!!
 			long allPublishedArticleCount = Article.allPublishedArticleCount();
-			userMap.put("userTotalAchievements", Achievement.getAllAchievementCount());
-			userMap.put("userTotalPublishedArticles", allPublishedArticleCount);
-			userMap.put("userTotalArticlesPublishedByUser", Article.allPublishedArticleCount(user));
-			userMap.put("userTotalCoolScore", user.getUserTotalCoolScore());
+			double publishedArticleRatio = ((double) Article.allPublishedArticleCount(user) / allPublishedArticleCount) * 100;
+			userMap.put("userPublishedRatio", new DecimalFormat("###.#").format(publishedArticleRatio));
+			double coolScoreRatio = 0;
 			if (allPublishedArticleCount > 0) {
-				userMap.put("userNetworkTotalCoolScore", RankAlgorithm.calculateNetworkTotalCoolScore(instance));
-			} else {
-				userMap.put("userNetworkTotalCoolScore", 0);
+				double networkTotalCoolScore = RankAlgorithm.calculateNetworkTotalCoolScore(instance);
+				coolScoreRatio = (user.getUserTotalCoolScore() / networkTotalCoolScore) * 100;
 			}
-			String[] interestedPlatforms = user.getInterestedPlatforms();
-			ArrayList<Platform> platforms = new ArrayList<>();
-			for (String platform : interestedPlatforms) {
-				Platform fetchedPlatform = platformDAOInstance.findByShortTitle(platform);
-				if (fetchedPlatform != null) {
-					platforms.add(fetchedPlatform);
-				}
+			userMap.put("userCoolScoreRatio", new DecimalFormat("###.#").format(coolScoreRatio));
 
-			}
-			userMap.put("userInterestedPlatforms", platforms);
 			userMap.put("userCountry", user.getCountry());
-			ArrayList<HashMap<String, Object>> genreMapList = new ArrayList<>();
-			for (Genre genre : user.getInterestedGenres()) {
-				HashMap<String, Object> genreMap = new HashMap<>();
-				genreMap.put("genreValue", genre.toString());
-				genreMap.put("genreShortValue", genre);
-				genreMapList.add(genreMap);
-			}
-			userMap.put("userInterestedGenres", genreMapList);
-
-			ArrayList<InterestedGame> interestedGames = user.getFollowingGames();
-			if (interestedGames != null) {
-				Collections.sort(interestedGames, new Comparator<InterestedGame>() {
-
-					@Override
-					public int compare(InterestedGame instance1, InterestedGame instance2) {
-						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
-					}
-
-				});
-
-				ArrayList<InterestedGame> selectedInterestedGameList = new ArrayList<>();
-				selectedInterestedGameList = interestedGames;
-				if (interestedGames.size() > 5) {
-					selectedInterestedGameList = (ArrayList<InterestedGame>) interestedGames.subList(0, 5);
-				} else if (interestedGames.size() > 10) {
-					selectedInterestedGameList = (ArrayList<InterestedGame>) interestedGames.subList(0, 10);
-				}
-
-				ArrayList<HashMap<String, Object>> interestedGameListMaps = new ArrayList<>();
-				for (InterestedGame selectedGame : selectedInterestedGameList) {
-					HashMap<String, Object> interestedGameMap = new HashMap<>();
-					Game game = gameDAOInstance.getGameById(selectedGame.getGameId());
-					interestedGameMap.put("interestedGameId", game.getId().toString());
-					interestedGameMap.put("interestedGameTitle", game.getTitle());
-					String gameBoxShot = game.getGameBoxShot();
-					if (gameBoxShot.isEmpty()) {
-						interestedGameMap.put("interestedGameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
-					} else {
-						Media media = mediaDAOInstance.getById(gameBoxShot);
-						interestedGameMap.put("interestedGameBoxShot", media.getUrl());
-					}
-					interestedGameMap.put("interestedGameURL", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
-					interestedGameMap.put("interestedGameTimestamp", selectedGame.getTimestamp());
-					interestedGameListMaps.add(interestedGameMap);
-				}
-
-				userMap.put("userInterestedGames", interestedGameListMaps);
-				userMap.put("userDashboardInterestedGames", interestedGameListMaps);
-
-			} else {
-				userMap.put("userInterestedGames", new ArrayList<>());
-				userMap.put("userDashboardInterestedGames", new ArrayList<>());
-			}
-
-			// 10 followers
-			ArrayList<Buddy> followedBy = user.getFollowedBy();
-
-			if (followedBy != null) {
-				Collections.sort(followedBy, new Comparator<Buddy>() {
-
-					@Override
-					public int compare(Buddy instance1, Buddy instance2) {
-						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
-					}
-
-				});
-
-				List<Buddy> selectedBuddyList = new ArrayList<>();
-				selectedBuddyList = followedBy;
-				if (followedBy.size() > 5) {
-					selectedBuddyList = followedBy.subList(0, 5);
-				} else if (followedBy.size() > 10) {
-					selectedBuddyList = followedBy.subList(0, 10);
-				}
-
-				ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
-				for (Buddy buddy : selectedBuddyList) {
-					HashMap<String, Object> buddyMap = new HashMap<>();
-					User buddyUser = findByUsername(buddy.getUserName());
-					buddyMap.put("buddyUserId", buddyUser.getId().toString());
-					buddyMap.put("buddyUsername", buddyUser.getUsername());
-					String buddyAvatarImage = buddyUser.getAvatar();
-					if (buddyAvatarImage.isEmpty()) {
-						buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
-					} else {
-						Media media = mediaDAOInstance.getById(buddyAvatarImage);
-						buddyMap.put("buddyUserAvatar", media.getUrl());
-					}
-					buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
-					buddyListMaps.add(buddyMap);
-				}
-
-				userMap.put("userFollowedBy", buddyListMaps);
-				userMap.put("userDashboardFollowedBy", buddyListMaps);
-
-			} else {
-				userMap.put("userFollowedBy", new ArrayList<>());
-				userMap.put("userDashboardFollowedBy", new ArrayList<>());
-			}
-
-			// 10 followings
-			ArrayList<Buddy> followings = user.getFollowing();
-
-			if (followings != null) {
-				Collections.sort(followings, new Comparator<Buddy>() {
-
-					@Override
-					public int compare(Buddy instance1, Buddy instance2) {
-						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
-					}
-
-				});
-
-				List<Buddy> selectedBuddyList = new ArrayList<>();
-				selectedBuddyList = followings;
-				if (followings.size() > 5) {
-					selectedBuddyList = followings.subList(0, 5);
-				} else if (followings.size() > 10) {
-					selectedBuddyList = followings.subList(0, 10);
-				}
-
-				ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
-				for (Buddy buddy : selectedBuddyList) {
-					HashMap<String, Object> buddyMap = new HashMap<>();
-					User buddyUser = findByUsername(buddy.getUserName());
-					buddyMap.put("buddyUserId", buddyUser.getId().toString());
-					buddyMap.put("buddyUsername", buddyUser.getUsername());
-					String buddyAvatarImage = buddyUser.getAvatar();
-					if (buddyAvatarImage.isEmpty()) {
-						buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
-					} else {
-						Media media = mediaDAOInstance.getById(buddyAvatarImage);
-						buddyMap.put("buddyUserAvatar", media.getUrl());
-					}
-					buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
-					buddyListMaps.add(buddyMap);
-				}
-
-				userMap.put("userFollowingOthers", buddyListMaps);
-
-			} else {
-				userMap.put("userFollowingOthers", new ArrayList<>());
-			}
-
-			// 10 achievements
-			ArrayList<Achievement> userAchievements = user.getAchievements();
-			if (userAchievements != null) {
-				if (userAchievements.size() > 10) {
-					userMap.put("userAchievements", userAchievements.subList(1, 11));
-				} else {
-					userMap.put("userAchievements", userAchievements);
-				}
-			} else {
-				userMap.put("userAchievements", new ArrayList<>());
-			}
 
 			if (mode == AppConstants.USER_PROFILE) {
 
@@ -349,8 +184,6 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 
 				userMap.put("userCarouselArticles", articleDao.getAllArticlesForUserCarousel(user.getUsername()));
 				userMap.put("userPublicActivities", activityDAOInstance.getPublicActivitiesForUser(user));
-				userMap.put("userRecentArticles", articleDao.getNArticlesByCarouselSelectorAndCategory(user.getUsername(), "all",
-						new Date().getTime(), Article.USER));
 				if (checkUserBlockedOrNot(user, findByUsername(username))) {
 					userMap.put("isBlocked", 1);
 				} else {
@@ -903,6 +736,154 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		} else {
 			return gloonDatastore.createQuery(User.class).order("-totalScore").asList();
 		}
+	}
+
+	@Override
+	public HashMap<String, Object> fetchSocial(String username) throws MalformedURLException {
+		HashMap<String, Object> userSocialMap = new HashMap<>();
+		User user = findByUsername(username);
+		Logger.debug("User whose social data fetched: " + user);
+		MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
+		userSocialMap.put("status", "fail");
+		try {
+			// games
+			ArrayList<InterestedGame> interestedGames = user.getFollowingGames();
+			if (interestedGames != null && interestedGames.size() > 0) {
+				Collections.sort(interestedGames, new Comparator<InterestedGame>() {
+
+					@Override
+					public int compare(InterestedGame instance1, InterestedGame instance2) {
+						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
+					}
+
+				});
+
+				ArrayList<HashMap<String, Object>> interestedGameListMaps = new ArrayList<>();
+				for (InterestedGame selectedGame : interestedGames) {
+					HashMap<String, Object> interestedGameMap = new HashMap<>();
+					Game game = gameDAOInstance.getGameById(selectedGame.getGameId());
+					interestedGameMap.put("interestedGameId", game.getId().toString());
+					interestedGameMap.put("interestedGameTitle", game.getTitle());
+					String gameBoxShot = game.getGameBoxShot();
+					if (gameBoxShot.isEmpty()) {
+						interestedGameMap.put("interestedGameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
+					} else {
+						Media media = mediaDAOInstance.getById(gameBoxShot);
+						interestedGameMap.put("interestedGameBoxShot", media.getUrl());
+					}
+					interestedGameMap.put("interestedGameURL", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
+					interestedGameMap.put("interestedGameTimestamp", selectedGame.getTimestamp());
+					interestedGameListMaps.add(interestedGameMap);
+				}
+
+				userSocialMap.put("userInterestedGames", interestedGameListMaps);
+
+			} else {
+				userSocialMap.put("userInterestedGames", new ArrayList<>());
+			}
+
+			// followers
+			ArrayList<Buddy> followedBy = user.getFollowedBy();
+
+			if (followedBy != null && followedBy.size() > 0) {
+				Collections.sort(followedBy, new Comparator<Buddy>() {
+
+					@Override
+					public int compare(Buddy instance1, Buddy instance2) {
+						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
+					}
+
+				});
+
+				ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
+				for (Buddy buddy : followedBy) {
+					HashMap<String, Object> buddyMap = new HashMap<>();
+					User buddyUser = findByUsername(buddy.getUserName());
+					buddyMap.put("buddyUserId", buddyUser.getId().toString());
+					buddyMap.put("buddyUsername", buddyUser.getUsername());
+					String buddyAvatarImage = buddyUser.getAvatar();
+					if (buddyAvatarImage.isEmpty()) {
+						buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+					} else {
+						Media media = mediaDAOInstance.getById(buddyAvatarImage);
+						buddyMap.put("buddyUserAvatar", media.getUrl());
+					}
+					buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
+					buddyListMaps.add(buddyMap);
+				}
+
+				userSocialMap.put("userFollowedBy", buddyListMaps);
+
+			} else {
+				userSocialMap.put("userFollowedBy", new ArrayList<>());
+			}
+
+			// followings
+			ArrayList<Buddy> followings = user.getFollowing();
+
+			if (followings != null && followings.size() > 0) {
+				Collections.sort(followings, new Comparator<Buddy>() {
+
+					@Override
+					public int compare(Buddy instance1, Buddy instance2) {
+						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
+					}
+
+				});
+				ArrayList<HashMap<String, Object>> buddyListMaps = new ArrayList<>();
+				for (Buddy buddy : followings) {
+					HashMap<String, Object> buddyMap = new HashMap<>();
+					User buddyUser = findByUsername(buddy.getUserName());
+					buddyMap.put("buddyUserId", buddyUser.getId().toString());
+					buddyMap.put("buddyUsername", buddyUser.getUsername());
+					String buddyAvatarImage = buddyUser.getAvatar();
+					if (buddyAvatarImage.isEmpty()) {
+						buddyMap.put("buddyUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+					} else {
+						Media media = mediaDAOInstance.getById(buddyAvatarImage);
+						buddyMap.put("buddyUserAvatar", media.getUrl());
+					}
+					buddyMap.put("buddyUserTimestamp", buddy.getTimestamp());
+					buddyListMaps.add(buddyMap);
+				}
+
+				userSocialMap.put("userFollowingOthers", buddyListMaps);
+
+			} else {
+				userSocialMap.put("userFollowingOthers", new ArrayList<>());
+			}
+			userSocialMap.put("status", "success");
+		} catch (Exception exception) {
+			Logger.error("Error in Fetching social information for user", exception.fillInStackTrace());
+			exception.printStackTrace();
+		}
+
+		return userSocialMap;
+	}
+
+	@Override
+	public HashMap<String, Object> fetchStats(String username) {
+		HashMap<String, Object> userStatsMap = new HashMap<>();
+		userStatsMap.put("status", "fail");
+		final User user = findByUsername(username);
+		try
+		{
+			ArrayList<Achievement> userAchievements = user.getAchievements();
+			if (userAchievements != null && userAchievements.size() > 0) {
+				userStatsMap.put("userAchievements", userAchievements);
+
+			} else {
+				userStatsMap.put("userAchievements", new ArrayList<>());
+			}
+			userStatsMap.put("status", "success");
+		}
+		catch(Exception exception)
+		{
+			Logger.error("Error in Fetching User stats", exception.fillInStackTrace());
+			exception.printStackTrace();
+		}
+		
+		return userStatsMap;
 	}
 
 	/**

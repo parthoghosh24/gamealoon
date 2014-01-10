@@ -1,6 +1,5 @@
 package com.gamealoon.models;
 
-
 import java.util.ArrayList;
 
 import org.bson.types.ObjectId;
@@ -8,25 +7,23 @@ import com.gamealoon.database.daos.ArticleDAO;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 
-
 /**
- * This is the Article entity of Gamealoon framework. Whatever content we will be seeing on the website, say review,
- * preview, news, etc... are articles at the end of the day. These articles will be part of category such as review, preview, 
- * news and so on. That is why it is independent.
+ * This is the Article entity of Gamealoon framework. Whatever content we will be seeing on the website, say review, preview, news,
+ * etc... are articles at the end of the day. These articles will be part of category such as review, preview, news and so on. That is
+ * why it is independent.
  * 
  * 
  * @author partho
- *
+ * 
  */
 
 @Entity
 public class Article {
-	
+
 	@Id
-	private ObjectId id;	
-	private String title;	
-	private String subtitle;
-	private String body; //snippet Text
+	private ObjectId id;
+	private String title;
+	private String body; // snippet Text
 	private String publishDate;
 	private String insertTime;
 	private String updateTime;
@@ -34,56 +31,55 @@ public class Article {
 	 * This is the article publish timestamp
 	 * 
 	 */
-	private Long timestamp; 
+	private long timestamp;
 	private double coolScore;
 	private double notCoolScore;
 	private double coolNotCoolwilsonScore;
 	private double totalTimeSpent;
-	private double averageTimeSpent;	
-	private double pageHitCount; 	
+	private double averageTimeSpent;
+	private double pageHitCount;
 	private double commentScore;
-	private double totalScore; //final article score
+	private double totalScore; // final article score
 	private String featuredImage;
-	private int state; //1: draft, 2:publish
+	private int state; // 1: draft, 2:publish
 	private String author;
 	private String game;
 	private int isPublished;
-	private String sourceUrl; //for news
-	private String videoUrl; //for video
-	private ArrayList<String> likes = new ArrayList<>(); //In case of Review
-	private ArrayList<String> unLikes = new ArrayList<>();//In case of Review
+	private String sourceUrl; // for news
+	private String videoUrl; // for video
+	private ArrayList<String> sweets = new ArrayList<>(); // In case of Review
+	private ArrayList<String> stinks = new ArrayList<>();// In case of Review
+	private String playedOnPlatform; // in case of Review
 	/**
 	 * Article states
 	 */
-	public final static int DRAFT=1; 
-	public final static int PUBLISH=2;
-	
+	public final static int DRAFT = 1;
+	public final static int PUBLISH = 2;
+
 	/**
 	 * Article is published states
 	 * 
 	 */
-	public final static int PUBLISHED=0; 
-	public final static int NOT_PUBLISHED=1;
-	
+	public final static int PUBLISHED = 0;
+	public final static int NOT_PUBLISHED = 1;
+
 	/**
 	 * Article List extractor modes
 	 */
-	public final static int PLATFORM=1;
-	public final static int USER=2;
-	public final static int GAME=3;
-	
+	public final static int PLATFORM = 1;
+	public final static int USER = 2;
+	public final static int GAME = 3;
+
 	/**
 	 * Voting Type
 	 * 
 	 */
-	public static final Integer COOL=0;
-	public static final Integer NOTCOOL=1;
-		
-	private String[] platforms = {};
-	private Category category;	
-	
-	public ObjectId getId()
-	{
+	public static final Integer COOL = 0;
+	public static final Integer NOTCOOL = 1;
+
+	private Category category;
+
+	public ObjectId getId() {
 		return this.id;
 	}
 
@@ -101,21 +97,6 @@ public class Article {
 		this.title = title;
 	}
 
-	/**
-	 * @return the subtitle
-	 */
-	public String getSubtitle() {
-		return subtitle;
-	}
-
-	/**
-	 * @param subtitle the subtitle to set
-	 */
-	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
-	}
-	
-	
 	/**
 	 * @return the body
 	 */
@@ -185,12 +166,11 @@ public class Article {
 	public void setGame(String game) {
 		this.game = game;
 	}
-	
+
 	/**
 	 * Title is returned as String
 	 */
-	public String toString()
-	{
+	public String toString() {
 		return this.title;
 	}
 
@@ -248,20 +228,6 @@ public class Article {
 	 */
 	public void setFeaturedImage(String featuredImage) {
 		this.featuredImage = featuredImage;
-	}
-
-	/**
-	 * @return the platforms
-	 */
-	public String[] getPlatforms() {
-		return platforms;
-	}
-
-	/**
-	 * @param platforms the platforms to set
-	 */
-	public void setPlatforms(String[] platforms) {
-		this.platforms = platforms;
 	}
 
 	/**
@@ -390,52 +356,48 @@ public class Article {
 		this.averageTimeSpent = averageTimeSpent;
 	}
 
-	  /**
-     * Get all publishedArticles
-     * 
-     * @return
-     */
-    public static Long allPublishedArticleCount()
-    {               
-            ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
-            return articleDAO.allPublishedArticlesCount(null);
-            
-    }
-    
-    /**
-     * Get all publishedArticles for Single User
-     * 
-     * @return
-     */
-    public static Long allPublishedArticleCount(User user)
-    {
-            
-            ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
-            return articleDAO.allPublishedArticlesCount(user);
-            
-    }
-    
-    /**
-     * Fetch Media Is From Body
-     * 
-     * @param body
-     * @return
-     */
-    public static ArrayList<String> fetchMediaIdsFromBody(String body)
-    {
-    	ArrayList<String> mediaIds= new ArrayList<>();
-    	int startIndex=body.indexOf("<img");
-    	while(startIndex!=-1)
-    	{
-    		int mediaIdIndex=body.indexOf("id=\"", startIndex);
-    		int endIndex=body.indexOf("\"", mediaIdIndex+4);
-    		String mediaId = body.substring(mediaIdIndex+4, endIndex);
-    		mediaIds.add(mediaId);
-    		startIndex=body.indexOf("<img",endIndex);
-    	}
-    	return mediaIds;
-    	
-    }
+	/**
+	 * Get all publishedArticles
+	 * 
+	 * @return
+	 */
+	public static Long allPublishedArticleCount() {
+		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
+		return articleDAO.allPublishedArticlesCount(null);
+
+	}
+
+	/**
+	 * Get all publishedArticles for Single User
+	 * 
+	 * @return
+	 */
+	public static Long allPublishedArticleCount(User user) {
+
+		ArticleDAO articleDAO = ArticleDAO.instantiateDAO();
+		return articleDAO.allPublishedArticlesCount(user);
+
+	}
+
+	/**
+	 * Fetch Media Is From Body
+	 * 
+	 * @param body
+	 * @return
+	 */
+	public static ArrayList<String> fetchMediaIdsFromBody(String body) {
+		ArrayList<String> mediaIds = new ArrayList<>();
+		int startIndex = body.indexOf("<img");
+		while (startIndex != -1) {
+			int mediaIdIndex = body.indexOf("id=\"", startIndex);
+			int endIndex = body.indexOf("\"", mediaIdIndex + 4);
+			String mediaId = body.substring(mediaIdIndex + 4, endIndex);
+			mediaIds.add(mediaId);
+			startIndex = body.indexOf("<img", endIndex);
+		}
+		return mediaIds;
+
+	}
 
 	/**
 	 * @return the isPublished
@@ -452,31 +414,31 @@ public class Article {
 	}
 
 	/**
-	 * @return the likes
+	 * @return the sweets
 	 */
-	public ArrayList<String> getLikes() {
-		return likes;
+	public ArrayList<String> getSweets() {
+		return sweets;
 	}
 
 	/**
-	 * @param likes the likes to set
+	 * @param likes the sweets to set
 	 */
-	public void setLikes(ArrayList<String> likes) {
-		this.likes = likes;
+	public void setSweets(ArrayList<String> sweets) {
+		this.sweets = sweets;
 	}
 
 	/**
-	 * @return the unLikes
+	 * @return the stinks
 	 */
-	public ArrayList<String> getUnLikes() {
-		return unLikes;
+	public ArrayList<String> getStinks() {
+		return stinks;
 	}
 
 	/**
-	 * @param unLikes the unLikes to set
+	 * @param unLikes the stinks to set
 	 */
-	public void setUnLikes(ArrayList<String> unLikes) {
-		this.unLikes = unLikes;
+	public void setStinks(ArrayList<String> stinks) {
+		this.stinks = stinks;
 	}
 
 	/**
@@ -507,6 +469,18 @@ public class Article {
 		this.videoUrl = videoUrl;
 	}
 
+	/**
+	 * @return the playedOnPlatform
+	 */
+	public String getPlayedOnPlatform() {
+		return playedOnPlatform;
+	}
 
+	/**
+	 * @param playedOnPlatform the playedOnPlatform to set
+	 */
+	public void setPlayedOnPlatform(String playedOnPlatform) {
+		this.playedOnPlatform = playedOnPlatform;
+	}
 
 }

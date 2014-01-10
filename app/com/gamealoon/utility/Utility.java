@@ -238,9 +238,8 @@ public class Utility {
 	 */
 	public static String[] stringToList(String input)
 	{		
-		String modifiedInput = input.substring(1, input.indexOf("]"));
-		modifiedInput = modifiedInput.replace("\"", "");
-		return modifiedInput.split(",");		
+		String modifiedInput = input.substring(1, input.indexOf("]"));		
+		return modifiedInput.split("\",\"");		
 	}
 	
 	/**

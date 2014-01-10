@@ -1,5 +1,6 @@
 package com.gamealoon.database.daos;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +19,9 @@ import com.gamealoon.models.Article;
 import com.gamealoon.models.Buddy;
 import com.gamealoon.models.Conversation;
 import com.gamealoon.models.Game;
+import com.gamealoon.models.Media;
 import com.gamealoon.models.User;
+import com.gamealoon.utility.AppConstants;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
@@ -139,7 +142,12 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 				}
 			});
 		}
-		activites = getActivityMaps(allActivites, userName);
+		try {
+			activites = getActivityMaps(allActivites, userName);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return activites;
 	}
 
@@ -148,7 +156,12 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 		ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
 		final List<Activity> allActivites = gloonDatastore.createQuery(Activity.class).filter("username", user.getUsername())
 				.filter("visibility", Activity.PUBLIC).order("-insertTime").limit(10).asList();
-		activites = getActivityMaps(allActivites, user.getUsername());
+		try {
+			activites = getActivityMaps(allActivites, user.getUsername());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return activites;
 	}
 
@@ -190,55 +203,85 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 	 * @param activityList
 	 * @param userName
 	 * @return
+	 * @throws MalformedURLException 
 	 */
-	private ArrayList<HashMap<String, Object>> getActivityMaps(final List<Activity> activityList, final String userName) {
+	private ArrayList<HashMap<String, Object>> getActivityMaps(final List<Activity> activityList, final String userName) throws MalformedURLException {
 		final ArrayList<HashMap<String, Object>> activites = new ArrayList<>();
 		for (final Activity activity : activityList) {
 			final HashMap<String, Object> activityMap = new HashMap<>();
+			final MediaDAO mediaDaoInstance = MediaDAO.instantiateDAO();
 			final int activityType = activity.getType();
 			final User activityUser = gloonDatastore.createQuery(User.class).filter("username", activity.getUsername()).get();
+			activityMap.put("activityTimestamp",activity.getTimestamp());
 			switch (activityType) {
 				case Activity.ACTIVITY_POST_PUBLISH:
 					final Article article = gloonDatastore.createQuery(Article.class).filter("_id", new ObjectId(activity.getEntityId()))
-							.get();
-					activityMap.put("message", " published a new " + article.getCategory() + ", ");
+							.get();					
+					activityMap.put("articleCategory", article.getCategory().toString());					
+					String featuredImage = article.getFeaturedImage();
+					if (featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage)) {
+						activityMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/featuredBg.png");
+					} else {
+						Media media = mediaDaoInstance.getById(featuredImage);
+						activityMap.put("articleFeaturedImage", media.getUrl());
+					}					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
+					activityMap.put("activityUserAvatar", activityUser.getAvatar());
 					activityMap.put("articleTitle", article.getTitle());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
 					activityMap.put("activityType", activityType);
 					break;
 
-				case Activity.ACTIVITY_USER_FOLLOWS:
-					activityMap.put("message", " now following ");
-					activityMap.put("activityOwnerUserName", userName);
+				case Activity.ACTIVITY_USER_FOLLOWS:					
+					activityMap.put("activityOwnerUserName", userName);					
 					activityMap.put("activityUserName", activityUser.getUsername());
+					String avatar = activityUser.getAvatar();
+					if (!avatar.isEmpty()) {
+						Media media = mediaDaoInstance.getById(avatar);
+						activityMap.put("activityUserAvatar", media.getUrl());
+					} else {
+						activityMap.put("activityUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+					}
 					final User userFollowing = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("followingUserName", userFollowing.getUsername());
+					avatar = userFollowing.getAvatar();
+					if (!avatar.isEmpty()) {
+						Media media = mediaDaoInstance.getById(avatar);
+						activityMap.put("followingUserAvatar", media.getUrl());
+					} else {
+						activityMap.put("followingUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+					}					
 					activityMap.put("activityType", activityType);
 					break;
 
-				case Activity.ACTIVITY_POST_COOL:
-					activityMap.put("message", " found article yeah ");
+				case Activity.ACTIVITY_POST_COOL:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
+					activityMap.put("activityUserAvatar", activityUser.getAvatar());
 					final Article coolArticle = gloonDatastore.get(Article.class, new ObjectId(activity.getEntityId()));
 					activityMap.put("articleTitle", coolArticle.getTitle());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(coolArticle.getTitle()) + "-"
 							+ coolArticle.getId().toString());
+					featuredImage = coolArticle.getFeaturedImage();
+					if (featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage)) {
+						activityMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/featuredBg.png");
+					} else {
+						Media media = mediaDaoInstance.getById(featuredImage);
+						activityMap.put("articleFeaturedImage", media.getUrl());
+					}					
 					activityMap.put("activityType", activityType);
 					break;
 
-				case Activity.ACTIVITY_POST_COMMENT:
-					activityMap.put("message", " posted a new comment for ");
+				case Activity.ACTIVITY_POST_COMMENT:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
 					activityMap.put("activityType", activityType);
 					final Conversation conversation = gloonDatastore.get(Conversation.class, new ObjectId(activity.getEntityId()));
 					final String commentMessage = conversation.getMessage();
-					if (commentMessage.length() > 10) {
-						activityMap.put("activityComment", commentMessage.substring(0, 10));
+					if (commentMessage.length() > 20) {
+						activityMap.put("activityComment", commentMessage.substring(0, 20));
 					} else {
 						activityMap.put("activityComment", commentMessage);
 					}
@@ -247,6 +290,13 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("articleTitle", commentArticle.getTitle());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(commentArticle.getTitle()) + "-"
 							+ commentArticle.getId().toString());
+					featuredImage = commentArticle.getFeaturedImage();
+					if (featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage)) {
+						activityMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/featuredBg.png");
+					} else {
+						Media media = mediaDaoInstance.getById(featuredImage);
+						activityMap.put("articleFeaturedImage", media.getUrl());
+					}					
 					activityMap.put("activityType", activityType);
 					break;
 
@@ -264,8 +314,7 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("activityType", activityType);
 					break;
 
-				case Activity.ACTIVITY_NEW_ACHIEVMENT:
-					activityMap.put("message", " earned new achievement ");
+				case Activity.ACTIVITY_NEW_ACHIEVMENT:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
 					final Achievement achievement = gloonDatastore.createQuery(Achievement.class)
@@ -274,13 +323,26 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("activityType", activityType);
 					break;
 
-				case Activity.ACTIVITY_USER_UNFOLLOWS:
-					activityMap.put("message", " no more following ");
+				case Activity.ACTIVITY_USER_UNFOLLOWS:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
+					avatar = activityUser.getAvatar();
+					if (!avatar.isEmpty()) {
+						Media media = mediaDaoInstance.getById(avatar);
+						activityMap.put("activityUserAvatar", media.getUrl());
+					} else {
+						activityMap.put("activityUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+					}					
 					final User userNotFollowing = gloonDatastore.createQuery(User.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("notFollowingUserName", userNotFollowing.getUsername());
+					avatar = userNotFollowing.getAvatar();
+					if (!avatar.isEmpty()) {
+						Media media = mediaDaoInstance.getById(avatar);
+						activityMap.put("notFollowingUserAvatar", media.getUrl());
+					} else {
+						activityMap.put("notFollowingUserAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+					}
 					activityMap.put("activityType", activityType);
 					break;
 
@@ -304,36 +366,57 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					activityMap.put("activityType", activityType);
 					break;
 
-				case Activity.ACTIVITY_FOLLOW_GAME:
-					activityMap.put("message", " interested in ");
+				case Activity.ACTIVITY_FOLLOW_GAME:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
+					activityMap.put("activityUserAvatar", activityUser.getAvatar());
 					final Game followedGame = gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("followingGame", followedGame.getTitle());
+					String gameBoxShot = followedGame.getGameBoxShot();
+					if(gameBoxShot.isEmpty())
+					{
+						activityMap.put("gameBoxShot",AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/boxShot.png");
+					}
+					else
+					{
+						Media media = mediaDaoInstance.getById(gameBoxShot);
+						activityMap.put("gameBoxShot", media.getUrl());
+					}					
 					activityMap.put("activityType", activityType);
 					activityMap.put("gameEncodedUrl", Utility.encodeForUrl(followedGame.getTitle()) + "-"
 							+ followedGame.getId().toString());
 					break;
 
-				case Activity.ACTIVITY_UNFOLLOW_GAME:
-					activityMap.put("message", " no more interested in ");
+				case Activity.ACTIVITY_UNFOLLOW_GAME:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
+					activityMap.put("activityUserAvatar", activityUser.getAvatar());
 					final Game unfollowedGame = gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(activity.getEntityId()))
 							.get();
 					activityMap.put("notFollowingGame", unfollowedGame.getTitle());
+					gameBoxShot = unfollowedGame.getGameBoxShot();
+					if(gameBoxShot.isEmpty())
+					{
+						activityMap.put("gameBoxShot",AppConstants.APP_IMAGE_DEFAULT_URL_PATH+"/boxShot.png");
+					}
+					else
+					{
+						Media media = mediaDaoInstance.getById(gameBoxShot);
+						activityMap.put("gameBoxShot", media.getUrl());
+					}
 					activityMap.put("activityType", activityType);
 					activityMap.put("gameEncodedUrl", Utility.encodeForUrl(unfollowedGame.getTitle()) + "-"
 							+ unfollowedGame.getId().toString());
 					break;
-				case Activity.ACTIVITY_POST_NOT_COOL:
-					activityMap.put("message", " found article meh ");
+				case Activity.ACTIVITY_POST_NOT_COOL:					
 					activityMap.put("activityOwnerUserName", userName);
 					activityMap.put("activityUserName", activityUser.getUsername());
+					activityMap.put("activityUserAvatar", activityUser.getAvatar());
 					final Article notCoolArticle = gloonDatastore.createQuery(Article.class)
 							.filter("_id", new ObjectId(activity.getEntityId())).get();
 					activityMap.put("articleTitle", notCoolArticle.getTitle());
+					activityMap.put("articleFeaturedImage", notCoolArticle.getFeaturedImage());
 					activityMap.put("articleEncodedUrl", Utility.encodeForUrl(notCoolArticle.getTitle()) + "-"
 							+ notCoolArticle.getId().toString());
 					activityMap.put("activityType", activityType);

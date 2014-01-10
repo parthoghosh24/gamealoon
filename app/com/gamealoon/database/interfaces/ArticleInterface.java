@@ -29,7 +29,7 @@ public interface ArticleInterface extends MongoDao<Article> {
 	 * @param username
 	 * @return
 	 */
-	public HashMap<String, Object> getAllArticlesForUserCarousel(String username) throws MalformedURLException;
+	public List<HashMap<String, Object>> getAllArticlesForUserCarousel(String username) throws MalformedURLException;
 
 	/**
 	 * Fetch all Articles for Game page carousel.
@@ -60,6 +60,15 @@ public interface ArticleInterface extends MongoDao<Article> {
 
 	public List<HashMap<String, Object>> getNArticlesByCarouselSelectorAndCategory(String categorySelector, String category,
 			Long timestamp, Integer mode) throws MalformedURLException;
+	
+	/**
+	 * Fetch all user drafts
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public List<HashMap<String, Object>> getUserDrafts(String username)throws MalformedURLException;
+	
 
 	/**
 	 * Saves New Article

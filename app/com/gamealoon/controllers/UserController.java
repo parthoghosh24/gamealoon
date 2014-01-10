@@ -134,6 +134,46 @@ public class UserController extends Controller {
 		}
 		return ok(toJson(allTopUsers));
 	}
+	
+	public static Result getUserSocialData(final String username)
+	{
+		final HashMap<String, Object> response = getUserSocialDataMap(username);
+		return ok(toJson(response));
+	}
+	
+	public static Result getUserStats(final String username)
+	{
+		final HashMap<String, Object> response = getUserStatsMap(username);
+		return ok(toJson(response));
+	}
+	
+	/**
+	 * Fetch user stats data i.e awards, XP, levels and so on
+	 * 
+	 * @param username
+	 * @return
+	 */
+	private static HashMap<String, Object> getUserStatsMap(String username) {
+
+		return  userDaoInstance.fetchStats(username);
+	}
+
+	/**
+	 * Fetch User social data i.e followers, followings and games
+	 * 
+	 * @param username
+	 * @return
+	 */
+	private static HashMap<String, Object> getUserSocialDataMap(final String username) {
+		HashMap<String, Object> userSocialMap = new HashMap<>();
+		try {
+			userSocialMap = userDaoInstance.fetchSocial(username);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userSocialMap;
+	}
 
 	/**
 	 * Save or update user avatar image

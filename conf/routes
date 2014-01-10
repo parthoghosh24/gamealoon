@@ -42,6 +42,8 @@ POST /user/saveOrUpdateUserAvatar/:userName/:mediaId		            com.gamealoon.
 GET /user/validateEmail/:email				 							com.gamealoon.controllers.UserController.validateEmail(email:String)	
 GET /user/validateUsername/:username         							com.gamealoon.controllers.UserController.validateUsername(username:String)  
 GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
+GET /user/socialData/:username											com.gamealoon.controllers.UserController.getUserSocialData(username:String)
+GET /user/stats/:username												com.gamealoon.controllers.UserController.getUserStats(username:String)
 
 
 # Media								

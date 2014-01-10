@@ -34,19 +34,18 @@ public class User {
 	private int day;
 	private int month;
 	private int year;
-	private String avatar; // path to avatar image file for user
-	private String coverImage; //path to user cover image
+	private String avatar; // path to avatar image file for user	
 	private String insertTime;
-	private Long timestamp;
+	private long timestamp;
 	private String updateTime;
 	private String gameBio;
 	private String status;
-	private Double articlePublishRate; // sum(Ai-Ai+1)/N-1
-	private Double userFollowScore;
-	private Double userArticleScore;
+	private double articlePublishRate; // sum(Ai-Ai+1)/N-1
+	private double userFollowScore;
+	private double userArticleScore;
 	@Indexed(value = IndexDirection.ASC, name = "usr_scr")
-	private Double totalScore;
-	private Double userTotalCoolScore;
+	private double totalScore;
+	private double userTotalCoolScore;
 
 	/**
 	 * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
@@ -552,19 +551,5 @@ public class User {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	/**
-	 * @return the coverImage
-	 */
-	public String getCoverImage() {
-		return coverImage;
-	}
-
-	/**
-	 * @param coverImage the coverImage to set
-	 */
-	public void setCoverImage(String coverImage) {
-		this.coverImage = coverImage;
 	}
 }

@@ -161,4 +161,22 @@ public interface UserInterface extends MongoDao<User> {
 	 * @return
 	 */
 	public HashMap<String, String> validateUsername(String username);
+	
+	/**
+	 * Fetch user's social information that is, followers, followings and interested games
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public HashMap<String, Object> fetchSocial(String username) throws MalformedURLException;
+	
+	/**
+	 * Fetch user's stats which includes awards (achievements), XP and level info
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public HashMap<String, Object> fetchStats(String username);
+	
+	
 }
