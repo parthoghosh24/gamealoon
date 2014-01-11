@@ -13,7 +13,7 @@ import com.gamealoon.models.UserArticleVotingMap;
 import com.google.code.morphia.Datastore;
 import com.mongodb.Mongo;
 
-public class UserArticleVotingMapDAO extends GloonDAO implements UserArticleVotingMapInterface {
+public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> implements UserArticleVotingMapInterface {
 
 	private static final UserArticleVotingMapDAO DATA_ACCESS_LAYER=new UserArticleVotingMapDAO();
 	private static final ActivityDAO activityDaoInstance = ActivityDAO.instantiateDAO();

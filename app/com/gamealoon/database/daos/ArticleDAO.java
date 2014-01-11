@@ -8,21 +8,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.bson.types.ObjectId;
 
 import play.Logger;
 import play.data.DynamicForm;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.ArticleInterface;
-import com.gamealoon.models.Activity;
 import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
@@ -105,14 +101,14 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	}
 
 	@Override
-	public List<HashMap<String, Object>> getAllArticlesForUserCarousel(String username) throws MalformedURLException {		
-		List<HashMap<String, Object>> carouselArticles = new ArrayList<>();	
+	public List<HashMap<String, Object>> getAllArticlesForUserCarousel(String username) throws MalformedURLException {
+		List<HashMap<String, Object>> carouselArticles = new ArrayList<>();
 
 		try {
-			carouselArticles = getCarouselArticlesForUserMap(username, "all");			
+			carouselArticles = getCarouselArticlesForUserMap(username, "all");
 		} catch (ParseException e) {
 			Logger.error("Error in ArticleDAO getAllArticlesForUSerCarousel ", e.fillInStackTrace());
-		}		
+		}
 		return carouselArticles;
 	}
 
@@ -151,7 +147,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		HashMap<String, Object> response = new HashMap<>();
 		if (article != null) {
 			response.put("articleId", article.getId().toString());
-			response.put("articleTitle", article.getTitle());			
+			response.put("articleTitle", article.getTitle());
 			response.put("articleBody", article.getBody());
 			response.put("articleCategory", article.getCategory().toString());
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
@@ -289,7 +285,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			for (Article article : articles) {
 				if (article != null) {
 					HashMap<String, Object> response = new HashMap<>();
-					response.put("articleTitle", article.getTitle());					
+					response.put("articleTitle", article.getTitle());
 					response.put("articleBody", article.getBody());
 					response.put("articleCategory", article.getCategory().toString());
 					response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
@@ -309,8 +305,8 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 						response.put("articleAuthorAvatar", media.getUrl());
 					} else {
 						response.put("articleAuthorAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
-					}	
-					
+					}
+
 					response.put("articleCoolScore", (int) article.getCoolScore());
 					response.put("articleNotCoolScore", (int) article.getNotCoolScore());
 					try {
@@ -346,89 +342,56 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		Article article = null;
 		try {
 			article = createOrUpdateArticleInstance(requestData);
-			/*Logger.debug("ARTICLE     " + article);
-			Logger.debug("ARTICLE STATE " + article.getState());
-			save(article);
-			if (Article.PUBLISH == article.getState() && Article.NOT_PUBLISHED == article.getIsPublished()) {
-				article.setIsPublished(Article.PUBLISHED);
-				User author = userDaoInstance.findByUsername(article.getAuthor());
-				Logger.debug("User  " + author);
-				List<Article> allAuthorArticles = findAllPublishedArticlesByUser(author.getUsername());
-				Logger.debug("allAuthorArticles " + allAuthorArticles);
-				Double articlePublishRate = 0.0;
-				Logger.debug("All article size: " + allAuthorArticles.size());
-				if (allAuthorArticles.size() > 0) {
-					articlePublishRate = RankAlgorithm.calculateUserArticlePublishRate(findAllPublishedArticlesByUser(author
-							.getUsername()));
-				}
-				author.setArticlePublishRate(articlePublishRate);
-				Double articlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio(articlePublishRate, instance);
-				Double userFollowScore = author.getUserFollowScore();
-				Double articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(author.getUserArticleScore(), instance);
-				Double totalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowScore, articleScoreRatio);
-				author.setTotalScore(totalScore);
-				Logger.debug("UserGameScoreMapDao count " + gloonDatastore.getCount(UserGameScoreMapDAO.class));
-				if (gloonDatastore.getCount(UserGameScoreMap.class) > 0) {
-					Query<UserGameScoreMap> updateQuery = gloonDatastore.createQuery(UserGameScoreMap.class).field("username")
-							.equal(author.getUsername());
-					Logger.debug("updateQuery " + updateQuery);
-					UpdateOperations<UserGameScoreMap> operations = gloonDatastore.createUpdateOperations(UserGameScoreMap.class).set(
-							"networkUserWeight", RankAlgorithm.calculateUserScoreRatio(totalScore, instance));
-					gloonDatastore.update(updateQuery, operations);
-				}
-				userDaoInstance.save(author);
-
-				for (User user : userDaoInstance.getTopUsers(0)) {
-					if (!author.getUsername().equalsIgnoreCase(user.getUsername())) {
-						Double userArticlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio(
-								user.getArticlePublishRate(), instance);
-						Double userArticleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(),
-								instance);
-						Double userTotalScore = RankAlgorithm.calculateUserScore(userArticlePublishRateRatio,
-								user.getUserFollowScore(), userArticleScoreRatio);
-						user.setTotalScore(userTotalScore);
-					}
-				}
-				String gameId = requestData.get("articleGameId");
-				Integer articleGameScore = Integer.parseInt(requestData.get("gameScore"));
-				Logger.debug("GAME SCORE: " + articleGameScore);
-				if (!gameId.isEmpty()) {
-					Game fetchedGame = gloonDatastore.get(Game.class, new ObjectId(gameId));
-					if (fetchedGame != null) {
-						if (article.getCategory().equals(Category.Review)) {
-							Double refinedGameScore = articleGameScore / 10.0;
-							Double userScoreRatio = RankAlgorithm.calculateUserScoreRatio(author.getTotalScore(), instance);
-							Logger.debug("USER SCORE RATIO " + userScoreRatio);
-							scoreMapDAO.createOrUpdateScoreMap("", gameId, author.getUsername(), refinedGameScore, userScoreRatio);
-							fetchedGame.setTotalScore(RankAlgorithm.calculateNetworkGameScore(gameId.toString(), instance));
-							gameDaoInstance.save(fetchedGame);
-						}
-						article.setGame(gameId);
-						save(article);
-					}
-				}
-				HashMap<String, String> activityMap = new HashMap<>();
-				activityMap.put("id", "");
-				activityMap.put("username", article.getAuthor());
-				activityMap.put("entityId", article.getId().toString());
-				activityMap.put("type", "" + Activity.ACTIVITY_POST_PUBLISH);
-				activityMap.put("visibility", "" + Activity.PUBLIC);
-
-				activityDaoInstance.createOrUpdateActivity(activityMap);
-				String articleBody = article.getBody();
-				ArrayList<String> mediaIds = Article.fetchMediaIdsFromBody(articleBody);
-				Logger.debug("MediaIds created");
-				if (mediaIds.size() > 0) {
-					*//**
-					 * This saves all the images from article body to DB
-					 * 
-					 *//*
-					for (String mediaId : mediaIds) {
-						articleMediaMapDaoInstance.createOrUpdateArticleMediaMap("", article.getId().toString(), mediaId);
-					}
-				}
-
-			}*/
+			/*
+			 * Logger.debug("ARTICLE     " + article); Logger.debug("ARTICLE STATE " + article.getState()); save(article); if
+			 * (Article.PUBLISH == article.getState() && Article.NOT_PUBLISHED == article.getIsPublished()) {
+			 * article.setIsPublished(Article.PUBLISHED); User author = userDaoInstance.findByUsername(article.getAuthor());
+			 * Logger.debug("User  " + author); List<Article> allAuthorArticles = findAllPublishedArticlesByUser(author.getUsername());
+			 * Logger.debug("allAuthorArticles " + allAuthorArticles); Double articlePublishRate = 0.0;
+			 * Logger.debug("All article size: " + allAuthorArticles.size()); if (allAuthorArticles.size() > 0) { articlePublishRate =
+			 * RankAlgorithm.calculateUserArticlePublishRate(findAllPublishedArticlesByUser(author .getUsername())); }
+			 * author.setArticlePublishRate(articlePublishRate); Double articlePublishRateRatio =
+			 * RankAlgorithm.calculateUserArticlePublishRateRatio(articlePublishRate, instance); Double userFollowScore =
+			 * author.getUserFollowScore(); Double articleScoreRatio =
+			 * RankAlgorithm.calculateUserArticleScoreRatio(author.getUserArticleScore(), instance); Double totalScore =
+			 * RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowScore, articleScoreRatio);
+			 * author.setTotalScore(totalScore); Logger.debug("UserGameScoreMapDao count " +
+			 * gloonDatastore.getCount(UserGameScoreMapDAO.class)); if (gloonDatastore.getCount(UserGameScoreMap.class) > 0) {
+			 * Query<UserGameScoreMap> updateQuery = gloonDatastore.createQuery(UserGameScoreMap.class).field("username")
+			 * .equal(author.getUsername()); Logger.debug("updateQuery " + updateQuery); UpdateOperations<UserGameScoreMap> operations
+			 * = gloonDatastore.createUpdateOperations(UserGameScoreMap.class).set( "networkUserWeight",
+			 * RankAlgorithm.calculateUserScoreRatio(totalScore, instance)); gloonDatastore.update(updateQuery, operations); }
+			 * userDaoInstance.save(author);
+			 * 
+			 * for (User user : userDaoInstance.getTopUsers(0)) { if (!author.getUsername().equalsIgnoreCase(user.getUsername())) {
+			 * Double userArticlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio( user.getArticlePublishRate(),
+			 * instance); Double userArticleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(),
+			 * instance); Double userTotalScore = RankAlgorithm.calculateUserScore(userArticlePublishRateRatio,
+			 * user.getUserFollowScore(), userArticleScoreRatio); user.setTotalScore(userTotalScore); } } String gameId =
+			 * requestData.get("articleGameId"); Integer articleGameScore = Integer.parseInt(requestData.get("gameScore"));
+			 * Logger.debug("GAME SCORE: " + articleGameScore); if (!gameId.isEmpty()) { Game fetchedGame =
+			 * gloonDatastore.get(Game.class, new ObjectId(gameId)); if (fetchedGame != null) { if
+			 * (article.getCategory().equals(Category.Review)) { Double refinedGameScore = articleGameScore / 10.0; Double
+			 * userScoreRatio = RankAlgorithm.calculateUserScoreRatio(author.getTotalScore(), instance);
+			 * Logger.debug("USER SCORE RATIO " + userScoreRatio); scoreMapDAO.createOrUpdateScoreMap("", gameId, author.getUsername(),
+			 * refinedGameScore, userScoreRatio); fetchedGame.setTotalScore(RankAlgorithm.calculateNetworkGameScore(gameId.toString(),
+			 * instance)); gameDaoInstance.save(fetchedGame); } article.setGame(gameId); save(article); } } HashMap<String, String>
+			 * activityMap = new HashMap<>(); activityMap.put("id", ""); activityMap.put("username", article.getAuthor());
+			 * activityMap.put("entityId", article.getId().toString()); activityMap.put("type", "" + Activity.ACTIVITY_POST_PUBLISH);
+			 * activityMap.put("visibility", "" + Activity.PUBLIC);
+			 * 
+			 * activityDaoInstance.createOrUpdateActivity(activityMap); String articleBody = article.getBody(); ArrayList<String>
+			 * mediaIds = Article.fetchMediaIdsFromBody(articleBody); Logger.debug("MediaIds created"); if (mediaIds.size() > 0) {
+			 *//**
+			 * This saves all the images from article body to DB
+			 * 
+			 */
+			/*
+			 * for (String mediaId : mediaIds) { articleMediaMapDaoInstance.createOrUpdateArticleMediaMap("",
+			 * article.getId().toString(), mediaId); } }
+			 * 
+			 * }
+			 */
 
 			response.put("status", "success");
 		} catch (ParseException pe) {
@@ -454,7 +417,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 				articleMap.put("articleStrippedTitle", title.substring(0, 15) + "...");
 			} else {
 				articleMap.put("articleStrippedTitle", title);
-			}			
+			}
 			articleMap.put("articleBody", article.getBody());
 			articleMap.put("articleCategory", article.getCategory().toString());
 			articleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
@@ -659,17 +622,15 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	public List<Article> findAllPublishedArticlesByUser(String username) {
 		return gloonDatastore.createQuery(Article.class).filter("author", username).asList();
 	}
-	
+
 	@Override
 	public List<HashMap<String, Object>> getUserDrafts(String username) throws MalformedURLException {
 		List<HashMap<String, Object>> userDrafts = new ArrayList<>();
-		List<Article> userDraftPosts= fetchUserDraftsForUser(username);
-		if(userDraftPosts.size()>0)
-		{
-			for(Article draft: userDraftPosts)
-			{
+		List<Article> userDraftPosts = fetchUserDraftsForUser(username);
+		if (userDraftPosts.size() > 0) {
+			for (Article draft : userDraftPosts) {
 				HashMap<String, Object> draftMap = new HashMap<>();
-				draftMap.put("articleTitle", draft.getTitle());					
+				draftMap.put("articleTitle", draft.getTitle());
 				draftMap.put("articleBody", draft.getBody());
 				draftMap.put("articleCategory", draft.getCategory().toString());
 				User author = userDaoInstance.findByUsername(draft.getAuthor());
@@ -680,7 +641,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					draftMap.put("articleAuthorAvatar", media.getUrl());
 				} else {
 					draftMap.put("articleAuthorAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
-				}							
+				}
 				String featuredImage = draft.getFeaturedImage();
 				if (featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage)) {
 					draftMap.put("articleFeaturedImage", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/featuredBg.png");
@@ -695,8 +656,9 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	}
 
 	private List<Article> fetchUserDraftsForUser(String username) {
-		
-		return gloonDatastore.createQuery(Article.class).filter("author", username).filter("state",Article.DRAFT).order("-insertTime").asList();
+
+		return gloonDatastore.createQuery(Article.class).filter("author", username).filter("state", Article.DRAFT)
+				.order("-insertTime").asList();
 	}
 
 	/**
@@ -706,7 +668,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	 * @return
 	 * @throws ParseException
 	 */
-	
+
 	@SuppressWarnings("unchecked")
 	private Article createOrUpdateArticleInstance(DynamicForm requestData) throws ParseException {
 
@@ -716,119 +678,91 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		String id = requestData.get("articleId");
 		int state = Integer.parseInt(requestData.get("articleState"));
 		Logger.debug("State recieved: " + state);
-		String articleTitle = requestData.get("articleTitle");		
+		String articleTitle = requestData.get("articleTitle");
 		Logger.debug("Title recieved: " + articleTitle);
 		String articleBody = requestData.get("articleBody");
 		Logger.debug("Body recieved: " + articleBody);
 		String category = Utility.capitalizeString(requestData.get("articleCategory"));
 		String username = requestData.get("articleUsername");
 		Logger.debug("USERNAME:   " + username);
-		String videoLink=requestData.get("articleVideoLink");
+		String videoLink = requestData.get("articleVideoLink");
 		Logger.debug("VIDEO Link:   " + videoLink);
 		String reviewPlayedOnPlatform = "";
-		String sweets="";
-		String stinks="";
-		String newsLink="";
-		int gameScore=0;
-		String gameId="";
-		if("Review".equalsIgnoreCase(category))
-		{
-			reviewPlayedOnPlatform=requestData.get("playedOnPlatform");
+		String sweets = "";
+		String stinks = "";
+		String newsLink = "";
+		int gameScore = 0;
+		String gameId = "";
+		if ("Review".equalsIgnoreCase(category)) {
+			reviewPlayedOnPlatform = requestData.get("playedOnPlatform");
 			Logger.debug("PLATFORM recieved: " + reviewPlayedOnPlatform);
-			gameScore=Integer.parseInt(requestData.get("gameScore"));
+			gameScore = Integer.parseInt(requestData.get("gameScore"));
 			Logger.debug("SCORE recieved: " + gameScore);
 			int sweetsLength = Integer.parseInt(requestData.get("sweetsLength"));
 			int stinksLength = Integer.parseInt(requestData.get("stinksLength"));
-			sweets=requestData.get("sweets");
-			ArrayList<String> sweetPoints=new ArrayList<>();
-			ArrayList<String> stinkPoints=new ArrayList<>();			
-			stinks=requestData.get("stinks");			
-			ObjectMapper mapper = new ObjectMapper();			
+			sweets = requestData.get("sweets");
+			ArrayList<String> sweetPoints = new ArrayList<>();
+			ArrayList<String> stinkPoints = new ArrayList<>();
+			stinks = requestData.get("stinks");
+			ObjectMapper mapper = new ObjectMapper();
 			try {
 				Map<String, Object> sweetsJson = new HashMap<>();
-				sweetsJson = mapper.readValue(sweets, Map.class); 
-				if(sweetsLength>0)
-				{
-					for(int index = 0; index<sweetsLength;++index)
-					{						
-						sweetPoints.add(index, sweetsJson.get(""+index).toString());
+				sweetsJson = mapper.readValue(sweets, Map.class);
+				if (sweetsLength > 0) {
+					for (int index = 0; index < sweetsLength; ++index) {
+						sweetPoints.add(index, sweetsJson.get("" + index).toString());
 					}
 				}
-				
+
 				Map<String, Object> stinksJson = new HashMap<>();
-				stinksJson = mapper.readValue(sweets, Map.class); 
-				if(stinksLength>0)
-				{
-					for(int index = 0; index<stinksLength;++index)
-					{						
-						stinkPoints.add(index, stinksJson.get(""+index).toString());
+				stinksJson = mapper.readValue(sweets, Map.class);
+				if (stinksLength > 0) {
+					for (int index = 0; index < stinksLength; ++index) {
+						stinkPoints.add(index, stinksJson.get("" + index).toString());
 					}
 				}
-				Logger.debug("Sweets: "+sweetPoints);
-				Logger.debug("Stinks: "+stinkPoints);
-				
+				Logger.debug("Sweets: " + sweetPoints);
+				Logger.debug("Stinks: " + stinkPoints);
+
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}		
-			
-			
+			}
+
 		}
-		
-		if("News".equalsIgnoreCase(category))
-		{
-			newsLink=requestData.get("newsSrcLink");
+
+		if ("News".equalsIgnoreCase(category)) {
+			newsLink = requestData.get("newsSrcLink");
 			Logger.debug("newsLink recieved: " + newsLink);
 		}
-		if("Review".equalsIgnoreCase(category) || "News".equalsIgnoreCase(category) || "Video".equalsIgnoreCase(category))
-		{
+		if ("Review".equalsIgnoreCase(category) || "News".equalsIgnoreCase(category) || "Video".equalsIgnoreCase(category)) {
 			gameId = requestData.get("gameId");
 			Logger.debug("gameId: " + gameId);
 		}
 		String featuredImage = requestData.get("articleFeaturedImage");
 		Logger.debug("Featured image: " + featuredImage);
-		
-		
-		/*if (!id.isEmpty()) {
-			ObjectId _id = new ObjectId(id);
-			article = gloonDatastore.get(Article.class, _id);
-			article.setUpdateTime(dateTime);
-			if (state == Article.PUBLISH) {
 
-				if (article.getPublishDate() == null || article.getPublishDate().isEmpty()) {
-					article.setPublishDate(dateTime);
-					article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
-
-				}
-
-			}
-		} else {
-			article = new Article();
-			article.setInsertTime(dateTime);
-			article.setUpdateTime(dateTime);
-			article.setIsPublished(Article.NOT_PUBLISHED);
-			if (state == Article.PUBLISH) {
-				article.setPublishDate(dateTime);
-				article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
-
-			}
-		}
-		article.setTitle(articleTitle);		
-		article.setBody(articleBody);
-		article.setCategory(Category.valueOf(category));
-		article.setAuthor(username);
-		article.setFeaturedImage(featuredImage);
-		article.setState(state);
-		if (!gameId.isEmpty()) {
-			Game fetchedGame = gloonDatastore.get(Game.class, new ObjectId(gameId));
-			if (fetchedGame != null) {
-				article.setGame(gameId);
-				save(article);
-			}
-		}*/
+		/*
+		 * if (!id.isEmpty()) { ObjectId _id = new ObjectId(id); article = gloonDatastore.get(Article.class, _id);
+		 * article.setUpdateTime(dateTime); if (state == Article.PUBLISH) {
+		 * 
+		 * if (article.getPublishDate() == null || article.getPublishDate().isEmpty()) { article.setPublishDate(dateTime);
+		 * article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
+		 * 
+		 * }
+		 * 
+		 * } } else { article = new Article(); article.setInsertTime(dateTime); article.setUpdateTime(dateTime);
+		 * article.setIsPublished(Article.NOT_PUBLISHED); if (state == Article.PUBLISH) { article.setPublishDate(dateTime);
+		 * article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
+		 * 
+		 * } } article.setTitle(articleTitle); article.setBody(articleBody); article.setCategory(Category.valueOf(category));
+		 * article.setAuthor(username); article.setFeaturedImage(featuredImage); article.setState(state); if (!gameId.isEmpty()) { Game
+		 * fetchedGame = gloonDatastore.get(Game.class, new ObjectId(gameId)); if (fetchedGame != null) { article.setGame(gameId);
+		 * save(article); } }
+		 */
 
 		return article;
 	}
@@ -880,7 +814,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					if (article != null) {
 						HashMap<String, Object> articleMap = new HashMap<String, Object>();
 						articleMap.put("articleCarouselCategory", Category.Review);
-						articleMap.put("articleTitle", article.getTitle());						
+						articleMap.put("articleTitle", article.getTitle());
 						articleMap.put("articleBody", article.getBody());
 						articleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-"
 								+ article.getId().toString());
@@ -892,7 +826,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 							articleMap.put("articleAuthorAvatar", media.getUrl());
 						} else {
 							articleMap.put("articleAuthorAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
-						} 
+						}
 						articleMap.put("articlepublishDate", article.getPublishDate());
 						String featuredImage = article.getFeaturedImage();
 						if (featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage)) {
@@ -960,7 +894,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					articleMap.put("articleAuthorAvatar", media.getUrl());
 				} else {
 					articleMap.put("articleAuthorAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
-				}					
+				}
 				articleMap.put("articlepublishDate", article.getPublishDate());
 				String featuredImage = article.getFeaturedImage();
 				if (featuredImage.isEmpty() || "default".equalsIgnoreCase(featuredImage)) {
@@ -1058,14 +992,12 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	 * @return
 	 */
 	private List<Article> getCarouselArticlesForUser(String username, String category) {
-		List<Article> articleList= new ArrayList<>();
-		if("all".equalsIgnoreCase(category))
-		{
-			articleList=gloonDatastore.createQuery(Article.class).filter("state", Article.PUBLISH).order("-publishDate").limit(5).filter("author", username).asList();
-		}
-		else
-		{
-			articleList=gloonDatastore.createQuery(Article.class).filter("category", Utility.capitalizeString(category))
+		List<Article> articleList = new ArrayList<>();
+		if ("all".equalsIgnoreCase(category)) {
+			articleList = gloonDatastore.createQuery(Article.class).filter("state", Article.PUBLISH).order("-publishDate").limit(5)
+					.filter("author", username).asList();
+		} else {
+			articleList = gloonDatastore.createQuery(Article.class).filter("category", Utility.capitalizeString(category))
 					.filter("state", Article.PUBLISH).order("-publishDate").limit(5).filter("author", username).asList();
 		}
 		return articleList;
@@ -1087,7 +1019,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		for (Article article : carouselArticles) {
 			HashMap<String, Object> articleMap = new HashMap<String, Object>();
 			articleMap.put("articleCategory", article.getCategory().toString());
-			articleMap.put("articleTitle", article.getTitle());			
+			articleMap.put("articleTitle", article.getTitle());
 			articleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
 			articleMap.put("articleBody", article.getBody());
 			articleMap.put("articleAuthor", article.getAuthor());
@@ -1126,7 +1058,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		for (Article article : gameArticles) {
 			HashMap<String, Object> articleMap = new HashMap<String, Object>();
 			articleMap.put("articleCarouselCategory", category);
-			articleMap.put("articleTitle", article.getTitle());			
+			articleMap.put("articleTitle", article.getTitle());
 			articleMap.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
 			articleMap.put("articleBody", article.getBody());
 			articleMap.put("articleAuthor", article.getAuthor());
@@ -1157,7 +1089,5 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		gameActivities = gameActivities.size() > 5 ? gameActivities.subList(0, 5) : gameActivities;
 		return gameActivities;
 	}
-
-	
 
 }
