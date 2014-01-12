@@ -19,8 +19,10 @@ import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Http.MultipartFormData.FilePart;
 
+import com.gamealoon.algorithm.Gamification;
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.algorithm.SecurePassword;
+import com.gamealoon.core.common.XPTriggerPoints;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.UserInterface;
 import com.gamealoon.models.Achievement;
@@ -45,7 +47,6 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 
 	private static final UserDAO DATA_ACCESS_LAYER = new UserDAO();
 	private static final MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
-	private static final PlatformDAO platformDAOInstance = PlatformDAO.instantiateDAO();
 	private static final ActivityDAO activityDAOInstance = ActivityDAO.instantiateDAO();
 	private static final ArticleDAO articleDao = ArticleDAO.instantiateDAO();
 	private static final AchievementDAO achievementDAOInstance = AchievementDAO.instantiateDAO();
@@ -434,6 +435,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		ArrayList<Buddy> buddyUserFollowedBy = buddy.getFollowedBy();
 		if (!buddyUserFollowedBy.contains(originalUser)) {
 			buddyUserFollowedBy.add(originalUser);// Buddy user getting followed by original user
+			updateUserPoints(buddy, XPTriggerPoints.FOLLOWED_BY);
 			buddy.setFollowedBy(buddyUserFollowedBy);
 		}
 
@@ -878,8 +880,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		HashMap<String, Object> userStatsMap = new HashMap<>();
 		userStatsMap.put("status", "fail");
 		final User user = findByUsername(username);
-		try
-		{
+		try {
 			ArrayList<Achievement> userAchievements = user.getAchievements();
 			if (userAchievements != null && userAchievements.size() > 0) {
 				userStatsMap.put("userAchievements", userAchievements);
@@ -888,13 +889,11 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				userStatsMap.put("userAchievements", new ArrayList<>());
 			}
 			userStatsMap.put("status", "success");
-		}
-		catch(Exception exception)
-		{
+		} catch (Exception exception) {
 			Logger.error("Error in Fetching User stats", exception.fillInStackTrace());
 			exception.printStackTrace();
 		}
-		
+
 		return userStatsMap;
 	}
 
@@ -1028,4 +1027,24 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		return user;
 	}
 
+	/**
+	 * Updates the the following for user:
+	 * <ul>
+	 * <li>Experience Points</li>
+	 * <li>Level</li>
+	 * <li>Gamealoon Points</li>
+	 * </ul>
+	 * 
+	 * @param user {@link User} User for which points are to be updated
+	 * @param xpTriggerPoints {@link XPTriggerPoints} Specifies the event through which experience points will be awarded
+	 */
+	private void updateUserPoints(final User user, final XPTriggerPoints xpTriggerPoints) {
+		long originalXP = user.getExperiencePoints();
+		long updatedXP = originalXP + xpTriggerPoints.getExperiencePoints();
+		user.setExperiencePoints(updatedXP);
+		int updatedUserLevel = Gamification.calculateLevel(updatedXP, user.getLevel());
+		int updatedGamealoonPoints = Gamification.calculateGP(updatedXP, user.getLevel());
+		user.setLevel(updatedUserLevel);
+		user.setGamealoonPoints(updatedGamealoonPoints);
+	}
 }

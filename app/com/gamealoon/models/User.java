@@ -50,17 +50,17 @@ public class User {
 	/**
 	 * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
 	 */
-	private Long experiencePoints;
+	private long experiencePoints;
 
 	/**
 	 * Redeemable points. Users can use GP to redeem xp or gifts.
 	 */
-	private Long gamealoonPoints;
+	private int gamealoonPoints;
 
 	/**
 	 * Levels depict the progress of users.
 	 */
-	private Long level;
+	private int level;
 
 	// Chat states
 	public static final int INVITE = 0;
@@ -500,42 +500,42 @@ public class User {
 	/**
 	 * @return the experiencePoints
 	 */
-	public Long getExperiencePoints() {
+	public long getExperiencePoints() {
 		return experiencePoints;
 	}
 
 	/**
 	 * @param experiencePoints the experiencePoints to set
 	 */
-	public void setExperiencePoints(Long experiencePoints) {
+	public void setExperiencePoints(long experiencePoints) {
 		this.experiencePoints = experiencePoints;
 	}
 
 	/**
 	 * @return the gamealoonPoints
 	 */
-	public Long getGamealoonPoints() {
+	public int getGamealoonPoints() {
 		return gamealoonPoints;
 	}
 
 	/**
 	 * @param gamealoonPoints the gamealoonPoints to set
 	 */
-	public void setGamealoonPoints(Long gamealoonPoints) {
+	public void setGamealoonPoints(int gamealoonPoints) {
 		this.gamealoonPoints = gamealoonPoints;
 	}
 
 	/**
 	 * @return the level
 	 */
-	public Long getLevel() {
+	public int getLevel() {
 		return level;
 	}
 
 	/**
 	 * @param level the level to set
 	 */
-	public void setLevel(Long level) {
+	public void setLevel(int level) {
 		this.level = level;
 	}
 

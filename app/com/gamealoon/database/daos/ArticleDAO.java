@@ -8,16 +8,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.bson.types.ObjectId;
 
 import play.Logger;
 import play.data.DynamicForm;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamealoon.algorithm.RankAlgorithm;
 import com.gamealoon.database.GloonDAO;
@@ -457,6 +454,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 				response.put("status", "success");
 			}
 
+
 		} catch (ParseException pe) {
 			Logger.error("Error in ArticleDAO saveOrUpdateArticle", pe.fillInStackTrace());
 		} catch (Exception e) {
@@ -804,7 +802,6 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		}
 		String featuredImage = requestData.get("articleFeaturedImage");
 		Logger.debug("Featured image: " + featuredImage);
-
 		HashMap<String, String> reviewAttributes = new HashMap<>();
 		reviewAttributes.put("author", username);
 		reviewAttributes.put("playedOnPlatform", reviewPlayedOnPlatform);
@@ -848,6 +845,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		article.setFeaturedImage(featuredImage);
 		article.setState(state);
 		article.setVideoUrl(videoLink);
+
 
 		if ("Review".equalsIgnoreCase(category))
 			;
