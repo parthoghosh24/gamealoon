@@ -9,7 +9,7 @@ import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.SearchInterface;
 import com.gamealoon.utility.AppConstants;
 
-public class SearchDAO extends GloonDAO implements SearchInterface{
+public class SearchDAO extends GloonDAO<Search> implements SearchInterface{
 	
 	private static final SearchDAO DATA_ACCESS_LAYER=new SearchDAO();	
 	
