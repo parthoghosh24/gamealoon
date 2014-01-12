@@ -24,7 +24,6 @@ import com.gamealoon.models.Article;
 import com.gamealoon.models.Category;
 import com.gamealoon.models.Game;
 import com.gamealoon.models.Media;
-import com.gamealoon.models.Platform;
 import com.gamealoon.models.User;
 import com.gamealoon.models.UserArticleVotingMap;
 import com.gamealoon.models.UserGameScoreMap;
