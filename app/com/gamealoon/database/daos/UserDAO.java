@@ -155,13 +155,25 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				userMap.put("userAvatarUrl", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
 				userMap.put("userAvatarId", "none");
 			}
-			double followedRatio = ((double) user.getFollowedBy().size() / (count() - 1)) * 100;
-			double followingRatio = ((double) user.getFollowing().size() / (count() - 1)) * 100;
+			
+			double followedRatio=0;
+			double followingRatio=0;
+			long userCount = count();
+			if(userCount>1)
+			{
+				followedRatio = ((double) user.getFollowedBy().size() / (count() - 1)) * 100;
+				followingRatio = ((double) user.getFollowing().size() / (count() - 1)) * 100;
+			}			
 			userMap.put("userFollowersRatio", new DecimalFormat("###.#").format(followedRatio));
 			userMap.put("userFollowingRatio", new DecimalFormat("###.#").format(followingRatio));
 			userMap.put("userGameBio", user.getGameBio());
 			long allPublishedArticleCount = Article.allPublishedArticleCount();
-			double publishedArticleRatio = ((double) Article.allPublishedArticleCount(user) / allPublishedArticleCount) * 100;
+			
+			double publishedArticleRatio=0;
+			if(allPublishedArticleCount>0)
+			{
+				publishedArticleRatio = ((double) Article.allPublishedArticleCount(user) / allPublishedArticleCount) * 100;
+			}			
 			userMap.put("userPublishedRatio", new DecimalFormat("###.#").format(publishedArticleRatio));
 			double coolScoreRatio = 0;
 			if (allPublishedArticleCount > 0) {
