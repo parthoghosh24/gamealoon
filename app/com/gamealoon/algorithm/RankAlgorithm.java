@@ -59,7 +59,10 @@ public class RankAlgorithm {
 		 double phat =totalPositives/total;
 		 
 		 score=(phat + ZSCORE*ZSCORE/(2*total) - ZSCORE * Math.sqrt((phat*(1-phat)+ZSCORE*ZSCORE/(4*total))/total))/(1+ZSCORE*ZSCORE/total); 
-		 
+		 if(score<0)
+		 {
+			 score=0; //Normalizer
+		 }
 		 return score;
 	 }
 	 
@@ -161,7 +164,12 @@ public class RankAlgorithm {
 	  */
 	 public static double calculateUserScore(double articlePublishRateRatio, double userFollowScore, double articleScoreRatio)
 	 {
-		 return ((1-articlePublishRateRatio)*USER_ARTICLE_PUBLISH_RATE_RATIO_WEIGHT )+(userFollowScore*USER_FOLLOW_SCORE_WEIGHT)+(articleScoreRatio*USER_ARTICLE_SCORE_RATIO);
+		 double userScore =((1-articlePublishRateRatio)*USER_ARTICLE_PUBLISH_RATE_RATIO_WEIGHT )+(userFollowScore*USER_FOLLOW_SCORE_WEIGHT)+(articleScoreRatio*USER_ARTICLE_SCORE_RATIO);
+		 if(userScore<0)
+		 {
+			 userScore=0; //Normalize for now
+		 }
+		 return userScore;
 	 }
 	 
 	 /**

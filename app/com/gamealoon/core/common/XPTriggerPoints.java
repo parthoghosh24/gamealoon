@@ -32,7 +32,7 @@ public enum XPTriggerPoints {
 	/**
 	 * 
 	 */
-	GAMEALOON_CREATION(10),
+	GLOONICLE_CREATION(10),
 
 	/**
 	 * 
@@ -42,8 +42,23 @@ public enum XPTriggerPoints {
 	/**
 	 * 
 	 */
-	VOTE_UP(20);
-
+	VOTE_UP(20),
+	
+	/**
+	 * 
+	 */
+	WELCOME(5),
+	
+	/**
+	 * 
+	 */
+	PROFILE_COMPLETION(10),
+	
+	/**
+	 * 
+	 */
+	VOTE_UP_REVERT(-20);
+	
 	/**
 	 * 
 	 */

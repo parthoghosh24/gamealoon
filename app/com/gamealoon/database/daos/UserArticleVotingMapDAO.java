@@ -4,6 +4,7 @@ package com.gamealoon.database.daos;
 import java.util.HashMap;
 import play.Logger;
 import com.gamealoon.algorithm.RankAlgorithm;
+import com.gamealoon.core.common.XPTriggerPoints;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.UserArticleVotingMapInterface;
 import com.gamealoon.models.Activity;
@@ -52,12 +53,14 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 			HashMap<String, String> activityMap = new HashMap<>();
 			if(articleVotingMap==null)			
 			{
+				Logger.debug("No article Vote Map");
 				articleVotingMap = new UserArticleVotingMap();
 				articleVotingMap.setArticleId(article.getId().toString());
 				articleVotingMap.setUsername(viewer.getUsername());
 				
 				if(Article.COOL == type)
 				{
+					
 					articleVotingMap.setCool(UserArticleVotingMap.SET);
 					article.setCoolScore(++coolScore);
 					author.setUserTotalCoolScore(RankAlgorithm.calculateUserTotalCoolScore(author.getUsername(), instance));
@@ -67,7 +70,10 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 		         	activityMap.put("entityId", article.getId().toString());
 		         	activityMap.put("type", ""+Activity.ACTIVITY_POST_COOL);
 		         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
-		         	activityDaoInstance.createOrUpdateActivity(activityMap);					
+		         	activityDaoInstance.createOrUpdateActivity(activityMap);
+		         	Logger.debug("Author XP: "+author.getExperiencePoints());
+		         	userDaoInstance.updateUserXP(author, XPTriggerPoints.VOTE_UP);
+		         	
 				}
 				else if(Article.NOTCOOL == type)
 				{
@@ -80,13 +86,14 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 		         	activityMap.put("type", ""+Activity.ACTIVITY_POST_NOT_COOL);
 		         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
 		         	activityDaoInstance.createOrUpdateActivity(activityMap);					
-				}
+				} 
 				gloonDatastore.save(article);				
 				gloonDatastore.save(author);
 				save(articleVotingMap);				
 			}
 			else
 			{
+				Logger.debug("article Vote Map");
 				if(Article.COOL == type)					
 				{
 					if(articleVotingMap.getNotCool() == UserArticleVotingMap.SET)
@@ -99,12 +106,18 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 								if(articleVotingMap.getCool() == UserArticleVotingMap.SET)
 								{
 									articleVotingMap.setCool(UserArticleVotingMap.UNSET);
-									article.setCoolScore(--coolScore);									
+									article.setCoolScore(--coolScore);		
+									Logger.debug("Author XP: "+author.getExperiencePoints());
+									userDaoInstance.updateUserXP(author, XPTriggerPoints.VOTE_UP_REVERT);
+									Logger.debug("Author XP after Update: "+author.getExperiencePoints());
 								}
 								else
 								{
 									articleVotingMap.setCool(UserArticleVotingMap.SET);
 									article.setCoolScore(++coolScore);
+									Logger.debug("Author XP: "+author.getExperiencePoints());
+									userDaoInstance.updateUserXP(author, XPTriggerPoints.VOTE_UP);
+									Logger.debug("Author XP after Update: "+author.getExperiencePoints());
 								}
 								gloonDatastore.save(article);
 								author.setUserTotalCoolScore(RankAlgorithm.calculateUserTotalCoolScore(author.getUsername(), instance));								
@@ -115,7 +128,8 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 					         	activityMap.put("entityId", article.getId().toString());
 					         	activityMap.put("type", ""+Activity.ACTIVITY_POST_COOL);
 					         	activityMap.put("visibility", ""+Activity.PUBLIC);		         	
-					         	activityDaoInstance.createOrUpdateActivity(activityMap);								
+					         	activityDaoInstance.createOrUpdateActivity(activityMap);			
+					         	
 							}	
 					
 					
@@ -146,7 +160,7 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 					         	activityMap.put("entityId", article.getId().toString());
 					         	activityMap.put("type", ""+Activity.ACTIVITY_POST_NOT_COOL);
 					         	activityMap.put("visibility", ""+Activity.PRIVATE);		         	
-					         	activityDaoInstance.createOrUpdateActivity(activityMap);								
+					         	activityDaoInstance.createOrUpdateActivity(activityMap);								         	
 							}
 					
 				}

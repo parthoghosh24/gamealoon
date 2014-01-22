@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 /**
  * Provides access to class-related utility operations
  * 
- * @author Gameloon
+ * @author Manoj
  * @version 1.0
  */
 public final class ClassUtil {

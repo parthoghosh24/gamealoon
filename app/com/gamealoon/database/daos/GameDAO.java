@@ -1,6 +1,7 @@
 package com.gamealoon.database.daos;
 
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,6 +145,7 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 			Double gameScore = 0.0;
 			if (gloonDatastore.getCount(UserGameScoreMap.class) > 0) {
 				gameScore = RankAlgorithm.calculateNetworkGameScore(game.getId().toString(), instance);
+				Logger.debug("Game Score: "+gameScore);
 				Logger.debug("Game score compare: " + gameScore.compareTo(game.getTotalScore()));
 				if (gameScore.compareTo(game.getTotalScore()) != 0) {
 					game.setTotalScore(gameScore);
@@ -206,8 +208,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				}
 			}
 
-			gameMap.put("gameInterestedUsers", interestedUserList);
-			gameMap.put("totalInterestedUsers", interestedUserList.size());
+			gameMap.put("gameInterestedUsers", interestedUserList);			
+			
 
 			List<Article> allPublishedArticles = articleDAOinstance.findAllPublishedArticlesByGame(game.getId().toString(), "all");
 			List<String> playedTheGame = new ArrayList<>();
@@ -238,16 +240,49 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				userWhoScoredGameMap.put("userWhoScoredGameUserAvatar", user.getAvatar());
 				userWhoScoredGameList.add(userWhoScoredGameMap);
 			}
-			gameMap.put("usersWhoScoredGame", userWhoScoredGameList);
-			gameMap.put("totalUsersWhoScoredGame", userWhoScoredGameList.size());
+			gameMap.put("usersWhoScoredGame", userWhoScoredGameList);			
 
 			List<HashMap<String, Object>> gameArticleList = articleDAOinstance.getNArticlesByCarouselSelectorAndCategory(game.getId()
 					.toString(), "all", new Date().getTime(), Article.GAME);
 			Logger.debug("game article list size " + gameArticleList.size());
-			gameMap.put("gameArticles", gameArticleList);
-			gameMap.put("totalGameArticles", gameArticleList.size());
-			gameMap.put("gameTotalPublishedArticles", Article.allPublishedArticleCount());
-			gameMap.put("gameTotalUsers", userDAOinstance.count());
+			gameMap.put("gameArticles", gameArticleList);			
+			
+			long totalArticlesPublishedCount = Article.allPublishedArticleCount();
+			double articlesPublishedRatio=0.0;
+			if(totalArticlesPublishedCount>0)
+			{
+				Logger.debug("gameArticleList.size(): "+gameArticleList.size());
+				Logger.debug("totalArticlesPublishedCount: "+totalArticlesPublishedCount);
+				articlesPublishedRatio= (1.0*gameArticleList.size()/totalArticlesPublishedCount)*100.0;
+				Logger.debug("articlesPublishedRatio: "+articlesPublishedRatio);
+			}
+			
+			gameMap.put("gameArticlesPublishedRatio", new DecimalFormat("###.#").format(articlesPublishedRatio));
+			
+			long userCount=userDAOinstance.count();
+			
+			double interestedUsersRatio=0.0;
+			double totalUsersPlayedRatio=0.0;
+			double totalUsersScoredRatio=0.0;
+			
+			if(userCount>0)
+			{				
+				interestedUsersRatio=(1.0*interestedUserList.size()/userCount)*100.0;
+				totalUsersPlayedRatio = (1.0*userWhoScoredGameList.size()/userCount)*100.0;
+				totalUsersScoredRatio = (1.0*userWhoScoredGameList.size()/userCount)*100.0;
+			}
+			
+			
+			gameMap.put("gameInterestedUsersRatio", new DecimalFormat("###.#").format(interestedUsersRatio));
+			
+			
+			gameMap.put("gameTotalUsersPlayedRatio", new DecimalFormat("###.#").format(totalUsersPlayedRatio));
+			
+			
+			gameMap.put("gameTotalUsersScoredRatio", new DecimalFormat("###.#").format(totalUsersScoredRatio));
+			
+			gameMap.put("totalUsersWhoScoredGame", userWhoScoredGameList.size());
+			
 			if (checkUserFollowingGameOrNot(userDAOinstance.findByUsername(username), game)) {
 				gameMap.put("isInterestedIn", 1);
 			} else {

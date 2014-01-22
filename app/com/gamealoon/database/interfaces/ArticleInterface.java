@@ -123,5 +123,14 @@ public interface ArticleInterface extends MongoDao<Article> {
 	 * 
 	 */
 	public HashMap<String, Object> updateArticleAverageTimeSpent(String articleId, Double timeSpent);
+	
+	/**
+	 * Find all published articles by games
+	 * 
+	 * @param gameIds
+	 * @param category
+	 * @return
+	 */
+	public List<Article> findAllPublishedArticlesByGames(List<String> gameIds, String category);
 
 }

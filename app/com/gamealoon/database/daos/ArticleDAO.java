@@ -17,6 +17,8 @@ import play.data.DynamicForm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamealoon.algorithm.RankAlgorithm;
+import com.gamealoon.core.common.PostHotness;
+import com.gamealoon.core.common.XPTriggerPoints;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.ArticleInterface;
 import com.gamealoon.models.Activity;
@@ -154,6 +156,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			response.put("articleCategory", category.toString());
 			response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
 			response.put("articleVideoLink",article.getVideoUrl());			
+			response.put("articleHotnessLevel", Article.ARTICLE_HOTNESS_MAP[article.getHotness()]);
 			String publishDate = article.getPublishDate();
 			try {
 				if (publishDate != null) {
@@ -165,12 +168,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 				response.put("articlePublishDate", article.getPublishDate());
 				e.printStackTrace();
 			}
-			HashMap<String, Object> userMap = new HashMap<>();
-			double averageTimeSpentRatio = RankAlgorithm
-					.calculateArticleAverageTimeSpentRatio(article.getAverageTimeSpent(), instance);
-			Logger.debug("ARTICLE AVG TIME SPENT RATIO: " + averageTimeSpentRatio);
-			Logger.debug("ARTICLE SCORE: "
-					+ RankAlgorithm.calculateArticleScore(article.getCoolNotCoolwilsonScore(), averageTimeSpentRatio));
+			HashMap<String, Object> userMap = new HashMap<>();			
 			User author = userDaoInstance.findByUsername(article.getAuthor());
 			Logger.debug("USER PUBLISH RATE RATIO "
 					+ RankAlgorithm.calculateUserArticlePublishRateRatio(author.getArticlePublishRate(), instance));
@@ -215,6 +213,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					HashMap<String, Object> gameMap = new HashMap<>();
 					gameMap.put("gameId", game.getId().toString());
 					gameMap.put("title", game.getTitle());
+					gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
 					String gameBoxShot = game.getGameBoxShot();
 					if (StringUtil.isNullOrEmpty(gameBoxShot)) {
 						gameMap.put("boxshotPath", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
@@ -240,6 +239,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					HashMap<String, Object> gameMap = new HashMap<>();
 					gameMap.put("gameId", game.getId().toString());
 					gameMap.put("title", game.getTitle());
+					gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
 					String gameBoxShot = game.getGameBoxShot();
 					if (StringUtil.isNullOrEmpty(gameBoxShot)) {
 						gameMap.put("boxshotPath", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
@@ -265,6 +265,8 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					UserGameScoreMap scoreMap = userGameMap.findByUserAndGame(author.getUsername(), game.getId().toString());
 					if (scoreMap != null) {
 						response.put("articleGameUserScore", scoreMap.getGameScore());
+						Double rawScore =scoreMap.getGameScore()*10; 
+						response.put("articleGameUserRawScore", rawScore.intValue());
 					} else {
 						response.put("articleGameUserScore", 0);
 					}
@@ -300,12 +302,14 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			for (Article article : articles) {
 				if (article != null) {
 					HashMap<String, Object> response = new HashMap<>();
+					response.put("articleId", article.getId().toString());
 					response.put("articleTitle", article.getTitle());
 					response.put("articleBody", article.getBody());
 					response.put("articleCategory", article.getCategory().toString());
 					response.put("articleEncodedUrlTitle", Utility.encodeForUrl(article.getTitle()) + "-" + article.getId().toString());
 					response.put("articlePublishDate", article.getPublishDate());
 					response.put("articleTimestamp", article.getTimestamp());
+					response.put("articleHotnessLevel", Article.ARTICLE_HOTNESS_MAP[article.getHotness()]);
 					try {
 						response.put("articleTimeSpentFromPublish", Utility.convertFromOneFormatToAnother(article.getPublishDate()));
 					} catch (ParseException e1) {
@@ -346,8 +350,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		return articleLists;
 	}
 
-	// TODO modfiy this method to check whether in the case of review, user in not posting a review for same game on same set of
-	// platforms. This is not allowed
+	
 	@Override
 	public HashMap<String, Object> createOrUpdateArticle(DynamicForm requestData) {
 		Mongo instance = getDatabaseInstance().getMongoInstance();
@@ -359,6 +362,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			article = createOrUpdateArticleInstance(requestData);
 			Logger.debug("ARTICLE     " + article);
 			Logger.debug("ARTICLE STATE " + article.getState());
+			article.setHotness(PostHotness.COLD.getHotnessValue());
 			save(article);
 			if (article != null) {
 				if (Article.PUBLISH == article.getState() && Article.NOT_PUBLISHED == article.getIsPublished()) {
@@ -422,6 +426,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 								save(article);
 							}
 						}
+						userDaoInstance.updateUserXP(author, XPTriggerPoints.REVIEW_CREATION);
 					}
 
 					if (Category.Gloonicle.equals(article.getCategory())) {
@@ -437,6 +442,15 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 								articleMediaMapDaoInstance.createOrUpdateArticleMediaMap("", article.getId().toString(), mediaId);
 							}
 						}
+						userDaoInstance.updateUserXP(author, XPTriggerPoints.GLOONICLE_CREATION);
+					}
+					if(Category.News.equals(article.getCategory()))
+					{
+						userDaoInstance.updateUserXP(author, XPTriggerPoints.NEWS_CREATION);
+					}
+					if(Category.Video.equals(article.getCategory()))
+					{
+						userDaoInstance.updateUserXP(author, XPTriggerPoints.VIDEO_CREATION);
 					}
 
 					HashMap<String, String> activityMap = new HashMap<>();
@@ -543,6 +557,19 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		}
 
 	}
+	
+	@Override
+	public List<Article> findAllPublishedArticlesByGames(List<String> gameIds, String category) {
+
+		if ("all".equalsIgnoreCase(category)) {
+			return gloonDatastore.createQuery(Article.class).filter("game in", gameIds).filter("state", Article.PUBLISH)
+					.order("-publishDate").asList();
+		} else {
+			return gloonDatastore.createQuery(Article.class).filter("game in", gameIds).filter("state", Article.PUBLISH)
+					.filter("category", Utility.capitalizeString(category)).order("-publishDate").asList();
+		}
+
+	}
 
 	@Override
 	public Long allPublishedArticlesCount(User user) {
@@ -567,8 +594,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		if (articleVotingMap != null) {
 			User author = userDaoInstance.findByUsername(article.getAuthor());
 			article.setCoolNotCoolwilsonScore(RankAlgorithm.wilsonScoreCalculator(article.getCoolScore(), article.getNotCoolScore()));
-			double averageTimeSpentRatio = RankAlgorithm
-					.calculateArticleAverageTimeSpentRatio(article.getAverageTimeSpent(), instance);
+			double averageTimeSpentRatio = RankAlgorithm.calculateArticleAverageTimeSpentRatio(article.getAverageTimeSpent(), instance);
 			Logger.debug("ARTICLE TOTAL SCORE: "
 					+ RankAlgorithm.calculateArticleScore(article.getCoolNotCoolwilsonScore(), averageTimeSpentRatio));
 			article.setTotalScore(RankAlgorithm.calculateArticleScore(article.getCoolNotCoolwilsonScore(), averageTimeSpentRatio));
@@ -686,10 +712,12 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	@Override
 	public List<HashMap<String, Object>> getUserDrafts(String username) throws MalformedURLException {
 		List<HashMap<String, Object>> userDrafts = new ArrayList<>();
+		Logger.debug("Username: "+username);
 		List<Article> userDraftPosts = fetchUserDraftsForUser(username);
 		if (userDraftPosts.size() > 0) {
 			for (Article draft : userDraftPosts) {
 				HashMap<String, Object> draftMap = new HashMap<>();
+				draftMap.put("articleId", draft.getId().toString());
 				draftMap.put("articleTitle", draft.getTitle());
 				draftMap.put("articleBody", draft.getBody());
 				draftMap.put("articleCategory", draft.getCategory().toString());
@@ -716,7 +744,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	}
 
 	private List<Article> fetchUserDraftsForUser(String username) {
-
+		
 		return gloonDatastore.createQuery(Article.class).filter("author", username).filter("state", Article.DRAFT)
 				.order("-insertTime").asList();
 	}
@@ -807,9 +835,13 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 		reviewAttributes.put("gameId", gameId);
 
 		// Guard for checking that review does exist or not
-		if (checkArticleAlreadyExist(Category.Review, reviewAttributes)) {
-			return null;
+		if(StringUtil.isNullOrEmpty(id))
+		{
+			if (checkArticleAlreadyExist(Category.Review, reviewAttributes)) {
+				return null;
+			}
 		}
+		
 
 		Logger.debug("Article doesnt exist");
 
@@ -977,7 +1009,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 	}
 
 	/**
-	 * Fetch 5 Features/News/Gloonicles of recently released games based on user ratings
+	 * Fetch 5 News/Gloonicles/Videos of recently released games based on user ratings
 	 * 
 	 * @param topUsers
 	 * @param type

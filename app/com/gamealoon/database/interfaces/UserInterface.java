@@ -7,6 +7,7 @@ import java.util.List;
 import play.data.DynamicForm;
 import play.mvc.Http.MultipartFormData.FilePart;
 
+import com.gamealoon.core.common.XPTriggerPoints;
 import com.gamealoon.database.mongo.api.MongoDao;
 import com.gamealoon.models.User;
 
@@ -178,5 +179,18 @@ public interface UserInterface extends MongoDao<User> {
 	 */
 	public HashMap<String, Object> fetchStats(String username);
 	
+	/**
+	 * Update a user's trigger points
+	 * 
+	 * @param username
+	 * @param xpTriggerPoints
+	 */
+	public void updateUserXP(final User user, XPTriggerPoints xpTriggerPoints);
 	
+	/**
+	 * Fetch top 3 users reverse sorted by XP
+	 * 
+	 * @return
+	 */
+	public List<HashMap<String, Object>> fetchTopThreeUsers()throws MalformedURLException ;
 }

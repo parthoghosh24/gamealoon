@@ -3,7 +3,7 @@ package com.gamealoon.utility;
 /**
  * This class is utility class containing various string related APIs which can be accessed directly.
  * 
- * @author Gamealoon
+ * @author Manoj
  * @version 1.0
  */
 public class StringUtil {

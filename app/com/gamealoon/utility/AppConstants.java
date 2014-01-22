@@ -20,11 +20,7 @@ public class AppConstants {
 	public static final String COOL ="cool";
 	public static final String UNCOOL ="uncool";
 	public final static String SEEDURL ="http://localhost:8080";	//this is temp
-	public final static String APP_BASE_URL=ConfigFactory.load().getString("gloon.base.url");
-	public final static int EMAIL_NOT_CONFIRMED =0;
-	public final static int EMAIL_CONFIRMED =1;
-	public final static int USER_PROFILE=1;
-	public final static int USER_PAGE=2;
+	public final static String APP_BASE_URL=ConfigFactory.load().getString("gloon.base.url");	
 	public final static String APP_ABSOLUTE_PATH=returnCanonicalPath();
 	public final static String APP_ABSOLUTE_IMAGE_PATH=APP_ABSOLUTE_PATH+"\\public\\images\\";
 	public final static String APP_ABSOLUTE_IMAGE_USER_PATH=APP_ABSOLUTE_IMAGE_PATH+"\\user\\";

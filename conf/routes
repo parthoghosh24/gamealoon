@@ -19,6 +19,7 @@ GET /admin/platforms/:timestamp                        			com.gamealoon.controll
 
 # Articles
 
+GET /articles/drafts/:username										 com.gamealoon.controllers.ArticleController.getDrafts(username:String)	
 GET /article/:username/:titleOrId           						 com.gamealoon.controllers.ArticleController.getArticle(username:String, titleOrId:String)
 GET /articles/:carouselSelector/:category/:timestamp/:mode           com.gamealoon.controllers.ArticleController.getNArticlesByCarouselSelectorAndCategory(carouselSelector:String, category:String, timestamp:String, mode:String)
 POST /article/save                      							 com.gamealoon.controllers.ArticleController.saveOrUpdateArticle()

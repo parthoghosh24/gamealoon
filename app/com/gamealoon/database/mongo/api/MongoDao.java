@@ -5,7 +5,7 @@ package com.gamealoon.database.mongo.api;
  * 
  * @param <T> the underlying entity type.
  * 
- * @author Gamealoon
+ * @author Manoj
  * @version 1.0
  */
 public interface MongoDao<T> {

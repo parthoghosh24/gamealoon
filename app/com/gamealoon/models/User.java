@@ -34,7 +34,7 @@ public class User {
 	private int day;
 	private int month;
 	private int year;
-	private String avatar; // path to avatar image file for user	
+	private String avatar; // path to avatar image file for user
 	private String insertTime;
 	private long timestamp;
 	private String updateTime;
@@ -62,6 +62,20 @@ public class User {
 	 */
 	private int level;
 
+	/**
+	 * Network Rank is awarded to user when user hits a particular XP checkpoint
+	 */
+	private int networkRank;
+	
+	
+	//User Page and settings tate
+	
+	public static final int EMAIL_NOT_CONFIRMED=0;
+	public static final int EMAIL_CONFIRMED=1;
+	public static final int USER_PAGE=1;
+	public static final int USER_PAGE_LOGGED_IN=2;
+	public static final int USER_SETTINGS=3;
+
 	// Chat states
 	public static final int INVITE = 0;
 	public static final int PENDING = 1;
@@ -74,6 +88,11 @@ public class User {
 	// User interests
 	public static final int PLATFORM_INTEREST = 1;
 	public static final int GENRE_INTEREST = 2;
+
+	// Rank Constants
+
+	public static final String[] USER_RANK_MAP = {"New Gloonie", "Gamealoon Yogi", "Gamealoon Big Boss", "Legend of Gamealoonland",
+			"Gamealoonova", "God of W...err... Gamealoon", "Gloonie"};
 
 	@Embedded
 	private ArrayList<Achievement> achievements = new ArrayList<>(); // Achievements earned
@@ -551,5 +570,19 @@ public class User {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	/**
+	 * @return the networkRank
+	 */
+	public int getNetworkRank() {
+		return networkRank;
+	}
+
+	/**
+	 * @param networkRank the networkRank to set
+	 */
+	public void setNetworkRank(int networkRank) {
+		this.networkRank = networkRank;
 	}
 }

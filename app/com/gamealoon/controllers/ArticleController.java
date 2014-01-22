@@ -50,6 +50,24 @@ public class ArticleController extends Controller{
 		HashMap<String, Object> response = updateArticleAverageTimeSpentMap(requestData);
 		return ok(toJson(response));
 	}
+	
+	public static Result getDrafts(String username)
+	{
+		List<HashMap<String, Object>> userDrafts = getDraftsMap(username);
+		return ok(toJson(userDrafts));
+	}
+	
+	private static List<HashMap<String, Object>> getDraftsMap(String username)
+	{
+		List<HashMap<String, Object>> userDrafts = new ArrayList<>();
+		try {
+			userDrafts=articleDaoInstance.getUserDrafts(username);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userDrafts;
+	}
 
 	/**
 	 * Fetch single article by username and article title

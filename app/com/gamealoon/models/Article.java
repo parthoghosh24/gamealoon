@@ -76,8 +76,17 @@ public class Article {
 	 */
 	public static final Integer COOL = 0;
 	public static final Integer NOTCOOL = 1;
+	
+	/**
+	 *  Article Hotness Constants
+	 */
+
+	public static final String[] ARTICLE_HOTNESS_MAP = {"Cold", "Warm", "Ignited", "Rising Heat",
+				"Hot", "Super Hot", "Red Hot"};
 
 	private Category category;
+	
+	private int hotness;
 
 	public ObjectId getId() {
 		return this.id;
@@ -481,6 +490,20 @@ public class Article {
 	 */
 	public void setPlayedOnPlatform(String playedOnPlatform) {
 		this.playedOnPlatform = playedOnPlatform;
+	}
+
+	/**
+	 * @return the hotness
+	 */
+	public int getHotness() {
+		return hotness;
+	}
+
+	/**
+	 * @param hotness the hotness to set
+	 */
+	public void setHotness(int hotness) {
+		this.hotness = hotness;
 	}
 
 }

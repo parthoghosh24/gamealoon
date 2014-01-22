@@ -9,9 +9,11 @@ import org.bson.types.ObjectId;
 
 import play.Logger;
 
+import com.gamealoon.core.common.XPTriggerPoints;
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.ConversationInterface;
 import com.gamealoon.models.Activity;
+import com.gamealoon.models.Article;
 import com.gamealoon.models.Comment;
 import com.gamealoon.models.Conversation;
 import com.gamealoon.models.Media;
@@ -24,6 +26,7 @@ public class ConversationDAO extends GloonDAO<Conversation> implements Conversat
 
 	private static final ConversationDAO DATA_ACCESS_LAYER = new ConversationDAO();
 	private static final UserDAO userDAOInstance = UserDAO.instantiateDAO();
+	private static final ArticleDAO articleDAOInstance = ArticleDAO.instantiateDAO();
 	private static final MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
 	private static final ActivityDAO activityDaoInstance = ActivityDAO.instantiateDAO();
 	private Datastore gloonDatastore = null;
@@ -80,7 +83,9 @@ public class ConversationDAO extends GloonDAO<Conversation> implements Conversat
 			}
 			conversation.setComment(comment);
 			save(conversation);
-
+			Article article = articleDAOInstance.getById(articleId);
+			User author = userDAOInstance.findByUsername(article.getAuthor());
+			userDAOInstance.updateUserXP(author, XPTriggerPoints.COMMENT_POSTED);	
 			conversationMap = getComment(conversation.getId().toString());
 			conversationMap.put("status", "success");
 			HashMap<String, String> activityMap = new HashMap<>();
