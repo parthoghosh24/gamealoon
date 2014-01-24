@@ -443,7 +443,16 @@ public class ActivityDAO extends GloonDAO<Activity> implements ActivityInterface
 					final Achievement achievement = gloonDatastore.createQuery(Achievement.class)
 							.filter("_id", new ObjectId(activity.getEntityId())).get();
 					activityMap.put("achievementTitle", achievement.getTitle());
-					activityMap.put("achievementImage",  AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/new_gloonie_achievement.png");
+					String achievementImage = achievement.getAchievementImage();
+					if (!achievementImage.isEmpty()) {			
+						media = mediaDaoInstance.getById(achievementImage);
+						try {
+							activityMap.put("achievementImage", media.getUrl());
+						} catch (MalformedURLException e) {
+							activityMap.put("achievementImage", "");
+							e.printStackTrace();
+						}
+					}					
 					activityMap.put("activityType", activityType);
 					break;
 

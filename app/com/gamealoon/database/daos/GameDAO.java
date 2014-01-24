@@ -139,6 +139,14 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				Media media = mediaDAOinstance.getById(gameBoxShot);
 				gameMap.put("gameBoxShot", media.getUrl());
 			}
+			
+			String gameCoverShot = game.getCoverImage();
+			if (gameCoverShot.isEmpty()) {
+				gameMap.put("gameCoverShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/featuredBg.png");
+			} else {
+				Media media = mediaDAOinstance.getById(gameCoverShot);
+				gameMap.put("gameCoverShot", media.getUrl());
+			}
 
 			gameMap.put("gameGenere", game.getGenre().toString());
 			gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());

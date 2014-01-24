@@ -1,21 +1,23 @@
 package com.gamealoon.database.daos;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import play.data.DynamicForm;
-
 import com.gamealoon.database.GloonDAO;
 import com.gamealoon.database.interfaces.AchievementInterface;
 import com.gamealoon.models.Achievement;
+import com.gamealoon.models.Media;
 import com.gamealoon.utility.Utility;
 import com.google.code.morphia.Datastore;
 
 public class AchievementDAO extends GloonDAO<Achievement> implements AchievementInterface {
 
 	private static final AchievementDAO DATA_ACCESS_LAYER = new AchievementDAO();
+	private static final MediaDAO mediaDAOInstance = MediaDAO.instantiateDAO();
+	
 	private Datastore gloonDatastore = null;
 
 	private AchievementDAO() {
@@ -64,7 +66,17 @@ public class AchievementDAO extends GloonDAO<Achievement> implements Achievement
 			achievementMap.put("id", achievement.getId().toString());
 			achievementMap.put("title", achievement.getTitle());
 			achievementMap.put("description", achievement.getDescription());
-			achievementMap.put("achievementImage", achievement.getAchievementImage());
+			String achievementImage = achievement.getAchievementImage();
+			if (!achievementImage.isEmpty()) {			
+				Media media = mediaDAOInstance.getById(achievementImage);
+				try {
+					achievementMap.put("achievementImage", media.getUrl());
+				} catch (MalformedURLException e) {
+					achievementMap.put("achievementImage", "");
+					e.printStackTrace();
+				}
+			}
+			
 			achievementMap.put("insertTime", achievement.getInsertTime());
 			achievementMap.put("updateTime", achievement.getUpdateTime());
 			achievementMap.put("timestamp", achievement.getTimestamp());

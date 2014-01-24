@@ -40,6 +40,7 @@ public class Media {
 	 */
 	public final static String USER="user";
 	public final static String GAME="game";
+	public final static String ACHIEVEMENT ="achievement";
 
 	/**
 	 * @return the id

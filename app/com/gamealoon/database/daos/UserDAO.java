@@ -917,7 +917,25 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		try {
 			ArrayList<Achievement> userAchievements = user.getAchievements();
 			if (userAchievements != null && userAchievements.size() > 0) {
-				userStatsMap.put("userAchievements", userAchievements);
+				List<HashMap<String, String>> achievementsMapList = new ArrayList<>();
+				for(Achievement achievement: userAchievements)
+				{
+					HashMap<String, String> achievementMap = new HashMap<>();
+					achievementMap.put("title", achievement.getTitle());
+					achievementMap.put("description", achievement.getDescription());
+					String achievementImage = achievement.getAchievementImage();
+					if (!achievementImage.isEmpty()) {			
+						Media media = mediaDAOInstance.getById(achievementImage);
+						try {
+							achievementMap.put("achievementImage", media.getUrl());
+						} catch (MalformedURLException e) {
+							achievementMap.put("achievementImage", "");
+							e.printStackTrace();
+						}
+					}
+					achievementsMapList.add(achievementMap);
+				}
+				userStatsMap.put("userAchievements", achievementsMapList);
 
 			} else {
 				userStatsMap.put("userAchievements", new ArrayList<>());
@@ -1055,7 +1073,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 			newUser.setGamealoonPoints(0);
 			newUser.setNetworkRank(GloonNetworkRank.NEW_GLOONIE.getRankValue());
 			save(newUser);
-			//sendConfirmMail(newUser);
+			sendConfirmMail(newUser);
 
 			// Reactively update all user scores as no of users increase
 			for (User user : getTopUsers(0)) {

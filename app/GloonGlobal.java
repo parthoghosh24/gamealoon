@@ -51,11 +51,27 @@ public class GloonGlobal extends GlobalSettings {
 				Achievement newGloonie = new Achievement();
 				newGloonie.setTitle("New Gloonie!");
 				newGloonie.setDescription("Welcome to gamealoon!!!");
-				newGloonie.setAchievementImage("");
+				Media media = new Media();
+				media.setFileName("new_gloonie_achievement.png");
+				media.setMediaType(Media.IMAGE);
+				media.setImmediateOwner(Utility.shortenString(newGloonie.getTitle()));
+				media.setOwner(Media.ACHIEVEMENT);
+				if(Play.isDev() || Play.isTest())
+				{
+					media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/achievement/newgloonie/new_gloonie_achievement.png");
+				}
+				if(Play.isProd())
+				{
+					media.setUrl("https://s3.amazonaws.com/gloonuploads/achievement/newgloonie/new_gloonie_achievement.png");
+				}
+				media.setInsertTime(Utility.convertDateToString(time));
+				media.setTimestamp(time.getTime());
+				mediaDAOInstance.save(media);				
+				newGloonie.setAchievementImage(media.getId().toString());
 				newGloonie.setInsertTime(Utility.convertDateToString(time));
 				newGloonie.setTimestamp(time.getTime());
 			
-			achievementDAOInstance.save(newGloonie);			
+				achievementDAOInstance.save(newGloonie);			
 		}
 		
 		
@@ -135,6 +151,26 @@ public class GloonGlobal extends GlobalSettings {
 			android.setTimestamp(time.getTime());
 			platformDAOInstance.save(android);
 			
+			Platform windows = new Platform();
+			windows.setTitle("Windows Phone");
+			windows.setShortTitle("windows");
+			windows.setDescription("Windows Phone (abbreviated as WP) is a series of proprietary smartphone operating systems developed by Microsoft. It is the successor to Windows Mobile, although it is incompatible with the earlier platform. With Windows Phone, Microsoft created a new user interface, featuring a design language named \"Modern\" (which was formerly known as \"Metro\").");
+			windows.setManufacturer("Microsoft");
+			windows.setDeveloper("Microsoft");
+			windows.setInsertTime(Utility.convertDateToString(time));
+			windows.setTimestamp(time.getTime());
+			platformDAOInstance.save(windows);
+			
+			Platform blackberry = new Platform();
+			blackberry.setTitle("Blackberry 10");
+			blackberry.setShortTitle("blackberry");
+			blackberry.setDescription("BlackBerry 10 is a proprietary mobile operating system developed by BlackBerry Limited (formerly Research In Motion) for its BlackBerry line of smartphone and tablet handheld devices.");
+			blackberry.setManufacturer("BlackBerry Ltd.");
+			blackberry.setDeveloper("BlackBerry Ltd.");
+			blackberry.setInsertTime(Utility.convertDateToString(time));
+			blackberry.setTimestamp(time.getTime());
+			platformDAOInstance.save(blackberry);
+			
 			Platform wiiu = new Platform();
 			wiiu.setTitle("WII-U");
 			wiiu.setShortTitle("wiiu");
@@ -206,6 +242,24 @@ public class GloonGlobal extends GlobalSettings {
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
 			maxPayne3.setGameBoxShot(media.getId().toString());			
+			
+			media = new Media();
+			media.setFileName("mp3_scr_2.jpeg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(maxPayne3.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/maxpayne3/uploads/mp3_scr_2.jpeg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/maxpayne3/uploads/mp3_scr_2.jpeg");
+			}
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			maxPayne3.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(maxPayne3);			
 			
 			time = new Date();
@@ -241,15 +295,34 @@ public class GloonGlobal extends GlobalSettings {
 			media.setInsertTime(Utility.convertDateToString(time));
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
-			farCry3.setGameBoxShot(media.getId().toString());			
+			farCry3.setGameBoxShot(media.getId().toString());		
+			
+			media = new Media();
+			media.setFileName("far_cry3.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(farCry3.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/farcry3/uploads/far_cry3.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/farcry3/uploads/far_cry3.jpg");
+			}
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			farCry3.setCoverImage(media.getId().toString());
+			
 			gameDAOInstance.save(farCry3);
 			
 			time = new Date();
 			Game batmanArkhamCity = new Game();
 			batmanArkhamCity.setTitle("Batman: Arkham City");
 			batmanArkhamCity.setDescription("Written by veteran Batman writer Paul Dini with Paul Crocker and Sefton Hill, Arkham City is based on the franchise's long-running comic book mythos. In the game's main storyline, Batman is incarcerated in Arkham City, a massive new super-prison enclosing the decaying urban slums of fictional Gotham City. He must uncover the secret behind the sinister scheme, \"Protocol 10\", orchestrated by the facilities warden, Hugo Strange.");
-			batmanArkhamCity.setDeveloper("Warner Bros. Interactive, Eidos Interactive");
-			batmanArkhamCity.setPublisher(" Rocksteady Studios");
+			batmanArkhamCity.setDeveloper("Rocksteady Studios");
+			batmanArkhamCity.setPublisher("Warner Bros. Interactive, Eidos Interactive");
 			batmanArkhamCity.setGenre(Genre.ActionAdventure);
 			batmanArkhamCity.setPrice("");
 			String[] batmanArkhamCityPlatforms = {"ps3","xbox360","pc","wiiu"};
@@ -278,6 +351,25 @@ public class GloonGlobal extends GlobalSettings {
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
 			batmanArkhamCity.setGameBoxShot(media.getId().toString());			
+			
+			media = new Media();
+			media.setFileName("batman_arkham_city.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(batmanArkhamCity.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/batmanarkhamcity/uploads/batman_arkham_city.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/batmanarkhamcity/uploads/batman_arkham_city.jpg");
+			}
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			batmanArkhamCity.setCoverImage(media.getId().toString());
+			
 			gameDAOInstance.save(batmanArkhamCity);
 			
 			time = new Date();
@@ -313,6 +405,24 @@ public class GloonGlobal extends GlobalSettings {
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
 			batmanArkhamOrigins.setGameBoxShot(media.getId().toString());			
+			
+			media = new Media();
+			media.setFileName("bat_arkh_org_1.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(batmanArkhamOrigins.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/batmanarkhamorigins/uploads/bat_arkh_org_1.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/batmanarkhamorigins/uploads/bat_arkh_org_1.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			batmanArkhamOrigins.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(batmanArkhamOrigins);
 			
 			time = new Date();
@@ -349,6 +459,25 @@ public class GloonGlobal extends GlobalSettings {
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
 			gta5.setGameBoxShot(media.getId().toString());			
+			
+			
+			media = new Media();
+			media.setFileName("gta5_car.png");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(gta5.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/grandtheftautov/uploads/gta5_car.png");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/grandtheftautov/uploads/gta5_car.png");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			gta5.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(gta5);
 			
 			time = new Date();
@@ -384,7 +513,26 @@ public class GloonGlobal extends GlobalSettings {
 			media.setInsertTime(Utility.convertDateToString(time));
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
-			mgsRising.setGameBoxShot(media.getId().toString());			
+			mgsRising.setGameBoxShot(media.getId().toString());		
+			
+			
+			media = new Media();
+			media.setFileName("mgsr.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(mgsRising.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/metalgearrisingrevengence/uploads/mgsr.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/metalgearrisingrevengence/uploads/mgsr.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			mgsRising.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(mgsRising);
 			
 			time = new Date();
@@ -420,7 +568,25 @@ public class GloonGlobal extends GlobalSettings {
 			media.setInsertTime(Utility.convertDateToString(time));
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
-			evilWithin.setGameBoxShot(media.getId().toString());			
+			evilWithin.setGameBoxShot(media.getId().toString());
+			
+			media = new Media();
+			media.setFileName("tew.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(evilWithin.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/theevilwithin/uploads/tew.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/theevilwithin/uploads/tew.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			evilWithin.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(evilWithin);
 			
 			time = new Date();
@@ -456,7 +622,26 @@ public class GloonGlobal extends GlobalSettings {
 			media.setInsertTime(Utility.convertDateToString(time));
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
-			battlefield4.setGameBoxShot(media.getId().toString());			
+			battlefield4.setGameBoxShot(media.getId().toString());	
+			
+			
+			media = new Media();
+			media.setFileName("bf4_scrn.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(battlefield4.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/battlefield4/uploads/bf4_scrn.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/battlefield4/uploads/bf4_scrn.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			battlefield4.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(battlefield4);
 			
 			time = new Date();
@@ -492,8 +677,199 @@ public class GloonGlobal extends GlobalSettings {
 			media.setInsertTime(Utility.convertDateToString(time));
 			media.setTimestamp(time.getTime());
 			mediaDAOInstance.save(media);
-			destiny.setGameBoxShot(media.getId().toString());			
+			destiny.setGameBoxShot(media.getId().toString());	
+			
+			
+			media = new Media();
+			media.setFileName("dest_img_3.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(destiny.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/destiny/uploads/dest_img_3.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/destiny/uploads/dest_img_3.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			destiny.setCoverImage(media.getId().toString());
 			gameDAOInstance.save(destiny);
+			
+			time = new Date();
+			Game songOfSwords = new Game();
+			songOfSwords.setTitle("Song Of Swords");
+			songOfSwords.setDescription("Song Of Swords is a solid 2D RPG platforming game created by Nautilus Mobile for Blackberry 10 devices. It won the People's Choice, Indie Game of the year 2013 from NASSCOM.");
+			songOfSwords.setDeveloper("Nautilus Mobile");
+			songOfSwords.setPublisher("Nautilus Mobile");
+			songOfSwords.setGenre(Genre.Rpg);
+			songOfSwords.setPrice("");
+			String[] songOfSwordsPlatforms = {"blackberry","windows","ios","android"};
+			songOfSwords.setPlatforms(songOfSwordsPlatforms);
+			songOfSwords.setRating(Game.TEEN);
+			songOfSwords.setInsertTime(Utility.convertDateToString(time));
+			songOfSwords.setTimestamp(time.getTime());
+			songOfSwords.setUpdateTime(Utility.convertDateToString(time));
+			songOfSwords.setGameReleaseStatus(Game.RELEASED);
+			songOfSwords.setReleaseDate("2013-12-10");		
+			songOfSwords.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-12-10").getTime());			
+			
+			media = new Media();
+			media.setFileName("sos_cover.png");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(songOfSwords.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/songofswords/uploads/sos_cover.png");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/songofswords/uploads/sos_cover.png");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			songOfSwords.setGameBoxShot(media.getId().toString());	
+			
+			
+			media = new Media();
+			media.setFileName("SOS_splash.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(songOfSwords.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/songofswords/uploads/SOS_splash.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/songofswords/uploads/SOS_splash.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			songOfSwords.setCoverImage(media.getId().toString());	
+			gameDAOInstance.save(songOfSwords);
+			
+			
+			time = new Date();
+			Game frozenFreeFall = new Game();
+			frozenFreeFall.setTitle("Frozen Free Fall");
+			frozenFreeFall.setDescription("Get ready for an epic puzzle matching adventure in the Kingdom of Arendelle , inspired by the newest Disney animated film, Frozen! Join Anna, Elsa, and more of your favorite characters on a journey to slide and match 75 icy puzzles for free!");
+			frozenFreeFall.setDeveloper("Disney");
+			frozenFreeFall.setPublisher("Disney");
+			frozenFreeFall.setGenre(Genre.Puzzle);
+			frozenFreeFall.setPrice("");
+			String[] frozenFreeFallPlatforms = {"windows"};
+			frozenFreeFall.setPlatforms(frozenFreeFallPlatforms);
+			frozenFreeFall.setRating(Game.EVERYONE);
+			frozenFreeFall.setInsertTime(Utility.convertDateToString(time));
+			frozenFreeFall.setTimestamp(time.getTime());
+			frozenFreeFall.setUpdateTime(Utility.convertDateToString(time));
+			frozenFreeFall.setGameReleaseStatus(Game.RELEASED);
+			frozenFreeFall.setReleaseDate("2013-12-21");		
+			frozenFreeFall.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-12-21").getTime());			
+			
+			media = new Media();
+			media.setFileName("frozen_cover.png");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(frozenFreeFall.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/frozenfreefall/uploads/frozen_cover.png");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/frozenfreefall/uploads/frozen_cover.png");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			frozenFreeFall.setGameBoxShot(media.getId().toString());	
+			
+			
+			media = new Media();
+			media.setFileName("frozen_free_fall.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(frozenFreeFall.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/frozenfreefall/uploads/frozen_free_fall.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/frozenfreefall/uploads/frozen_free_fall.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			frozenFreeFall.setCoverImage(media.getId().toString());	
+			gameDAOInstance.save(frozenFreeFall);
+			
+			
+			
+			
+			time = new Date();
+			Game asphalt8 = new Game();
+			asphalt8.setTitle("Asphalt 8: Airborne");
+			asphalt8.setDescription("Asphalt 8 is the latest game in Asphalt racing series by Gameloft. The game features a brand new physics engine, console quality graphics for mobile, licensed soundtracks and of course ... fast cars.");
+			asphalt8.setDeveloper("Gameloft");
+			asphalt8.setPublisher("Gameloft");
+			asphalt8.setGenre(Genre.Racing);
+			asphalt8.setPrice("");
+			String[] asphalt8Platforms = {"windows","ios","android","blackberry"};
+			asphalt8.setPlatforms(asphalt8Platforms);
+			asphalt8.setRating(Game.EVERYONE);
+			asphalt8.setInsertTime(Utility.convertDateToString(time));
+			asphalt8.setTimestamp(time.getTime());
+			asphalt8.setUpdateTime(Utility.convertDateToString(time));
+			asphalt8.setGameReleaseStatus(Game.RELEASED);
+			asphalt8.setReleaseDate("2013-08-22");		
+			asphalt8.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2("2013-08-22").getTime());			
+			
+			media = new Media();
+			media.setFileName("asphalt8_cover.JPG");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(asphalt8.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/asphalt8airborne/uploads/asphalt8_cover.JPG");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/asphalt8airborne/uploads/asphalt8_cover.JPG");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			asphalt8.setGameBoxShot(media.getId().toString());	
+			
+			
+			media = new Media();
+			media.setFileName("asphalt8_scr.jpg");
+			media.setMediaType(Media.IMAGE);
+			media.setImmediateOwner(Utility.shortenString(asphalt8.getTitle()));
+			media.setOwner(Media.GAME);
+			if(Play.isDev() || Play.isTest())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploadsdev/game/asphalt8airborne/uploads/asphalt8_scr.jpg");
+			}
+			if(Play.isProd())
+			{
+				media.setUrl("https://s3.amazonaws.com/gloonuploads/game/asphalt8airborne/uploads/asphalt8_scr.jpg");
+			}				
+			media.setInsertTime(Utility.convertDateToString(time));
+			media.setTimestamp(time.getTime());
+			mediaDAOInstance.save(media);
+			asphalt8.setCoverImage(media.getId().toString());	
+			gameDAOInstance.save(asphalt8);
 			
 			
 		}
