@@ -1055,7 +1055,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 			newUser.setGamealoonPoints(0);
 			newUser.setNetworkRank(GloonNetworkRank.NEW_GLOONIE.getRankValue());
 			save(newUser);
-			sendConfirmMail(newUser);
+			//sendConfirmMail(newUser);
 
 			// Reactively update all user scores as no of users increase
 			for (User user : getTopUsers(0)) {
