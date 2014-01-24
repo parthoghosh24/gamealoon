@@ -854,9 +854,14 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 				if (article.getPublishDate() == null || article.getPublishDate().isEmpty()) {
 					article.setPublishDate(dateTime);
 					article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
+					article.setState(Article.PUBLISH);
 
 				}
 
+			}
+			else
+			{
+				article.setState(Article.DRAFT);
 			}
 		} else {
 			article = new Article();
@@ -864,9 +869,14 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			article.setUpdateTime(dateTime);
 			article.setIsPublished(Article.NOT_PUBLISHED);
 			if (state == Article.PUBLISH) {
+				article.setState(Article.PUBLISH);
 				article.setPublishDate(dateTime);
 				article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
 
+			}
+			else
+			{
+				article.setState(Article.DRAFT);
 			}
 		}
 		article.setTitle(articleTitle);

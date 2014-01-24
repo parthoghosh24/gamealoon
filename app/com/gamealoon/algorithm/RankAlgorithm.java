@@ -164,6 +164,10 @@ public class RankAlgorithm {
 	  */
 	 public static double calculateUserScore(double articlePublishRateRatio, double userFollowScore, double articleScoreRatio)
 	 {
+		 if(articlePublishRateRatio == 1)
+		 {
+			 articlePublishRateRatio =0.9; // To normalize so that some value can be obtained
+		 }
 		 double userScore =((1-articlePublishRateRatio)*USER_ARTICLE_PUBLISH_RATE_RATIO_WEIGHT )+(userFollowScore*USER_FOLLOW_SCORE_WEIGHT)+(articleScoreRatio*USER_ARTICLE_SCORE_RATIO);
 		 if(userScore<0)
 		 {

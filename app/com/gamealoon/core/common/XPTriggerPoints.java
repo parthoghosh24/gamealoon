@@ -57,11 +57,14 @@ public enum XPTriggerPoints {
 	/**
 	 * 
 	 */
-	VOTE_UP_REVERT(-20);
+	VOTE_UP_REVERT(-20),
 	
 	/**
 	 * 
 	 */
+	USER_AVATAR_UPLOADED(5);
+	
+	
 	private int experiencePoints;
 
 	/**
