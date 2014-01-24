@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bson.types.ObjectId;
 
@@ -44,6 +45,8 @@ import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
 import com.mongodb.Mongo;
+import com.typesafe.plugin.MailerAPI;
+import com.typesafe.plugin.MailerPlugin;
 
 public class UserDAO extends GloonDAO<User> implements UserInterface {
 
@@ -80,11 +83,11 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				userMap.put("userXp", user.getExperiencePoints());
 				userMap.put("userLevel", user.getLevel());
 				userMap.put("userLevel", user.getLevel());
-				userMap.put("userNextLevel", user.getLevel()+1);
+				userMap.put("userNextLevel", user.getLevel() + 1);
 				userMap.put("userXp", user.getExperiencePoints());
-				userMap.put("userNextLevelPointsToGo",Gamification.pointsToGo(user.getExperiencePoints(), user.getLevel()));
+				userMap.put("userNextLevelPointsToGo", Gamification.pointsToGo(user.getExperiencePoints(), user.getLevel()));
 				double levelCompletionRatio = Gamification.levelCompletionRatio(user.getExperiencePoints(), user.getLevel());
-				userMap.put("userLevelCompletionRatio",levelCompletionRatio*100);
+				userMap.put("userLevelCompletionRatio", levelCompletionRatio * 100);
 				String avatar = user.getAvatar();
 				if (!avatar.isEmpty()) {
 					Media media = mediaDAOInstance.getById(avatar);
@@ -92,7 +95,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				} else {
 					userMap.put("userAvatar", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
 				}
-				
+
 				userMaps.add(userMap);
 
 			}
@@ -146,13 +149,11 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 
 		HashMap<String, Object> userMap = new HashMap<>();
 		if (user != null) {
-			if(mode == User.USER_SETTINGS)
-			{
+			if (mode == User.USER_SETTINGS) {
 				userMap.put("userEmailConfirmed", user.getEmailConfirmed());
 			}
-			if(mode == User.USER_SETTINGS || mode == User.USER_PAGE || mode == User.USER_PAGE_LOGGED_IN)
-			{
-				
+			if (mode == User.USER_SETTINGS || mode == User.USER_PAGE || mode == User.USER_PAGE_LOGGED_IN) {
+
 				userMap.put("userFirstName", user.getFirstName());
 				userMap.put("userLastName", user.getLastName());
 				userMap.put("userDay", user.getDay());
@@ -174,53 +175,51 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 					userMap.put("userAvatarId", "none");
 				}
 			}
-			
-			if(mode == User.USER_PAGE || mode == User.USER_PAGE_LOGGED_IN)
-			{
-				userMap.put("userNetworkCrown",User.USER_RANK_MAP[user.getNetworkRank()]);
-				userMap.put("userNextNetworkCrown",User.USER_RANK_MAP[user.getNetworkRank()+1]);
-				userMap.put("userLeaderboardRank",fetchUserLeaderBoardRank(user.getUsername()));
+
+			if (mode == User.USER_PAGE || mode == User.USER_PAGE_LOGGED_IN) {
+				userMap.put("userNetworkCrown", User.USER_RANK_MAP[user.getNetworkRank()]);
+				userMap.put("userNextNetworkCrown", User.USER_RANK_MAP[user.getNetworkRank() + 1]);
+				userMap.put("userLeaderboardRank", fetchUserLeaderBoardRank(user.getUsername()));
 				userMap.put("userLevel", user.getLevel());
-				userMap.put("userNextLevel", user.getLevel()+1);
+				userMap.put("userNextLevel", user.getLevel() + 1);
 				userMap.put("userXp", user.getExperiencePoints());
-				userMap.put("userNextLevelPointsToGo",Gamification.pointsToGo(user.getExperiencePoints(), user.getLevel()));
+				userMap.put("userNextLevelPointsToGo", Gamification.pointsToGo(user.getExperiencePoints(), user.getLevel()));
 				double levelCompletionRatio = Gamification.levelCompletionRatio(user.getExperiencePoints(), user.getLevel());
-				userMap.put("userLevelCompletionRatio",levelCompletionRatio*100);
+				userMap.put("userLevelCompletionRatio", levelCompletionRatio * 100);
 				double totalAchievementCount = Achievement.getAllAchievementCount();
 				double userAchievementCount = user.getAchievements().size();
-				userMap.put("userAchievementRatio", new DecimalFormat("###.#").format((userAchievementCount/totalAchievementCount)*100));
-				
-				
-				double followedRatio=0;
-				double followingRatio=0;
+				userMap.put("userAchievementRatio",
+						new DecimalFormat("###.#").format((userAchievementCount / totalAchievementCount) * 100));
+
+				double followedRatio = 0;
+				double followingRatio = 0;
 				long userCount = count();
-				if(userCount>1)
-				{
+				if (userCount > 1) {
 					followedRatio = ((double) user.getFollowedBy().size() / (count() - 1)) * 100;
 					followingRatio = ((double) user.getFollowing().size() / (count() - 1)) * 100;
-				}			
+				}
 				userMap.put("userFollowersRatio", new DecimalFormat("###.#").format(followedRatio));
-				userMap.put("userFollowingRatio", new DecimalFormat("###.#").format(followingRatio));				
+				userMap.put("userFollowingRatio", new DecimalFormat("###.#").format(followingRatio));
 				long allPublishedArticleCount = Article.allPublishedArticleCount();
-				
-				double publishedArticleRatio=0;
-				if(allPublishedArticleCount>0)
-				{
+
+				double publishedArticleRatio = 0;
+				double networkTotalCoolScore = 0;
+				if (allPublishedArticleCount > 0) {
 					publishedArticleRatio = ((double) Article.allPublishedArticleCount(user) / allPublishedArticleCount) * 100;
-				}			
+					networkTotalCoolScore = RankAlgorithm.calculateNetworkTotalCoolScore(instance);
+				}
 				userMap.put("userPublishedRatio", new DecimalFormat("###.#").format(publishedArticleRatio));
-				double networkTotalCoolScore = RankAlgorithm.calculateNetworkTotalCoolScore(instance);
-				Logger.debug("Network Total Cool Score: "+networkTotalCoolScore);
-				Logger.debug("User Total Cool Score: "+user.getUserTotalCoolScore());
+
+				Logger.debug("Network Total Cool Score: " + networkTotalCoolScore);
+				Logger.debug("User Total Cool Score: " + user.getUserTotalCoolScore());
 				double coolScoreRatio = 0;
 				if (networkTotalCoolScore > 0) {
-					
+
 					coolScoreRatio = (user.getUserTotalCoolScore() / networkTotalCoolScore) * 100;
 				}
 				userMap.put("userCoolScoreRatio", new DecimalFormat("###.#").format(coolScoreRatio));
 				userMap.put("userCarouselArticles", articleDao.getAllArticlesForUserCarousel(user.getUsername()));
 
-				
 				if (checkUserBlockedOrNot(user, findByUsername(username))) {
 					userMap.put("isBlocked", 1);
 				} else {
@@ -232,8 +231,8 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				} else {
 					userMap.put("isFollowing", 0);
 				}
-				
-				if (mode == User.USER_PAGE_LOGGED_IN) {				
+
+				if (mode == User.USER_PAGE_LOGGED_IN) {
 					// 10 recent activities
 					userMap.put("userActivities", activityDAOInstance.getActivities(user));
 				}
@@ -241,9 +240,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 					userMap.put("userActivities", activityDAOInstance.getPublicActivitiesForUser(user));
 				}
 			}
-			
 
-			
 		}
 
 		return userMap;
@@ -326,7 +323,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 			save(user);
 			response.put("status", "success");
 		} catch (Exception e) {
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 		return response;
 	}
@@ -435,8 +432,6 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		}
 		return response;
 	}
-	
-	
 
 	/**
 	 * @param username
@@ -763,6 +758,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		if (response.get("status").equalsIgnoreCase("success")) {
 			User user = findByUsername(username);
 			String fetchedMediaId = response.get("mediaId");
+			String lastAvatarState = user.getAvatar();
 			user.setAvatar(response.get("mediaId"));
 			Media media = mediaDAOInstance.getById(fetchedMediaId);
 			try {
@@ -773,6 +769,9 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				Logger.error("Url is malformed " + e.fillInStackTrace());
 			}
 			save(user);
+			if (lastAvatarState.isEmpty()) {
+				updateUserXP(user, XPTriggerPoints.USER_AVATAR_UPLOADED);
+			}
 		}
 
 		return response;
@@ -934,26 +933,23 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 
 	@Override
 	public void updateUserXP(User user, XPTriggerPoints xpTriggerPoints) {
-		
-		if(user!=null)
-		{
-			Logger.debug("User: "+user);
+
+		if (user != null) {
+			Logger.debug("User: " + user);
 			updateUserPoints(user, xpTriggerPoints);
-			Logger.debug("Points: "+user.getExperiencePoints());
+			Logger.debug("Points: " + user.getExperiencePoints());
 			save(user);
 		}
-		
+
 	}
-	
+
 	@Override
 	public List<HashMap<String, Object>> fetchTopThreeUsers() throws MalformedURLException {
 		List<HashMap<String, Object>> topperMaps = new ArrayList<>();
 		List<User> users = getTopUsers(3);
-		
-		if(users.size()>0 || users!=null)
-		{
-			for(User user: users)
-			{
+
+		if (users.size() > 0 || users != null) {
+			for (User user : users) {
 				HashMap<String, Object> userMap = new HashMap<>();
 				userMap.put("userName", user.getUsername());
 				userMap.put("userXp", user.getExperiencePoints());
@@ -967,10 +963,41 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				topperMaps.add(userMap);
 			}
 		}
-		
+
 		return topperMaps;
 	}
 	
+	@Override
+	public HashMap<String, String> checkConfirmStatusForUser(String username, String confirmationToken) {
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		User user = findByUsername(username);
+		int confirmToken = Integer.parseInt(confirmationToken);
+		if(confirmToken!=-1 && confirmToken == user.getEmailConfirmToken())
+		{
+			user.setEmailConfirmed(User.EMAIL_CONFIRMED);
+			user.setEmailConfirmToken(-1);
+			save(user);
+			response.put("status", "success");
+		}
+		return response;
+	}
+
+	@Override
+	public void sendConfirmMail(User user) {
+		MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
+		int randToken = new Random().nextInt(Integer.MAX_VALUE)+1;
+		user.setEmailConfirmToken(randToken);
+		save(user);
+		mail.setSubject("Welcome to Gamealoon!");
+		mail.addRecipient(user.getEmail());
+		mail.addFrom("Team Gamealoon <noreply@gamealoon.com>");
+		mail.sendHtml("<html><p>Hi "
+				+ user.getUsername()
+				+ ",</p><p>Gamealoon welcomes you to the fun gameocratic world of video gaming. Tell the world that how much passionate you are about video gaming and also follow other gloonies to find out what they think about gaming. And guess what, doing so will also earn you XP, level up and fetch a rank in leaderboards. That is not all, you don't know, with all those accumulated points, you might be able to unlock a gift or two for you in future. So what are you waiting for, keep gaming and bragging about your gaming passion on Gamealoon. Please click or copy & paste to your browser's URL bar the following link to confirm your email and happy gaming." 
+				+"<p><a target='_blank' href='http://www.gamealoon.com/confirmuser/"+user.getUsername()+"/"+user.getEmailConfirmToken()+"'>http://www.gamealoon.com/confirmuser/"+user.getUsername()+"/"+user.getEmailConfirmToken()+"</a></p></p><p>Thanks and Regards,<br> Team Gamealoon<br><a target='_blank' href='http://www.gamealoon.com'>www.gamealoon.com</a></p></html>");
+	}
+
 	/**
 	 * Register user. simply create new user object and feed username, password and email
 	 * 
@@ -1004,7 +1031,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 			newUser.setLastName(lastName);
 			Calendar now = GregorianCalendar.getInstance();
 			newUser.setDay(now.get(Calendar.DAY_OF_MONTH));
-			newUser.setMonth(now.get(Calendar.MONTH)+1);
+			newUser.setMonth(now.get(Calendar.MONTH) + 1);
 			newUser.setYear(now.get(Calendar.YEAR));
 			newUser.setGameBio("I love gaming.");
 			newUser.setCountry("India");
@@ -1028,16 +1055,24 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 			newUser.setGamealoonPoints(0);
 			newUser.setNetworkRank(GloonNetworkRank.NEW_GLOONIE.getRankValue());
 			save(newUser);
+			sendConfirmMail(newUser);
 
-			// Reactively update all user scores as no of users increased
+			// Reactively update all user scores as no of users increase
 			for (User user : getTopUsers(0)) {
 				if (!newUser.getUsername().equalsIgnoreCase(user.getUsername())) {
-					Double userFollowedByScore = user.getFollowedBy().size() / (count() * 1.0);
+					double userFollowedByScore = user.getFollowedBy().size() / (count() * 1.0);
 					user.setUserFollowScore(userFollowedByScore);
-					Double articlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(),
-							instance);
-					Double articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(), instance);
-					Double userTotalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowedByScore,
+					double articlePublishRateRatio = 0;
+					if (user.getArticlePublishRate() > 0) {
+						articlePublishRateRatio = RankAlgorithm.calculateUserArticlePublishRateRatio(user.getArticlePublishRate(),
+								instance);
+					}
+					double articleScoreRatio = 0;
+					if (user.getUserArticleScore() > 0) {
+						articleScoreRatio = RankAlgorithm.calculateUserArticleScoreRatio(user.getUserArticleScore(), instance);
+					}
+
+					double userTotalScore = RankAlgorithm.calculateUserScore(articlePublishRateRatio, userFollowedByScore,
 							articleScoreRatio);
 					user.setTotalScore(userTotalScore);
 					save(user);
@@ -1127,16 +1162,13 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		user.setGamealoonPoints(updatedGamealoonPoints);
 		user.setNetworkRank(updatedUserNetworkRank);
 	}
-	
-	private int fetchUserLeaderBoardRank(String username)
-	{
-		int rank=0;
+
+	private int fetchUserLeaderBoardRank(String username) {
+		int rank = 0;
 		List<User> sortedByXP = getTopUsers(0);
-		for(int index = 0; index<sortedByXP.size();++index)
-		{
-			if(username.equalsIgnoreCase(sortedByXP.get(index).getUsername()))
-			{
-				rank=index+1;
+		for (int index = 0; index < sortedByXP.size(); ++index) {
+			if (username.equalsIgnoreCase(sortedByXP.get(index).getUsername())) {
+				rank = index + 1;
 				break;
 			}
 		}
@@ -1145,5 +1177,4 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 
 	
 
-	
 }

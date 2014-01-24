@@ -46,6 +46,7 @@ public class User {
 	@Indexed(value = IndexDirection.ASC, name = "usr_scr")
 	private double totalScore;
 	private double userTotalCoolScore;
+	private int emailConfirmToken;
 
 	/**
 	 * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
@@ -584,5 +585,19 @@ public class User {
 	 */
 	public void setNetworkRank(int networkRank) {
 		this.networkRank = networkRank;
+	}
+
+	/**
+	 * @return the emailConfirmToken
+	 */
+	public int getEmailConfirmToken() {
+		return emailConfirmToken;
+	}
+
+	/**
+	 * @param emailConfirmToken the emailConfirmToken to set
+	 */
+	public void setEmailConfirmToken(int emailConfirmToken) {
+		this.emailConfirmToken = emailConfirmToken;
 	}
 }

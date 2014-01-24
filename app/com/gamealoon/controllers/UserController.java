@@ -147,6 +147,11 @@ public class UserController extends Controller {
 		return ok(toJson(response));
 	}
 	
+	public static Result confirmUserEmail(final String username, final String token)
+	{
+		return ok(toJson(userDaoInstance.checkConfirmStatusForUser(username, token)));
+	}
+	
 	/**
 	 * Fetch user stats data i.e awards, XP, levels and so on
 	 * 

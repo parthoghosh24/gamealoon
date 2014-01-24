@@ -193,4 +193,16 @@ public interface UserInterface extends MongoDao<User> {
 	 * @return
 	 */
 	public List<HashMap<String, Object>> fetchTopThreeUsers()throws MalformedURLException ;
+	
+	/**
+	 * Send a confirm mail to user to get user's email confirmed. 
+	 */
+	public void sendConfirmMail(User user);
+	
+	/**
+	 * Check user's confirmation status. Confirmation Token will be checked with database value and if there is match then it is a success.
+	 * 
+	 * @return
+	 */
+	public HashMap<String, String> checkConfirmStatusForUser(String username, String confirmationToken);
 }

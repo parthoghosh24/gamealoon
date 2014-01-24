@@ -14,7 +14,8 @@ object ApplicationBuild extends Build {
     javaCore,
     javaJdbc,
     javaEbean,
-     "com.amazonaws" % "aws-java-sdk" % "1.6.3"
+     "com.amazonaws" % "aws-java-sdk" % "1.6.3",
+     "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(

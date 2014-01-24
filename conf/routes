@@ -45,6 +45,7 @@ GET /user/validateUsername/:username         							com.gamealoon.controllers.Us
 GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
 GET /user/socialData/:username											com.gamealoon.controllers.UserController.getUserSocialData(username:String)
 GET /user/stats/:username												com.gamealoon.controllers.UserController.getUserStats(username:String)
+GET /confirmEmail/:username/:token									com.gamealoon.controllers.UserController.confirmUserEmail(username:String, token:String)
 
 
 # Media								
