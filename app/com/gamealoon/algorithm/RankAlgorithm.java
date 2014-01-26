@@ -281,6 +281,17 @@ public class RankAlgorithm {
          {
         	 finalScore=networkGameScore/totalWeight;
          }
+         else
+         {
+        	 if(networkGameScore>10)
+        	 {
+        		 finalScore= networkGameScore/10.0; 
+        	 }
+        	 else
+        	 {
+        		 finalScore= networkGameScore;
+        	 }
+         }
 		 return finalScore;
 	 }
 	 
