@@ -1005,8 +1005,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 	public void sendConfirmMail(User user) {
 		MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
 		int randToken = new Random().nextInt(Integer.MAX_VALUE)+1;
-		user.setEmailConfirmToken(randToken);
-		save(user);
+		user.setEmailConfirmToken(randToken);		
 		mail.setSubject("Welcome to Gamealoon!");
 		mail.addRecipient(user.getEmail());
 		mail.addFrom("Team Gamealoon <noreply@gamealoon.com>");
@@ -1072,8 +1071,9 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 			newUser.setLevel(0);
 			newUser.setGamealoonPoints(0);
 			newUser.setNetworkRank(GloonNetworkRank.NEW_GLOONIE.getRankValue());
-			save(newUser);
 			sendConfirmMail(newUser);
+			save(newUser);
+			
 
 			// Reactively update all user scores as no of users increase
 			for (User user : getTopUsers(0)) {
