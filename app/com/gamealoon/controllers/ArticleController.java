@@ -2,6 +2,7 @@ package com.gamealoon.controllers;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import com.gamealoon.database.daos.ArticleDAO;
@@ -103,7 +104,12 @@ public class ArticleController extends Controller{
 	{
 		List<HashMap<String, Object>> response = new ArrayList<>();
 		try {
-			response= articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, Long.parseLong(timestamp), mode);
+			long articleTimestamp=Long.parseLong(timestamp);
+			if(-1 == articleTimestamp)
+			{
+				articleTimestamp = new Date().getTime();
+			}
+			response= articleDaoInstance.getNArticlesByCarouselSelectorAndCategory(platform, category, articleTimestamp, mode);
 		} catch (NumberFormatException | MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
