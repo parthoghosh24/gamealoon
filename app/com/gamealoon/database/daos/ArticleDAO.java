@@ -362,10 +362,12 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			article = createOrUpdateArticleInstance(requestData);
 			Logger.debug("ARTICLE     " + article);
 			Logger.debug("ARTICLE STATE " + article.getState());
+			Logger.debug("ARTICLE PUBLISH STATE " + article.getIsPublished());
 			article.setHotness(PostHotness.COLD.getHotnessValue());
 			save(article);
 			if (article != null) {
 				if (Article.PUBLISH == article.getState() && Article.NOT_PUBLISHED == article.getIsPublished()) {
+					int publishState = article.getIsPublished();
 					article.setIsPublished(Article.PUBLISHED);
 					User author = userDaoInstance.findByUsername(article.getAuthor());
 					Logger.debug("User  " + author);
@@ -452,15 +454,18 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					{
 						userDaoInstance.updateUserXP(author, XPTriggerPoints.VIDEO_CREATION);
 					}
-
-					HashMap<String, String> activityMap = new HashMap<>();
-					activityMap.put("id", "");
-					activityMap.put("username", article.getAuthor());
-					activityMap.put("entityId", article.getId().toString());
-					activityMap.put("type", "" + Activity.ACTIVITY_POST_PUBLISH);
-					activityMap.put("visibility", "" + Activity.PUBLIC);
-
-					activityDaoInstance.createOrUpdateActivity(activityMap);
+					
+					if(Article.NOT_PUBLISHED == publishState)
+					{
+						HashMap<String, String> activityMap = new HashMap<>();
+						activityMap.put("id", "");
+						activityMap.put("username", article.getAuthor());
+						activityMap.put("entityId", article.getId().toString());
+						activityMap.put("type", "" + Activity.ACTIVITY_POST_PUBLISH);
+						activityMap.put("visibility", "" + Activity.PUBLIC);
+						activityDaoInstance.createOrUpdateActivity(activityMap);
+					}
+					
 
 				}
 
@@ -854,14 +859,15 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 				if (article.getPublishDate() == null || article.getPublishDate().isEmpty()) {
 					article.setPublishDate(dateTime);
 					article.setTimestamp(Utility.convertFromStringToDate(article.getPublishDate()).getTime());
-					article.setState(Article.PUBLISH);
-
+					article.setState(Article.PUBLISH);					
 				}
+				article.setIsPublished(Article.PUBLISHED);
 
 			}
 			else
 			{
 				article.setState(Article.DRAFT);
+				article.setIsPublished(Article.NOT_PUBLISHED);
 			}
 		} else {
 			article = new Article();
@@ -877,6 +883,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			else
 			{
 				article.setState(Article.DRAFT);
+				
 			}
 		}
 		article.setTitle(articleTitle);
