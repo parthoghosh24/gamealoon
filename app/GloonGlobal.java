@@ -25,7 +25,7 @@ public class GloonGlobal extends GlobalSettings {
 	public void onStart(Application app) {
 		 	
 		 if (Achievement.getAllAchievementCount()==0) {
-				System.out.println("Data getting created.............");				
+				System.out.println("Data getting created for new gamealoon.............");				
 				createAchievements();				
 				createPlatforms();					
 				try {
