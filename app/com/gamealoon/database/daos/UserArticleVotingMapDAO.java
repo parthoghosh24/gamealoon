@@ -63,7 +63,7 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 					
 					articleVotingMap.setCool(UserArticleVotingMap.SET);
 					article.setCoolScore(++coolScore);
-					author.setUserTotalCoolScore(RankAlgorithm.calculateUserTotalCoolScore(author.getUsername(), instance));
+					author.setUserTotalCoolScore(RankAlgorithm.calculateUserTotalCoolScore(author.getUsername(), instance)+1.0);
 					articleVotingMap.setNotCool(UserArticleVotingMap.UNSET);					
 		         	activityMap.put("id", "");
 		         	activityMap.put("username", viewer.getUsername());
@@ -166,7 +166,7 @@ public class UserArticleVotingMapDAO extends GloonDAO<UserArticleVotingMap> impl
 				}
 			}
 			
-			
+			Logger.debug("AUTHOR TOTAL COOL SCORE: "+author.getUserTotalCoolScore());
 		}
 		catch(Exception exception)
 		{
