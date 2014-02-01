@@ -15,7 +15,9 @@ public enum Genre {
 	Casual("Casual"),
 	Puzzle("Puzzle"),
 	Racing("Racing"),			
-	Simulation("Simulation");
+	Simulation("Simulation"),
+	EndlessRunner("Endless Runner"),
+	Platformer("Platformer");
 	
 	private String text;
 	Genre(String text)

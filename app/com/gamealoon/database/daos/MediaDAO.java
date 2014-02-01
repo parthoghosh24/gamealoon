@@ -10,6 +10,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import play.Logger;
+import play.data.DynamicForm;
 import play.mvc.Http.MultipartFormData.FilePart;
 import plugins.S3Plugin;
 
@@ -55,6 +56,44 @@ public class MediaDAO extends GloonDAO<Media> implements MediaInterface {
 		// TODO Auto-generated method stub
 		return gloonDatastore.createQuery(Media.class).filter("parentId", parentId).asList();
 	}
+	
+	@Override
+	public HashMap<String, String> createOrUpdateAdminMedia(DynamicForm adminMediaData) {
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		try
+		{
+			String mediaId=adminMediaData.get("mediaId");
+			String fileName=adminMediaData.get("mediaFilename");
+			String owner=adminMediaData.get("mediaOwner");
+			String immediateOwner=adminMediaData.get("mediaImmediateOwner");
+			String url = adminMediaData.get("mediaUrl");
+			
+			Media media = null;
+			Date time = new Date();
+			if (mediaId.isEmpty() || "none".equalsIgnoreCase(mediaId)) {
+				media = new Media();
+				media.setTimestamp(time.getTime());
+				media.setInsertTime(Utility.convertDateToString(time));
+			} else {
+				media = getById(mediaId);
+				media.setUpdateTime(Utility.convertDateToString(time));
+			}
+			media.setFileName(fileName);
+			media.setMediaType(Media.IMAGE);		
+			media.setUrl(url);
+			media.setOwner(owner);
+			media.setImmediateOwner(immediateOwner);
+			save(media);
+			response.put("status", "success");
+			response.put("mediaId", media.getId().toString());
+		}
+		catch(Exception e)
+		{
+			Logger.error("Error in saving media: "+e.fillInStackTrace());
+		}				
+		return response;
+	}
 
 	@Override
 	public HashMap<String, String> createOrUpdateMedia(String mediaId, FilePart filePart, String username, String mediaOwnerType) {
@@ -72,8 +111,12 @@ public class MediaDAO extends GloonDAO<Media> implements MediaInterface {
 	}
 
 	/**
-	 * Media instance
+	 * Media instance created for user
 	 * 
+	 * @param mediaId
+	 * @param filePart
+	 * @param username
+	 * @param mediaOwnerType
 	 * @return
 	 */
 	private Media createOrUpdateMediaInstance(String mediaId, FilePart filePart, String username, String mediaOwnerType) {
@@ -156,5 +199,7 @@ public class MediaDAO extends GloonDAO<Media> implements MediaInterface {
 		return gloonDatastore.createQuery(Media.class).filter("immediateOwner", userName).order("-insertTime")
 				.filter("timestamp >", timeStamp).asList();
 	}
+
+	
 
 }

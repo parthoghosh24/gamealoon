@@ -354,14 +354,16 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 
 	@Override
 	public HashMap<String, String> createOrUpdateGame(DynamicForm requestData) {
+		
 		HashMap<String, String> response = new HashMap<>();
-		response.put("status", "fail");
+		response.put("status", "fail");				
 		Game game = null;
 		try {
 			game = createOrUpdateGameInstance(requestData);
 			if (game != null) {
 				save(game);
 				response.put("status", "success");
+				Logger.debug("Game successfully created");
 			}
 		} catch (ParseException e) {
 			Logger.error("Something wrong happened " + e.fillInStackTrace());
@@ -493,16 +495,17 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	 */
 	private Game createOrUpdateGameInstance(DynamicForm requestData) throws ParseException {
 		Game game = null;
-		String id = requestData.get("id");
-		String title = requestData.get("title");
-		String description = requestData.get("description");
-		String releaseDate = requestData.get("releaseDate");
-		String publisher = requestData.get("publisher");
-		String developer = requestData.get("developer");
+		String id = requestData.get("gameId");
+		String title = requestData.get("gameTitle");
+		String description = requestData.get("gameDescription");
+		String releaseDate = requestData.get("gameReleaseDate");
+		String publisher = requestData.get("gamePublisher");
+		String developer = requestData.get("gameDeveloper");
 		String gameBoxShot = requestData.get("gameBoxShot");
-		String genre = requestData.get("genre");
-		String platforms = requestData.get("platforms");
-		String rating = requestData.get("rating");
+		String gameCoverImage = requestData.get("gameCoverImage");
+		String genre = requestData.get("gameGenre");
+		String platforms = requestData.get("gamePlatforms");
+		String rating = requestData.get("gameRating");
 		Date time = new Date();
 
 		if (id.isEmpty()) {
@@ -522,14 +525,15 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 			game.setReleaseTimeStamp(Long.MAX_VALUE);
 		} else {
 			game.setReleaseDate(releaseDate);
-			game.setReleaseTimeStamp(Utility.convertFromStringToDate(releaseDate).getTime());
+			game.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2(releaseDate).getTime());
 		}
 		game.setPublisher(publisher);
 		game.setDeveloper(developer);
 		game.setGameBoxShot(gameBoxShot);
+		game.setCoverImage(gameCoverImage);
 		game.setGenre(Genre.valueOf(genre));
 		game.setRating(rating);
-		if (Utility.date1BeforeDate2(Utility.convertFromStringToDate(game.getReleaseDate()), new Date())) {
+		if (Utility.date1BeforeDate2(Utility.convertFromStringToDateFormat2(game.getReleaseDate()), new Date())) {
 			game.setGameReleaseStatus(Game.RELEASED);
 		} else {
 			game.setGameReleaseStatus(Game.NOT_RELEASED);

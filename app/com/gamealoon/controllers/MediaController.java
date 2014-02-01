@@ -4,10 +4,12 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.gamealoon.database.daos.MediaDAO;
+import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import static play.data.Form.form;
 import static play.libs.Json.toJson;
 
 public class MediaController extends Controller{
@@ -49,6 +51,14 @@ public class MediaController extends Controller{
 		}
 		return ok(toJson(response));
 	}
+	
+	public static Result createOrUpdateAdminMedia()
+	{
+		DynamicForm adminMediaData = form().bindFromRequest();
+		HashMap<String,String> response = mediaDAOInstance.createOrUpdateAdminMedia(adminMediaData);
+		return ok(toJson(response));
+	}
+	
 	/**
 	 * Fetch user images from its uploads dir
 	 * 

@@ -10,6 +10,7 @@ GET  /platform/:platform/:category								com.gamealoon.controllers.PlatformCont
 
 GET  /admin/                                   					com.gamealoon.controllers.AdminController.getAdminData()
 POST /admin/game/save											com.gamealoon.controllers.GameController.createOrUpdateGame()
+POST /admin/media/save											com.gamealoon.controllers.MediaController.createOrUpdateAdminMedia()
 GET /admin/games/:timestamp                                   	com.gamealoon.controllers.GameController.getNGames(timestamp:String)
 POST /admin/achievement/save									com.gamealoon.controllers.AchievementController.createOrUpdateAchievement()
 GET /admin/achievements/:timestamp                        		com.gamealoon.controllers.AchievementController.getNAchievements(timestamp:String)
