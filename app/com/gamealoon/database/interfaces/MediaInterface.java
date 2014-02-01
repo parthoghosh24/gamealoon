@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import play.data.DynamicForm;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 import com.gamealoon.models.Media;
@@ -33,6 +34,14 @@ public interface MediaInterface {
 	 * @return
 	 */
 	public List<Media> findAllByParent(String parentId);
+	
+	/**
+	 * Create or update Admin media, ie., games, achievements and platforms. This API can be modified in future
+	 * 
+	 * @param adminMediaData
+	 * @return
+	 */
+	public HashMap<String, String> createOrUpdateAdminMedia(DynamicForm adminMediaData);
 	
 	/**
 	 * Create or update Media based on the parent
