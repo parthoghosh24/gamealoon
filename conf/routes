@@ -46,7 +46,9 @@ GET /user/validateUsername/:username         							com.gamealoon.controllers.Us
 GET /users															    com.gamealoon.controllers.UserController.getAllUsers()
 GET /user/socialData/:username											com.gamealoon.controllers.UserController.getUserSocialData(username:String)
 GET /user/stats/:username												com.gamealoon.controllers.UserController.getUserStats(username:String)
-GET /confirmEmail/:username/:token									com.gamealoon.controllers.UserController.confirmUserEmail(username:String, token:String)
+GET /confirmEmail/:username/:token									    com.gamealoon.controllers.UserController.confirmUserEmail(username:String, token:String)
+POST /user/confirmMailForResetPassword									com.gamealoon.controllers.UserController.confirmAndSendMailForPasswordReset()
+POST /user/resetPassword												com.gamealoon.controllers.UserController.checkAndUpdatePassword()
 
 
 # Media								

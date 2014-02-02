@@ -47,6 +47,7 @@ public class User {
 	private double totalScore;
 	private double userTotalCoolScore;
 	private int emailConfirmToken;
+	private int passwordResetToken;
 
 	/**
 	 * XP is used to calculate user level. Also, users will be ranked on the basis of total XP earned.
@@ -599,5 +600,19 @@ public class User {
 	 */
 	public void setEmailConfirmToken(int emailConfirmToken) {
 		this.emailConfirmToken = emailConfirmToken;
+	}
+
+	/**
+	 * @return the passwordResetToken
+	 */
+	public int getPasswordResetToken() {
+		return passwordResetToken;
+	}
+
+	/**
+	 * @param passwordResetToken the passwordResetToken to set
+	 */
+	public void setPasswordResetToken(int passwordResetToken) {
+		this.passwordResetToken = passwordResetToken;
 	}
 }

@@ -205,4 +205,21 @@ public interface UserInterface extends MongoDao<User> {
 	 * @return
 	 */
 	public HashMap<String, String> checkConfirmStatusForUser(String username, String confirmationToken);
+	
+	/**
+	 * Confirm user exist against provide emailId and if yes, send mail for password confirmation
+	 * 
+	 * @param emailId
+	 * @return
+	 */
+	public HashMap<String, String> confirmAndSendMailForPasswordReset(String emailId);
+	
+	/**
+	 * Update password after checking user exists and the passwordResetToken matches
+	 * 
+	 * @param emailId
+	 * @param token
+	 * @return
+	 */
+	public HashMap<String, String> checkAndUpdatePassword(String emailId, String token, String password);
 }

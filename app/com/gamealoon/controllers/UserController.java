@@ -152,6 +152,20 @@ public class UserController extends Controller {
 		return ok(toJson(userDaoInstance.checkConfirmStatusForUser(username, token)));
 	}
 	
+	public static Result confirmAndSendMailForPasswordReset()
+	{
+		final DynamicForm requestData = form().bindFromRequest();
+		return ok(toJson(userDaoInstance.confirmAndSendMailForPasswordReset(requestData.get("emailId"))));
+	}
+	
+	public static Result checkAndUpdatePassword()
+	{
+		final DynamicForm requestData = form().bindFromRequest();
+		String emailId=requestData.get("emailId");
+		String token=requestData.get("token");
+		String password=requestData.get("password");
+		return ok(toJson(userDaoInstance.checkAndUpdatePassword(emailId, token, password)));
+	}
 	/**
 	 * Fetch user stats data i.e awards, XP, levels and so on
 	 * 

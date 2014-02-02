@@ -1014,6 +1014,57 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 				+ ",</p><p>Gamealoon welcomes you to the fun gameocratic world of video gaming. Tell the world that how much passionate you are about video gaming and also follow other gloonies to find out what they think about gaming. And guess what, doing so will also earn you XP, level up and fetch a rank in leaderboards. That is not all, you don't know, with all those accumulated points, you might be able to unlock a gift or two for you in future. So what are you waiting for, keep gaming and bragging about your gaming passion on Gamealoon. Please click or copy & paste to your browser's URL bar the following link to confirm your email and happy gaming." 
 				+"<p><a target='_blank' href='http://www.gamealoon.com/confirmuser/"+user.getUsername()+"/"+user.getEmailConfirmToken()+"'>http://www.gamealoon.com/confirmuser/"+user.getUsername()+"/"+user.getEmailConfirmToken()+"</a></p></p><p>Thanks and Regards,<br> Team Gamealoon<br><a target='_blank' href='http://www.gamealoon.com'>www.gamealoon.com</a></p></html>");
 	}
+	
+	@Override
+	public HashMap<String, String> confirmAndSendMailForPasswordReset(String emailId) {
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		User user = findByEmail(emailId);
+		if(user!= null)
+		{			
+			int randToken = new Random().nextInt(Integer.MAX_VALUE)+1;
+			MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();			
+			user.setPasswordResetToken(randToken);		
+			save(user);
+			mail.setSubject("Request for Gamealoon password change");
+			mail.addRecipient(user.getEmail());
+			mail.addFrom("Team Gamealoon <noreply@gamealoon.com>");
+			mail.sendHtml("<html><p>Hi "
+					+ user.getUsername()
+					+ ",</p><p>You are receiving this mail because you have triggered a request for password reset. If this request has not been triggered by you, then you can ignore this mail. Otherwise, please click or copy & paste to your browser's URL bar the following link to reset your password and happy gaming." 
+					+"<p><a target='_blank' href='http://www.gamealoon.com/user/initResetPassword/"+user.getEmail()+"/"+user.getPasswordResetToken()+"'>http://www.gamealoon.com/user/initResetPassword/"+user.getEmail()+"/"+user.getPasswordResetToken()+"</a></p></p><p>Thanks and Regards,<br> Team Gamealoon<br><a target='_blank' href='http://www.gamealoon.com'>www.gamealoon.com</a></p></html>");
+			response.put("status", "success");
+		}
+		return response;
+	}
+	
+	@Override
+	public HashMap<String, String> checkAndUpdatePassword(String emailId, String token, String password) {
+		HashMap<String, String> response = new HashMap<>();
+		response.put("status", "fail");
+		User user = findByEmail(emailId);
+		int passwordToken = Integer.parseInt(token);
+		if(user!=null && -1!=user.getPasswordResetToken() && passwordToken == user.getPasswordResetToken())
+		{
+			HashMap<String, String> securePasswordMap= new HashMap<>();
+			try {
+				securePasswordMap = SecurePassword.createHash(password);
+				user.setPasswordHash(securePasswordMap.get("hashHex"));
+				user.setPasswordSalt(securePasswordMap.get("saltHex"));
+				user.setPasswordResetToken(-1);
+				save(user);
+				Logger.debug("Password successfully changed");
+				response.put("status", "success");
+			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {				
+				e.printStackTrace();
+				Logger.error("Error in saving password: "+e.fillInStackTrace());
+			}
+			
+		}
+		return response;
+	}
+	
+	
 
 	/**
 	 * Register user. simply create new user object and feed username, password and email
@@ -1192,6 +1243,10 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 		}
 		return rank;
 	}
+
+	
+
+	
 
 	
 
