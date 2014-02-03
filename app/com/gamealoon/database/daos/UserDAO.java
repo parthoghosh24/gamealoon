@@ -254,7 +254,7 @@ public class UserDAO extends GloonDAO<User> implements UserInterface {
 	@Override
 	public User findByEmail(String email) {
 
-		return gloonDatastore.find(User.class, "email", email).get();
+		return gloonDatastore.createQuery(User.class).filter("email", email).filter("emailConfirmed", User.EMAIL_CONFIRMED).get();
 	}
 
 	@Override
