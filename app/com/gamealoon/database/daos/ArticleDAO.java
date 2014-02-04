@@ -425,7 +425,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 									gameDaoInstance.save(fetchedGame);
 								}
 								article.setGame(gameId);
-								save(article);
+								
 							}
 						}
 						userDaoInstance.updateUserXP(author, XPTriggerPoints.REVIEW_CREATION);
@@ -454,7 +454,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					{
 						userDaoInstance.updateUserXP(author, XPTriggerPoints.VIDEO_CREATION);
 					}
-					
+					save(article);
 					if(Article.NOT_PUBLISHED == publishState)
 					{
 						HashMap<String, String> activityMap = new HashMap<>();
