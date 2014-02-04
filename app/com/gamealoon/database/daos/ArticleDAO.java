@@ -365,11 +365,12 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 			Logger.debug("ARTICLE PUBLISH STATE " + article.getIsPublished());
 			article.setHotness(PostHotness.COLD.getHotnessValue());
 			save(article);
+			User author = userDaoInstance.findByUsername(article.getAuthor());
 			if (article != null) {
 				if (Article.PUBLISH == article.getState() && Article.NOT_PUBLISHED == article.getIsPublished()) {
 					int publishState = article.getIsPublished();
 					article.setIsPublished(Article.PUBLISHED);
-					User author = userDaoInstance.findByUsername(article.getAuthor());
+					
 					Logger.debug("User  " + author);
 					List<Article> allAuthorArticles = findAllPublishedArticlesByUser(author.getUsername());
 					Logger.debug("allAuthorArticles " + allAuthorArticles);
@@ -419,8 +420,11 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 									Double refinedGameScore = gameScore / 10.0;
 									Double userScoreRatio = RankAlgorithm.calculateUserScoreRatio(author.getTotalScore(), instance);
 									Logger.debug("USER SCORE RATIO " + userScoreRatio);
-									scoreMapDAO.createOrUpdateScoreMap("", gameId, author.getUsername(), refinedGameScore,
-											userScoreRatio);
+									UserGameScoreMap scoreMap = scoreMapDAO.findByUserAndGame(author.getUsername(),gameId);
+									scoreMap.setGameScore(refinedGameScore);
+									scoreMap.setNetworkUserWeight(userScoreRatio);
+									scoreMap.setUpdateTime(article.getUpdateTime());
+									scoreMapDAO.save(scoreMap);
 									fetchedGame.setTotalScore(RankAlgorithm.calculateNetworkGameScore(gameId.toString(), instance));
 									gameDaoInstance.save(fetchedGame);
 								}
@@ -467,6 +471,30 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 					}
 					
 
+				}
+				else
+				{
+					if (Category.Review.equals(article.getCategory())) {						
+						String gameId = article.getGame();
+						int gameScore = Integer.parseInt(requestData.get("gameScore"));
+						Logger.debug("SCORE recieved: " + gameScore);
+						if (!StringUtil.isNullOrEmpty(gameId)) {
+							Game fetchedGame = gloonDatastore.get(Game.class, new ObjectId(gameId));
+							if (fetchedGame != null) {
+								if (article.getCategory().equals(Category.Review)) {
+									Double refinedGameScore = gameScore / 10.0;
+									Double userScoreRatio = RankAlgorithm.calculateUserScoreRatio(author.getTotalScore(), instance);
+									Logger.debug("USER SCORE RATIO " + userScoreRatio);
+									scoreMapDAO.createOrUpdateScoreMap("", gameId, author.getUsername(), refinedGameScore,
+											userScoreRatio);
+									fetchedGame.setTotalScore(RankAlgorithm.calculateNetworkGameScore(gameId.toString(), instance));
+									gameDaoInstance.save(fetchedGame);
+								}
+								article.setGame(gameId);
+								save(article);
+							}
+						}					
+					}
 				}
 
 				response.put("status", "success");
@@ -896,7 +924,6 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 
 
 		if ("Review".equalsIgnoreCase(category))
-			;
 		{
 			article.setPlayedOnPlatform(reviewPlayedOnPlatform);
 			article.setSweets(sweetPoints);
