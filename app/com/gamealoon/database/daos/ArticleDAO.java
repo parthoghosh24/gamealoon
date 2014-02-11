@@ -421,10 +421,17 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 									Double userScoreRatio = RankAlgorithm.calculateUserScoreRatio(author.getTotalScore(), instance);
 									Logger.debug("USER SCORE RATIO " + userScoreRatio);
 									UserGameScoreMap scoreMap = scoreMapDAO.findByUserAndGame(author.getUsername(),gameId);
-									scoreMap.setGameScore(refinedGameScore);
-									scoreMap.setNetworkUserWeight(userScoreRatio);
-									scoreMap.setUpdateTime(article.getUpdateTime());
-									scoreMapDAO.save(scoreMap);
+									if(scoreMap!=null)
+									{
+										scoreMap.setGameScore(refinedGameScore);
+										scoreMap.setNetworkUserWeight(userScoreRatio);
+										scoreMap.setUpdateTime(article.getUpdateTime());
+										scoreMapDAO.save(scoreMap);
+									}
+									else
+									{
+										scoreMapDAO.createOrUpdateScoreMap("", gameId, author.getUsername(), refinedGameScore,userScoreRatio);
+									}
 									fetchedGame.setTotalScore(RankAlgorithm.calculateNetworkGameScore(gameId.toString(), instance));
 									gameDaoInstance.save(fetchedGame);
 								}
