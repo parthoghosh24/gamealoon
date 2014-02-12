@@ -37,11 +37,14 @@ import com.mongodb.Mongo;
 public class GameDAO extends GloonDAO<Game> implements GameInterface {
 
 	private static final GameDAO DATA_ACCESS_LAYER = new GameDAO();
-	private static final ArticleDAO articleDAOinstance = ArticleDAO.instantiateDAO();
+	private static final ArticleDAO articleDAOinstance = ArticleDAO
+			.instantiateDAO();
 	private static final UserDAO userDAOinstance = UserDAO.instantiateDAO();
 	private static final MediaDAO mediaDAOinstance = MediaDAO.instantiateDAO();
-	private static final ActivityDAO activityDAOinstance = ActivityDAO.instantiateDAO();
-	private static final PlatformDAO platformDAOinstance = PlatformDAO.instantiateDAO();
+	private static final ActivityDAO activityDAOinstance = ActivityDAO
+			.instantiateDAO();
+	private static final PlatformDAO platformDAOinstance = PlatformDAO
+			.instantiateDAO();
 	private Datastore gloonDatastore = null;
 
 	private GameDAO() {
@@ -59,7 +62,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	}
 
 	@Override
-	public List<HashMap<String, Object>> getTopNGames(int limit, String platform) throws MalformedURLException {
+	public List<HashMap<String, Object>> getTopNGames(int limit, String platform)
+			throws MalformedURLException {
 		List<HashMap<String, Object>> topGameMaps = new ArrayList<>();
 		List<Game> topGames = getTopGames(limit, platform);
 		if (topGames.size() > 0) {
@@ -70,13 +74,17 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				gameMap.put("gameReleaseDate", game.getReleaseDate());
 				String gameBoxShot = game.getGameBoxShot();
 				if (gameBoxShot.isEmpty()) {
-					gameMap.put("gameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
+					gameMap.put("gameBoxShot",
+							AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+									+ "/boxShot.png");
 				} else {
 					Media media = mediaDAOinstance.getById(gameBoxShot);
 					gameMap.put("gameBoxShot", media.getUrl());
 				}
 				gameMap.put("gameGenere", game.getGenre().toString().toString());
-				gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
+				gameMap.put("gameEncodedUrl",
+						Utility.encodeForUrl(game.getTitle()) + "-"
+								+ game.getId().toString());
 				topGameMaps.add(gameMap);
 			}
 		}
@@ -85,7 +93,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	}
 
 	@Override
-	public List<HashMap<String, Object>> getRecentNGames(int limit, String platform) throws MalformedURLException {
+	public List<HashMap<String, Object>> getRecentNGames(int limit,
+			String platform) throws MalformedURLException {
 		List<HashMap<String, Object>> recentGameMaps = new ArrayList<>();
 		List<Game> recentGames = getRecentGames(limit, platform);
 		if (recentGames.size() > 0) {
@@ -96,13 +105,17 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				gameMap.put("gameReleaseDate", game.getReleaseDate());
 				String gameBoxShot = game.getGameBoxShot();
 				if (gameBoxShot.isEmpty()) {
-					gameMap.put("gameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
+					gameMap.put("gameBoxShot",
+							AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+									+ "/boxShot.png");
 				} else {
 					Media media = mediaDAOinstance.getById(gameBoxShot);
 					gameMap.put("gameBoxShot", media.getUrl());
 				}
 				gameMap.put("gameGenere", game.getGenre().toString());
-				gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
+				gameMap.put("gameEncodedUrl",
+						Utility.encodeForUrl(game.getTitle()) + "-"
+								+ game.getId().toString());
 				recentGameMaps.add(gameMap);
 			}
 		}
@@ -120,7 +133,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	}
 
 	@Override
-	public HashMap<String, Object> getById(String urlOrid, String username) throws MalformedURLException {
+	public HashMap<String, Object> getById(String urlOrid, String username)
+			throws MalformedURLException {
 		Mongo instance = getDatabaseInstance().getMongoInstance();
 		HashMap<String, Object> gameMap = new HashMap<>();
 		Game game = getGameById(urlOrid);
@@ -134,27 +148,34 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 			gameMap.put("gameRating", game.getRating());
 			String gameBoxShot = game.getGameBoxShot();
 			if (gameBoxShot.isEmpty()) {
-				gameMap.put("gameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
+				gameMap.put("gameBoxShot",
+						AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+								+ "/boxShot.png");
 			} else {
 				Media media = mediaDAOinstance.getById(gameBoxShot);
 				gameMap.put("gameBoxShot", media.getUrl());
 			}
-			
+
 			String gameCoverShot = game.getCoverImage();
 			if (gameCoverShot.isEmpty()) {
-				gameMap.put("gameCoverShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/featuredBg.png");
+				gameMap.put("gameCoverShot",
+						AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+								+ "/featuredBg.png");
 			} else {
 				Media media = mediaDAOinstance.getById(gameCoverShot);
 				gameMap.put("gameCoverShot", media.getUrl());
 			}
 
 			gameMap.put("gameGenere", game.getGenre().toString());
-			gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
+			gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle())
+					+ "-" + game.getId().toString());
 			Double gameScore = 0.0;
 			if (gloonDatastore.getCount(UserGameScoreMap.class) > 0) {
-				gameScore = RankAlgorithm.calculateNetworkGameScore(game.getId().toString(), instance);
-				Logger.debug("Game Score: "+gameScore);
-				Logger.debug("Game score compare: " + gameScore.compareTo(game.getTotalScore()));
+				gameScore = RankAlgorithm.calculateNetworkGameScore(game
+						.getId().toString(), instance);
+				Logger.debug("Game Score: " + gameScore);
+				Logger.debug("Game score compare: "
+						+ gameScore.compareTo(game.getTotalScore()));
 				if (gameScore.compareTo(game.getTotalScore()) != 0) {
 					game.setTotalScore(gameScore);
 					save(game);
@@ -162,11 +183,16 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 
 			}
 			gameMap.put("gameScore", gameScore);
-			gameMap.put("gameNetworkScale", Game.getGameNetworkRating(gameScore));
-			gameMap.put("gameActivities", activityDAOinstance.getActivitiesForGame(game));
-			gameMap.put("gameCarousel", articleDAOinstance.getAllArticlesForGameCarousel(game.getId().toString()));
+			gameMap.put("gameNetworkScale",
+					Game.getGameNetworkRating(gameScore));
+			gameMap.put("gameActivities",
+					activityDAOinstance.getActivitiesForGame(game));
+			gameMap.put("gameCarousel", articleDAOinstance
+					.getAllArticlesForGameCarousel(game.getId().toString()));
 			try {
-				if (Utility.date1BeforeDate2(Utility.convertFromStringToDateFormat2(game.getReleaseDate()), new Date())) {
+				if (Utility.date1BeforeDate2(Utility
+						.convertFromStringToDateFormat2(game.getReleaseDate()),
+						new Date())) {
 					game.setGameReleaseStatus(Game.RELEASED);
 				} else {
 					game.setGameReleaseStatus(Game.NOT_RELEASED);
@@ -180,7 +206,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 			List<HashMap<String, Object>> platformList = new ArrayList<>();
 			for (String gamePlatform : game.getPlatforms()) {
 				HashMap<String, Object> platformMap = new HashMap<>();
-				Platform platform = platformDAOinstance.findByShortTitle(gamePlatform);
+				Platform platform = platformDAOinstance
+						.findByShortTitle(gamePlatform);
 				platformMap.put("platformTitle", platform.getTitle());
 				platformMap.put("platformShortTitle", platform.getShortTitle());
 				platformList.add(platformMap);
@@ -190,36 +217,46 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 			List<HashMap<String, Object>> interestedUserList = new ArrayList<>();
 			ArrayList<InterestedUser> interestedUsers = game.getInterestedIn();
 			if (interestedUsers != null) {
-				Collections.sort(interestedUsers, new Comparator<InterestedUser>() {
+				Collections.sort(interestedUsers,
+						new Comparator<InterestedUser>() {
 
-					@Override
-					public int compare(InterestedUser instance1, InterestedUser instance2) {
-						return instance2.getTimestamp().compareTo(instance1.getTimestamp());
-					}
+							@Override
+							public int compare(InterestedUser instance1,
+									InterestedUser instance2) {
+								return instance2.getTimestamp().compareTo(
+										instance1.getTimestamp());
+							}
 
-				});
+						});
 				if (interestedUsers.size() > 10) {
-					interestedUsers = (ArrayList<InterestedUser>) interestedUsers.subList(0, 10);
+					interestedUsers = (ArrayList<InterestedUser>) interestedUsers
+							.subList(0, 10);
 				}
 				for (InterestedUser interestedUser : interestedUsers) {
 					HashMap<String, Object> interestedInUserMap = new HashMap<>();
-					User user = userDAOinstance.findByUsername(interestedUser.getUserName());
-					interestedInUserMap.put("interestedUserUserName", user.getUsername());
+					User user = userDAOinstance.findByUsername(interestedUser
+							.getUserName());
+					interestedInUserMap.put("interestedUserUserName",
+							user.getUsername());
 					String avatarPath = user.getAvatar();
 					if (avatarPath.isEmpty()) {
-						interestedInUserMap.put("interestedAvatarPath", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/avatar.png");
+						interestedInUserMap.put("interestedAvatarPath",
+								AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+										+ "/avatar.png");
 					} else {
 						Media media = mediaDAOinstance.getById(avatarPath);
-						interestedInUserMap.put("interestedAvatarPath", media.getUrl());
+						interestedInUserMap.put("interestedAvatarPath",
+								media.getUrl());
 					}
 					interestedUserList.add(interestedInUserMap);
 				}
 			}
 
-			gameMap.put("gameInterestedUsers", interestedUserList);			
-			
+			gameMap.put("gameInterestedUsers", interestedUserList);
 
-			List<Article> allPublishedArticles = articleDAOinstance.findAllPublishedArticlesByGame(game.getId().toString(), "all");
+			List<Article> allPublishedArticles = articleDAOinstance
+					.findAllPublishedArticlesByGame(game.getId().toString(),
+							"all");
 			List<String> playedTheGame = new ArrayList<>();
 			List<String> scoredTheGame = new ArrayList<>();
 			for (Article article : allPublishedArticles) {
@@ -244,54 +281,62 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 			for (String userWhoScoredGame : scoredTheGame) {
 				HashMap<String, Object> userWhoScoredGameMap = new HashMap<>();
 				User user = userDAOinstance.findByUsername(userWhoScoredGame);
-				userWhoScoredGameMap.put("userWhoScoredGameUserName", user.getUsername());
-				userWhoScoredGameMap.put("userWhoScoredGameUserAvatar", user.getAvatar());
+				userWhoScoredGameMap.put("userWhoScoredGameUserName",
+						user.getUsername());
+				userWhoScoredGameMap.put("userWhoScoredGameUserAvatar",
+						user.getAvatar());
 				userWhoScoredGameList.add(userWhoScoredGameMap);
 			}
-			gameMap.put("usersWhoScoredGame", userWhoScoredGameList);			
+			gameMap.put("usersWhoScoredGame", userWhoScoredGameList);
 
-			List<HashMap<String, Object>> gameArticleList = articleDAOinstance.getNArticlesByCarouselSelectorAndCategory(game.getId()
-					.toString(), "all", new Date().getTime(), Article.GAME);
+			List<HashMap<String, Object>> gameArticleList = articleDAOinstance
+					.getNArticlesByCarouselSelectorAndCategory(game.getId()
+							.toString(), "all", new Date().getTime(),
+							Article.GAME);
 			Logger.debug("game article list size " + gameArticleList.size());
-			gameMap.put("gameArticles", gameArticleList);			
-			
-			long totalArticlesPublishedCount = Article.allPublishedArticleCount();
-			double articlesPublishedRatio=0.0;
-			if(totalArticlesPublishedCount>0)
-			{
-				Logger.debug("gameArticleList.size(): "+gameArticleList.size());
-				Logger.debug("totalArticlesPublishedCount: "+totalArticlesPublishedCount);
-				articlesPublishedRatio= (1.0*gameArticleList.size()/totalArticlesPublishedCount)*100.0;
-				Logger.debug("articlesPublishedRatio: "+articlesPublishedRatio);
+			gameMap.put("gameArticles", gameArticleList);
+
+			long totalArticlesPublishedCount = Article
+					.allPublishedArticleCount();
+			double articlesPublishedRatio = 0.0;
+			if (totalArticlesPublishedCount > 0) {
+				Logger.debug("gameArticleList.size(): "
+						+ gameArticleList.size());
+				Logger.debug("totalArticlesPublishedCount: "
+						+ totalArticlesPublishedCount);
+				articlesPublishedRatio = (1.0 * gameArticleList.size() / totalArticlesPublishedCount) * 100.0;
+				Logger.debug("articlesPublishedRatio: "
+						+ articlesPublishedRatio);
 			}
-			
-			gameMap.put("gameArticlesPublishedRatio", new DecimalFormat("###.#").format(articlesPublishedRatio));
-			
-			long userCount=userDAOinstance.count();
-			
-			double interestedUsersRatio=0.0;
-			double totalUsersPlayedRatio=0.0;
-			double totalUsersScoredRatio=0.0;
-			
-			if(userCount>0)
-			{				
-				interestedUsersRatio=(1.0*interestedUserList.size()/userCount)*100.0;
-				totalUsersPlayedRatio = (1.0*userWhoScoredGameList.size()/userCount)*100.0;
-				totalUsersScoredRatio = (1.0*userWhoScoredGameList.size()/userCount)*100.0;
+
+			gameMap.put("gameArticlesPublishedRatio",
+					new DecimalFormat("###.#").format(articlesPublishedRatio));
+
+			long userCount = userDAOinstance.count();
+
+			double interestedUsersRatio = 0.0;
+			double totalUsersPlayedRatio = 0.0;
+			double totalUsersScoredRatio = 0.0;
+
+			if (userCount > 0) {
+				interestedUsersRatio = (1.0 * interestedUserList.size() / userCount) * 100.0;
+				totalUsersPlayedRatio = (1.0 * userWhoScoredGameList.size() / userCount) * 100.0;
+				totalUsersScoredRatio = (1.0 * userWhoScoredGameList.size() / userCount) * 100.0;
 			}
-			
-			
-			gameMap.put("gameInterestedUsersRatio", new DecimalFormat("###.#").format(interestedUsersRatio));
-			
-			
-			gameMap.put("gameTotalUsersPlayedRatio", new DecimalFormat("###.#").format(totalUsersPlayedRatio));
-			
-			
-			gameMap.put("gameTotalUsersScoredRatio", new DecimalFormat("###.#").format(totalUsersScoredRatio));
-			
+
+			gameMap.put("gameInterestedUsersRatio",
+					new DecimalFormat("###.#").format(interestedUsersRatio));
+
+			gameMap.put("gameTotalUsersPlayedRatio",
+					new DecimalFormat("###.#").format(totalUsersPlayedRatio));
+
+			gameMap.put("gameTotalUsersScoredRatio",
+					new DecimalFormat("###.#").format(totalUsersScoredRatio));
+
 			gameMap.put("totalUsersWhoScoredGame", userWhoScoredGameList.size());
-			
-			if (checkUserFollowingGameOrNot(userDAOinstance.findByUsername(username), game)) {
+
+			if (checkUserFollowingGameOrNot(
+					userDAOinstance.findByUsername(username), game)) {
 				gameMap.put("isInterestedIn", 1);
 			} else {
 				gameMap.put("isInterestedIn", 0);
@@ -301,10 +346,12 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	}
 
 	@Override
-	public ArrayList<HashMap<String, Object>> findAllByTerm(String term) throws MalformedURLException {
+	public ArrayList<HashMap<String, Object>> findAllByTerm(String term)
+			throws MalformedURLException {
 		ArrayList<HashMap<String, Object>> gameMaps = new ArrayList<>();
 		Pattern titleRegex = Pattern.compile(term, Pattern.CASE_INSENSITIVE);
-		List<Game> games = gloonDatastore.createQuery(Game.class).filter("title", titleRegex).asList();
+		List<Game> games = gloonDatastore.createQuery(Game.class)
+				.filter("title", titleRegex).asList();
 		if (games.size() > 0) {
 			for (Game game : games) {
 				Logger.debug("Game: " + game);
@@ -315,7 +362,9 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				gameMap.put("gameGenre", game.getGenre().toString());
 				String gameBoxShot = game.getGameBoxShot();
 				if (gameBoxShot.isEmpty()) {
-					gameMap.put("gameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
+					gameMap.put("gameBoxShot",
+							AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+									+ "/boxShot.png");
 				} else {
 					Media media = mediaDAOinstance.getById(gameBoxShot);
 					gameMap.put("gameBoxShot", media.getUrl());
@@ -323,9 +372,11 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				List<HashMap<String, Object>> platformList = new ArrayList<>();
 				for (String gamePlatform : game.getPlatforms()) {
 					HashMap<String, Object> platformMap = new HashMap<>();
-					Platform platform = platformDAOinstance.findByShortTitle(gamePlatform);
+					Platform platform = platformDAOinstance
+							.findByShortTitle(gamePlatform);
 					platformMap.put("platformTitle", platform.getTitle());
-					platformMap.put("platformShortTitle", platform.getShortTitle());
+					platformMap.put("platformShortTitle",
+							platform.getShortTitle());
 					platformList.add(platformMap);
 				}
 				gameMap.put("gamePlatforms", platformList);
@@ -344,19 +395,21 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	public Game getGameById(String urlOrid) {
 		Logger.debug("UrlORId: " + urlOrid);
 		if (!urlOrid.contains("-")) {
-			return gloonDatastore.createQuery(Game.class).filter("_id", new ObjectId(urlOrid)).get();
+			return gloonDatastore.createQuery(Game.class)
+					.filter("_id", new ObjectId(urlOrid)).get();
 		} else {
 			ObjectId _id = Utility.fetchIdFromTitle(urlOrid);
-			return gloonDatastore.createQuery(Game.class).filter("_id", _id).get();
+			return gloonDatastore.createQuery(Game.class).filter("_id", _id)
+					.get();
 		}
 
 	}
 
 	@Override
 	public HashMap<String, String> createOrUpdateGame(DynamicForm requestData) {
-		
+
 		HashMap<String, String> response = new HashMap<>();
-		response.put("status", "fail");				
+		response.put("status", "fail");
 		Game game = null;
 		try {
 			game = createOrUpdateGameInstance(requestData);
@@ -374,7 +427,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	}
 
 	@Override
-	public List<HashMap<String, Object>> getNGames(int limit, long timeStamp, String platform) throws MalformedURLException {
+	public List<HashMap<String, Object>> getNGames(int limit, long timeStamp,
+			String platform) throws MalformedURLException {
 		List<HashMap<String, Object>> nGameMaps = new ArrayList<>();
 		List<Game> recentGames = getNGames(limit, platform, timeStamp);
 		if (recentGames.size() > 0) {
@@ -392,7 +446,9 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				gameMap.put("gameDeveloper", game.getDeveloper());
 				String gameBoxShot = game.getGameBoxShot();
 				if (gameBoxShot.isEmpty()) {
-					gameMap.put("gameBoxShot", AppConstants.APP_IMAGE_DEFAULT_URL_PATH + "/boxShot.png");
+					gameMap.put("gameBoxShot",
+							AppConstants.APP_IMAGE_DEFAULT_URL_PATH
+									+ "/boxShot.png");
 				} else {
 					Media media = mediaDAOinstance.getById(gameBoxShot);
 					gameMap.put("gameBoxShot", media.getUrl());
@@ -400,7 +456,9 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 				}
 				gameMap.put("gameRating", game.getRating());
 				gameMap.put("gameGenre", game.getGenre().toString());
-				gameMap.put("gameEncodedUrl", Utility.encodeForUrl(game.getTitle()) + "-" + game.getId().toString());
+				gameMap.put("gameEncodedUrl",
+						Utility.encodeForUrl(game.getTitle()) + "-"
+								+ game.getId().toString());
 				gameMap.put("gamePlatforms", game.getPlatforms());
 				nGameMaps.add(gameMap);
 			}
@@ -422,17 +480,22 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	private List<Game> getRecentGames(int limit, String platform) {
 		if (limit > 0) {
 			if ("all".equalsIgnoreCase(platform)) {
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-releaseTimeStamp").asList();
+				return gloonDatastore.createQuery(Game.class).limit(limit)
+						.order("-releaseTimeStamp").asList();
 			} else {
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-releaseTimeStamp").filter("platforms", platform)
-						.asList();
+				return gloonDatastore.createQuery(Game.class).limit(limit)
+						.order("-releaseTimeStamp")
+						.filter("platforms", platform).asList();
 			}
 
 		} else {
 			if ("all".equalsIgnoreCase(platform)) {
-				return gloonDatastore.createQuery(Game.class).order("-releaseTimeStamp").asList();
+				return gloonDatastore.createQuery(Game.class)
+						.order("-releaseTimeStamp").asList();
 			} else {
-				return gloonDatastore.createQuery(Game.class).order("-releaseTimeStamp").filter("platforms", platform).asList();
+				return gloonDatastore.createQuery(Game.class)
+						.order("-releaseTimeStamp")
+						.filter("platforms", platform).asList();
 			}
 
 		}
@@ -442,18 +505,23 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	private List<Game> getNGames(int limit, String platform, long timestamp) {
 		if (limit > 0) {
 			if ("all".equalsIgnoreCase(platform)) {
-				return gloonDatastore.createQuery(Game.class).limit(limit).filter("timestamp <", timestamp).order("-timestamp")
+				return gloonDatastore.createQuery(Game.class).limit(limit)
+						.filter("timestamp <", timestamp).order("-timestamp")
 						.asList();
 			} else {
-				return gloonDatastore.createQuery(Game.class).limit(limit).filter("timestamp <", timestamp).order("-timestamp")
+				return gloonDatastore.createQuery(Game.class).limit(limit)
+						.filter("timestamp <", timestamp).order("-timestamp")
 						.filter("platforms", platform).asList();
 			}
 
 		} else {
 			if ("all".equalsIgnoreCase(platform)) {
-				return gloonDatastore.createQuery(Game.class).filter("timestamp <", timestamp).order("-timestamp").asList();
+				return gloonDatastore.createQuery(Game.class)
+						.filter("timestamp <", timestamp).order("-timestamp")
+						.asList();
 			} else {
-				return gloonDatastore.createQuery(Game.class).filter("timestamp <", timestamp).order("-timestamp")
+				return gloonDatastore.createQuery(Game.class)
+						.filter("timestamp <", timestamp).order("-timestamp")
 						.filter("platforms", platform).asList();
 			}
 
@@ -470,16 +538,22 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	private List<Game> getTopGames(int limit, String platform) {
 		if (limit > 0) {
 			if ("all".equalsIgnoreCase(platform)) {
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-totalScore").asList();
+				return gloonDatastore.createQuery(Game.class).limit(limit)
+						.order("-totalScore").asList();
 			} else {
-				return gloonDatastore.createQuery(Game.class).limit(limit).order("-totalScore").filter("platforms", platform).asList();
+				return gloonDatastore.createQuery(Game.class).limit(limit)
+						.order("-totalScore").filter("platforms", platform)
+						.asList();
 			}
 
 		} else {
 			if ("all".equalsIgnoreCase(platform)) {
-				return gloonDatastore.createQuery(Game.class).order("-totalScore").asList();
+				return gloonDatastore.createQuery(Game.class)
+						.order("-totalScore").asList();
 			} else {
-				return gloonDatastore.createQuery(Game.class).order("-totalScore").filter("platforms", platform).asList();
+				return gloonDatastore.createQuery(Game.class)
+						.order("-totalScore").filter("platforms", platform)
+						.asList();
 			}
 
 		}
@@ -493,7 +567,8 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	 * @return
 	 * @throws ParseException
 	 */
-	private Game createOrUpdateGameInstance(DynamicForm requestData) throws ParseException {
+	private Game createOrUpdateGameInstance(DynamicForm requestData)
+			throws ParseException {
 		Game game = null;
 		String id = requestData.get("gameId");
 		String title = requestData.get("gameTitle");
@@ -520,14 +595,15 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 		}
 		game.setTitle(title);
 		game.setDescription(description);
-		Logger.debug("releasedDate: "+releaseDate);
+		Logger.debug("releasedDate: " + releaseDate);
 		if ("noDate".equalsIgnoreCase(releaseDate.trim())) {
 			Logger.debug("Date sent is noDate ");
 			game.setReleaseDate("TBA");
 			game.setReleaseTimeStamp(Long.MAX_VALUE);
 		} else {
 			game.setReleaseDate(releaseDate);
-			game.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2(releaseDate).getTime());
+			game.setReleaseTimeStamp(Utility.convertFromStringToDateFormat2(
+					releaseDate).getTime());
 		}
 		game.setPublisher(publisher);
 		game.setDeveloper(developer);
@@ -535,7 +611,10 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 		game.setCoverImage(gameCoverImage);
 		game.setGenre(Genre.valueOf(genre));
 		game.setRating(rating);
-		if (Utility.date1BeforeDate2(Utility.convertFromStringToDateFormat2(game.getReleaseDate()), new Date())) {
+		if (!"TBA".equalsIgnoreCase(game.getReleaseDate())
+				&& Utility.date1BeforeDate2(Utility
+						.convertFromStringToDateFormat2(game.getReleaseDate()),
+						new Date())) {
 			game.setGameReleaseStatus(Game.RELEASED);
 		} else {
 			game.setGameReleaseStatus(Game.NOT_RELEASED);
@@ -552,10 +631,16 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	 */
 	public List<Game> getRecentReleasedGames(int limit) {
 		if (limit > 0) {
-			return gloonDatastore.createQuery(Game.class).filter("releaseDate <", Utility.convertDateToStringWithoutTime(new Date()))
+			return gloonDatastore
+					.createQuery(Game.class)
+					.filter("releaseDate <",
+							Utility.convertDateToStringWithoutTime(new Date()))
 					.limit(limit).order("-releaseDate").asList();
 		} else {
-			return gloonDatastore.createQuery(Game.class).filter("releaseDate <", Utility.convertDateToStringWithoutTime(new Date()))
+			return gloonDatastore
+					.createQuery(Game.class)
+					.filter("releaseDate <",
+							Utility.convertDateToStringWithoutTime(new Date()))
 					.order("-releaseDate").asList();
 		}
 
@@ -571,9 +656,11 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 	private Boolean checkUserFollowingGameOrNot(User user, Game game) {
 		Boolean response = false;
 		if (user != null) {
-			ArrayList<InterestedGame> interestedGames = user.getFollowingGames();
+			ArrayList<InterestedGame> interestedGames = user
+					.getFollowingGames();
 			for (InterestedGame interestedGame : interestedGames) {
-				if (game.getId().toString().equalsIgnoreCase(interestedGame.getGameId())) {
+				if (game.getId().toString()
+						.equalsIgnoreCase(interestedGame.getGameId())) {
 					response = true;
 					break;
 				}
