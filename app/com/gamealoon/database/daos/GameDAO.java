@@ -520,7 +520,9 @@ public class GameDAO extends GloonDAO<Game> implements GameInterface {
 		}
 		game.setTitle(title);
 		game.setDescription(description);
-		if ("noDate".equalsIgnoreCase(releaseDate)) {
+		Logger.debug("releasedDate: "+releaseDate);
+		if ("noDate".equalsIgnoreCase(releaseDate.trim())) {
+			Logger.debug("Date sent is noDate ");
 			game.setReleaseDate("TBA");
 			game.setReleaseTimeStamp(Long.MAX_VALUE);
 		} else {

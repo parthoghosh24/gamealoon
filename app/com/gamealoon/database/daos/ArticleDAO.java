@@ -481,7 +481,7 @@ public class ArticleDAO extends GloonDAO<Article> implements ArticleInterface {
 				}
 				else
 				{
-					if (Category.Review.equals(article.getCategory())) {						
+					if (Article.DRAFT == article.getState() && Category.Review.equals(article.getCategory())) {						
 						String gameId = article.getGame();
 						int gameScore = Integer.parseInt(requestData.get("gameScore"));
 						Logger.debug("SCORE recieved: " + gameScore);
